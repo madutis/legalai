@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { ChatInterface } from '@/components/chat/ChatInterface';
-import { OnboardingModal } from '@/components/chat/OnboardingModal';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
 interface UserContext {
@@ -14,49 +12,57 @@ interface UserContext {
   topic: string;
 }
 
-function ChatPageContent() {
-  const searchParams = useSearchParams();
-  const topicFromUrl = searchParams.get('topic');
+const ROLE_LABELS: Record<string, string> = {
+  employer: 'Darbdavys',
+  employee: 'Darbuotojas',
+  hr: 'HR',
+  other: 'Kita',
+};
 
+const TOPIC_LABELS: Record<string, string> = {
+  hiring: 'Įdarbinimas',
+  termination: 'Atleidimas',
+  leave: 'Atostogos',
+  wages: 'Darbo užmokestis',
+  council: 'Darbo taryba',
+  contracts: 'Darbo sutartys',
+  other: 'Kitas klausimas',
+};
+
+export default function ChatPage() {
+  const router = useRouter();
   const [context, setContext] = useState<UserContext | null>(null);
-  const [showOnboarding, setShowOnboarding] = useState(true);
-  const [chatKey, setChatKey] = useState(Date.now());
+  const [loading, setLoading] = useState(true);
 
-  // Check for saved context on mount, or use topic from URL
   useEffect(() => {
     const saved = localStorage.getItem('legalai-context');
-    if (saved && !topicFromUrl) {
+    if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        setContext(parsed);
-        setShowOnboarding(false);
+        setContext(JSON.parse(saved));
       } catch {
-        // Invalid saved data, show onboarding
+        router.push('/');
       }
+    } else {
+      router.push('/');
     }
-  }, [topicFromUrl]);
-
-  const handleOnboardingComplete = (data: UserContext) => {
-    setContext(data);
-    setShowOnboarding(false);
-    setChatKey(Date.now()); // Reset chat
-    localStorage.setItem('legalai-context', JSON.stringify(data));
-  };
+    setLoading(false);
+  }, [router]);
 
   const handleNewConsultation = () => {
-    setShowOnboarding(true);
+    localStorage.removeItem('legalai-context');
+    router.push('/');
   };
+
+  if (loading || !context) {
+    return (
+      <div className="h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen flex flex-col bg-slate-50">
-      {/* Onboarding Modal */}
-      {showOnboarding && (
-        <OnboardingModal
-          onComplete={handleOnboardingComplete}
-          initialTopic={topicFromUrl || undefined}
-        />
-      )}
-
       {/* Header */}
       <header className="border-b bg-white/95 backdrop-blur-sm flex-shrink-0">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -68,47 +74,40 @@ function ChatPageContent() {
             <Button variant="outline" size="sm" onClick={handleNewConsultation}>
               Nauja konsultacija
             </Button>
-            <Link href="/">
-              <Button variant="ghost" size="sm">Grįžti</Button>
-            </Link>
           </div>
         </div>
       </header>
 
-      {/* Chat - takes remaining height */}
-      <main className="flex-1 overflow-hidden">
-        {context && (
-          <ChatInterface
-            key={chatKey}
-            userRole={context.userRole}
-            companySize={context.companySize}
-            topic={context.topic}
-          />
-        )}
-      </main>
-    </div>
-  );
-}
-
-function ChatPageLoading() {
-  return (
-    <div className="h-screen flex flex-col bg-slate-50">
-      <header className="border-b bg-white/95 backdrop-blur-sm flex-shrink-0">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <Skeleton className="h-8 w-48" />
+      {/* Context Summary */}
+      <div className="bg-slate-100 border-b px-4 py-2 flex-shrink-0">
+        <div className="max-w-4xl mx-auto flex items-center gap-4 text-sm">
+          <span className="text-slate-500">Kontekstas:</span>
+          <span className="bg-white px-2 py-1 rounded text-slate-700">
+            {ROLE_LABELS[context.userRole] || context.userRole}
+          </span>
+          <span className="bg-white px-2 py-1 rounded text-slate-700">
+            {context.companySize} darbuotojų
+          </span>
+          <span className="bg-white px-2 py-1 rounded text-slate-700">
+            {TOPIC_LABELS[context.topic] || context.topic}
+          </span>
+          <button
+            onClick={handleNewConsultation}
+            className="text-slate-400 hover:text-slate-600 ml-auto text-xs"
+          >
+            Keisti
+          </button>
         </div>
-      </header>
-      <main className="flex-1 flex items-center justify-center">
-        <Skeleton className="h-12 w-64" />
+      </div>
+
+      {/* Chat */}
+      <main className="flex-1 overflow-hidden">
+        <ChatInterface
+          userRole={context.userRole}
+          companySize={context.companySize}
+          topic={context.topic}
+        />
       </main>
     </div>
-  );
-}
-
-export default function ChatPage() {
-  return (
-    <Suspense fallback={<ChatPageLoading />}>
-      <ChatPageContent />
-    </Suspense>
   );
 }
