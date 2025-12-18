@@ -27,7 +27,13 @@ Darbo kodekso struktūra:
 - 1-20 str.: Bendrosios nuostatos
 - 21-40 str.: Darbo sutartis (sudarymas, sąlygos, išbandymas - 36 str.)
 - 41-60 str.: Darbo sutarties nutraukimas (57 str. - darbdavio iniciatyva)
-- 61-100 str.: Specialios darbo sutartys (terminuota, laikinas darbas, nuotolinis)
+- 61-65 str.: Darbo sutarties nutraukimo apribojimai ir specialūs atvejai:
+  - 61 str.: Darbo sutarties nutraukimo apribojimai (nėščios, vaiko priežiūros atostogos)
+  - 62 str.: Darbo sutarties nutraukimas darbdavio bankroto atveju
+  - 63 str.: Grupės darbuotojų atleidimas
+  - 64 str.: Įspėjimo terminai
+  - 65 str.: Išeitinė išmoka
+- 66-100 str.: Specialios darbo sutartys (terminuota, laikinas darbas, nuotolinis)
 - 101-125 str.: Darbo laikas (111 str.), viršvalandžiai (119 str.)
 - 126-145 str.: Atostogos (126 str. kasmetinės, 131 str. tikslinės, 137 str. nemokamos)
 - 146-160 str.: Darbo užmokestis, žalos atlyginimas
