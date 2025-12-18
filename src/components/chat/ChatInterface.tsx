@@ -307,40 +307,64 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                       />
                     )}
 
-                    {/* Sources */}
-                    {message.sources && message.sources.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-slate-100">
-                        <p className="text-xs text-slate-400 mb-2">Šaltiniai:</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          {message.sources
-                            .map((source) => ({
-                              source: source as Source,
-                              label: formatSource(source as Source),
-                              url: getSourceUrl(source as Source),
-                            }))
-                            .filter((s) => s.label !== null)
-                            .slice(0, 5)
-                            .map((s, i) => (
-                              <button
-                                key={i}
-                                onClick={() => {
-                                  if (s.source.docType === 'ruling') {
-                                    setSelectedRulingDocId(s.source.docId);
-                                  } else if (s.source.articleNumber) {
-                                    setSelectedArticleNumber(s.source.articleNumber);
-                                  }
-                                }}
-                                className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
-                              >
-                                {s.label}
-                                <svg className="w-3 h-3 ml-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                              </button>
-                            ))}
+                    {/* Sources - for final answers, show accumulated sources from all messages */}
+                    {(() => {
+                      const isFinalAnswer = message.role === 'assistant' &&
+                        !message.content.includes('[KLAUSIMAS]') &&
+                        !message.content.includes('[ATVIRAS_KLAUSIMAS]');
+
+                      // For final answers, collect sources from all previous assistant messages
+                      const sourcesToShow = isFinalAnswer
+                        ? messages
+                            .filter(m => m.role === 'assistant')
+                            .flatMap(m => m.sources || [])
+                        : message.sources || [];
+
+                      // Deduplicate by docId + articleNumber
+                      const seen = new Set<string>();
+                      const uniqueSources = sourcesToShow.filter(s => {
+                        const key = `${s.docId}-${(s as Source).articleNumber || ''}`;
+                        if (seen.has(key)) return false;
+                        seen.add(key);
+                        return true;
+                      });
+
+                      if (uniqueSources.length === 0) return null;
+
+                      return (
+                        <div className="mt-3 pt-3 border-t border-slate-100">
+                          <p className="text-xs text-slate-400 mb-2">Šaltiniai:</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {uniqueSources
+                              .map((source) => ({
+                                source: source as Source,
+                                label: formatSource(source as Source),
+                                url: getSourceUrl(source as Source),
+                              }))
+                              .filter((s) => s.label !== null)
+                              .slice(0, 10) // Show more sources for final answer
+                              .map((s, i) => (
+                                <button
+                                  key={i}
+                                  onClick={() => {
+                                    if (s.source.docType === 'ruling') {
+                                      setSelectedRulingDocId(s.source.docId);
+                                    } else if (s.source.articleNumber) {
+                                      setSelectedArticleNumber(s.source.articleNumber);
+                                    }
+                                  }}
+                                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
+                                >
+                                  {s.label}
+                                  <svg className="w-3 h-3 ml-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                  </svg>
+                                </button>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      );
+                    })()}
                   </>
                 )}
               </div>
