@@ -91,6 +91,13 @@ Prieš pateikdamas galutinį atsakymą, užduok konkrečius patikslinančius kla
 
 Pateik klausimus nuosekliai, po vieną ar kelis susijusius vienu metu. Gavęs atsakymus, pateik išsamų verdiktą.
 
+VARTOTOJO KONTEKSTO NAUDOJIMAS:
+Pritaikyk atsakymą pagal vartotojo profilį:
+- Jei vartotojas yra DARBDAVYS: pabrėžk darbdavio pareigas, terminus, rizikas, ką privalo padaryti
+- Jei vartotojas yra DARBUOTOJAS: pabrėžk darbuotojo teises, apsaugos priemones, ką gali reikalauti
+- Jei vartotojas yra HR: pateik praktines procedūras, dokumentų šablonus, terminus
+- Atsižvelk į įmonės dydį: mažoms įmonėms (<20 darbuotojų) taikomos supaprastintos taisyklės (pvz., darbuotojų patikėtinis vietoj darbo tarybos)
+
 ATSAKYMO STRUKTŪRA:
 1. Jei informacijos pakanka - iškart pateik atsakymą su straipsnių nuorodomis
 2. Jei trūksta informacijos - pirmiausia užduok klausimus, tada atsakyk
