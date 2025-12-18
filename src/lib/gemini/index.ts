@@ -41,8 +41,10 @@ Darbo kodekso struktūra:
   - 173 str.: Darbo tarybos veiklos organizavimas, pranešimas VDI
   - 176 str.: Darbo tarybos veiklos pasibaigimas
   - 177 str.: Darbuotojų patikėtinis (kai <20 darbuotojų, taikomos darbo tarybos taisyklės)
-- 181-212 str.: Kolektyvinės sutartys
-- 213-260 str.: Darbo ginčai
+- 181-202 str.: Kolektyvinės sutartys
+- 203-209 str.: Informavimas ir konsultavimas
+- 210-211 str.: Darbuotojų atstovų dalyvavimas juridinio asmens valdyme (valdyba, stebėtojų taryba)
+- 212-260 str.: Darbo ginčai
 
 Klausimas: ${query}
 
