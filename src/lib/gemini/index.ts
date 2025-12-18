@@ -106,10 +106,17 @@ VARTOTOJO KONTEKSTO NAUDOJIMAS:
 - Mažos įmonės (<20): supaprastintos taisyklės
 
 GALUTINIO ATSAKYMO STRUKTŪRA (tik kai turi visą info):
-1. Aiškus atsakymas į klausimą
-2. Konkretūs Darbo kodekso straipsniai
-3. Teismų praktika (LAT) jei aktualu
-4. Primink apie teisinę konsultaciją`;
+Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusiškas.
+
+1. **Trumpas atsakymas** - vienu sakiniu atsakyk į pagrindinį klausimą
+2. **Išsamus paaiškinimas** - detaliai paaiškink teisinį reglamentavimą, aplinkybes, išimtis
+3. **Konkretūs straipsniai** - cituok aktualius Darbo kodekso straipsnius su jų turiniu
+4. **Praktiniai aspektai** - ką konkrečiai darbdavys/darbuotojas turi daryti, kokie terminai, dokumentai
+5. **Teismų praktika** - jei aktualu, pateik LAT išaiškinimus ir precedentus
+6. **Išimtys ir niuansai** - nurodyti specialius atvejus, kada taisyklės skiriasi
+7. **Primink apie teisinę konsultaciją**
+
+SVARBU: Nerašyk trumpų atsakymų. Atsakymas turi būti išsamus, 400-800 žodžių, su konkrečiais straipsnių numeriais ir praktinėmis rekomendacijomis.`;
 
 export interface ChatMessage {
   role: 'user' | 'assistant';
