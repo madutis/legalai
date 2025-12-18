@@ -23,39 +23,248 @@ export async function extractRelevantArticles(query: string): Promise<number[]> 
   const prompt = `Tu esi Lietuvos darbo teisės ekspertas. Vartotojas užduoda klausimą apie darbo teisę.
 Nustatyk, kurie Darbo kodekso straipsniai gali būti aktualūs šiam klausimui.
 
-Darbo kodekso struktūra:
-- 1-20 str.: Bendrosios nuostatos
-- 21-40 str.: Darbo sutartis (sudarymas, sąlygos, išbandymas - 36 str.)
-- 41-60 str.: Darbo sutarties nutraukimas (57 str. - darbdavio iniciatyva)
-- 61-65 str.: Darbo sutarties nutraukimo apribojimai ir specialūs atvejai:
-  - 61 str.: Darbo sutarties nutraukimo apribojimai (nėščios, vaiko priežiūros atostogos)
-  - 62 str.: Darbo sutarties nutraukimas darbdavio bankroto atveju
-  - 63 str.: Grupės darbuotojų atleidimas
-  - 64 str.: Įspėjimo terminai
-  - 65 str.: Išeitinė išmoka
-- 66-100 str.: Specialios darbo sutartys (terminuota, laikinas darbas, nuotolinis)
-- 101-125 str.: Darbo laikas (111 str.), viršvalandžiai (119 str.)
-- 126-145 str.: Atostogos (126 str. kasmetinės, 131 str. tikslinės, 137 str. nemokamos)
-- 146-160 str.: Darbo užmokestis, žalos atlyginimas
-- 161-180 str.: Darbo taryba ir patikėtinis:
-  - 165 str.: Darbo tarybos sudarymas
-  - 167 str.: Darbo tarybos narių veiklos garantijos (finansavimas, patalpos, priemonės)
-  - 168 str.: Darbuotojų atstovų pareigų atlikimo garantijos (60 val./metus, mokamas laikas, mokymai)
-  - 169 str.: Darbo tarybos rinkimai
-  - 170 str.: Darbo tarybos sudėtis
-  - 172 str.: Narystė darbo taryboje
-  - 173 str.: Darbo tarybos veiklos organizavimas, pranešimas VDI
-  - 176 str.: Darbo tarybos veiklos pasibaigimas
-  - 177 str.: Darbuotojų patikėtinis (kai <20 darbuotojų, taikomos darbo tarybos taisyklės)
-- 181-202 str.: Kolektyvinės sutartys
-- 203-209 str.: Informavimas ir konsultavimas
-- 210-211 str.: Darbuotojų atstovų dalyvavimas juridinio asmens valdyme (valdyba, stebėtojų taryba)
-- 212-260 str.: Darbo ginčai
+DARBO KODEKSO STRAIPSNIŲ SĄRAŠAS:
+
+I. BENDROSIOS NUOSTATOS (1-20)
+1 - Darbo kodekso paskirtis
+2 - Darbo santykių teisinis reglamentavimas
+3 - Darbo teisės šaltiniai
+4 - Darbo teisės principai
+5 - Darbo teisės normų aiškinimas
+6 - Darbo sutarties šalys
+7 - Darbdavys
+8 - Darbuotojas
+9 - Darbuotojų atstovai
+10 - Darbo santykių atsiradimas
+11 - Darbuotojo pareigos
+12 - Darbdavio pareigos
+13 - Darbuotojo teisės
+14 - Darbdavio teisės
+20 - Senatis darbo ginčuose
+
+II. DARBO SUTARTIS (21-40)
+21 - Darbo sutarties samprata
+22 - Darbo sutarties turinys
+23 - Būtinosios darbo sutarties sąlygos
+24 - Papildomos darbo sutarties sąlygos
+25 - Susitarimas dėl nekonkuravimo
+26 - Darbo sutarties sudarymo tvarka
+27 - Darbo sutarties forma
+28 - Darbo sutarties registravimas
+29 - Dokumentai sudarant darbo sutartį
+30 - Leidimas dirbti užsieniečiams
+31 - Darbo sutarties sudarymo ribojimai
+32 - Darbo sutarties negaliojimas
+33 - Darbo sutarties sąlygų keitimas
+34 - Perkėlimas į kitą darbą
+35 - Nušalinimas nuo darbo
+36 - Išbandymas sudarant darbo sutartį
+37 - Darbo funkcijų ir pareigų aprašymas
+38 - Darbo vieta
+39 - Darbo apmokėjimo sąlygos
+40 - Darbo laiko norma
+
+III. DARBO SUTARTIES PASIBAIGIMAS (41-60)
+41 - Darbo sutarties pasibaigimo pagrindai
+42 - Darbo sutarties pasibaigimas nesant šalių valios
+43 - Darbo sutarties nutraukimas šalių susitarimu
+44 - Darbo sutarties nutraukimas darbuotojo valia (be svarbių priežasčių)
+45 - Darbo sutarties nutraukimas dėl darbuotojo prašymo (su svarbiomis priežastimis)
+46 - Atleidimo tvarka pagal darbuotojo pareiškimą
+47 - Darbuotojo teisė atšaukti pareiškimą
+48 - Atsiskaitymas atleidžiant darbuotoją
+49 - Dokumentų grąžinimas
+50 - Darbo pažymėjimas
+51 - Rekomendacija
+52 - Darbo sutarties nutraukimo įforminimas
+53 - Darbo sutarties nutraukimas dėl darbuotojo mirties
+54 - Darbo sutarties nutraukimas dėl darbdavio mirties
+55 - Teismo sprendimas dėl darbo sutarties nutraukimo
+56 - Neteisėtas atleidimas iš darbo
+57 - Darbo sutarties nutraukimas darbdavio iniciatyva be darbuotojo kaltės
+58 - Darbo sutarties nutraukimas darbdavio iniciatyva dėl darbuotojo kaltės
+59 - Darbuotojo atleidimas už šiurkštų pažeidimą
+60 - Darbo sutarties nutraukimas darbdavio valia
+
+IV. DARBO SUTARTIES NUTRAUKIMO APRIBOJIMAI IR GARANTIJOS (61-65)
+61 - Darbo sutarties nutraukimo apribojimai (nėščios, vaiko priežiūros atostogos, neįgalieji)
+62 - Darbo sutarties nutraukimas darbdavio bankroto atveju
+63 - Grupės darbuotojų atleidimas (kolektyvinis atleidimas)
+64 - Įspėjimo apie darbo sutarties nutraukimą terminai
+65 - Išeitinė išmoka
+
+V. SPECIALIOS DARBO SUTARTYS (66-100)
+66 - Specialių darbo sutarčių rūšys
+67 - Terminuota darbo sutartis
+68 - Terminuotos sutarties pratęsimas
+69 - Terminuotos sutarties pasibaigimas
+70 - Laikinojo darbo sutartis
+71 - Laikinojo darbo agentura
+72 - Laikinojo darbuotojo teisės
+73 - Pameistrystės darbo sutartis
+74 - Projektinio darbo sutartis
+75 - Darbo vietos dalijimosi sutartis
+76 - Darbo keliems darbdaviams sutartis
+77 - Sezoninio darbo sutartis
+78 - Nuotolinio darbo sutartis
+79 - Nuotolinio darbo sąlygos
+80 - Nuotolinio darbo įforminimas
+81 - Papildomo darbo sutartis (antraeilės pareigos)
+82 - Papildomo darbo apribojimai
+
+VI. DARBO LAIKAS (101-120)
+101 - Darbo laiko samprata
+102 - Darbo laiko režimas
+103 - Darbo laiko norma
+104 - Sutrumpintas darbo laikas
+105 - Ne visas darbo laikas
+106 - Darbo laiko apskaita
+107 - Suminė darbo laiko apskaita
+108 - Lankstus darbo grafikas
+109 - Darbo grafikai
+110 - Budėjimas
+111 - Maksimalus darbo laikas (48 val./sav.)
+112 - Nakties darbas
+113 - Nakties darbo apribojimai
+114 - Nakties darbuotojų garantijos
+115 - Viršvalandinis darbas
+116 - Viršvalandžių ribos
+117 - Viršvalandžių apmokėjimas
+118 - Darbas poilsio ir švenčių dienomis
+119 - Darbo laiko apskaitos žiniaraštis
+120 - Darbo laiko fiksavimas
+
+VII. POILSIO LAIKAS (121-125)
+121 - Poilsio laiko rūšys
+122 - Pertrauka pailsėti ir pavalgyti
+123 - Specialios pertraukos
+124 - Paros poilsis
+125 - Savaitės nepertraukiamasis poilsis
+
+VIII. ATOSTOGOS (126-140)
+126 - Kasmetinės atostogos (minimali trukmė 20 d.d.)
+127 - Pailgintos atostogos
+128 - Papildomos atostogos
+129 - Kasmetinių atostogų suteikimas
+130 - Atostogų grafikas
+131 - Tikslinės atostogos (nėštumo, gimdymo, tėvystės, vaiko priežiūros)
+132 - Nėštumo ir gimdymo atostogos
+133 - Tėvystės atostogos
+134 - Vaiko priežiūros atostogos
+135 - Atostogų dėl vaiko priežiūros suteikimas
+136 - Mokymosi atostogos
+137 - Nemokamos atostogos
+138 - Kūrybinės atostogos
+139 - Atostogų perkėlimas
+140 - Atšaukimas iš atostogų
+
+IX. DARBO UŽMOKESTIS (141-150)
+141 - Darbo užmokesčio samprata
+142 - Minimalusis darbo užmokestis (MMA)
+143 - Darbo apmokėjimo sistema
+144 - Darbo užmokesčio mokėjimas
+145 - Darbo užmokesčio apskaičiavimas
+146 - Vidutinis darbo užmokestis
+147 - Priemokos, priedai
+148 - Premijos
+149 - Darbo užmokesčio apsauga
+150 - Išskaitos iš darbo užmokesčio
+
+X. MATERIALINĖ ATSAKOMYBĖ (151-160)
+151 - Darbuotojo materialinė atsakomybė
+152 - Visiškos materialinės atsakomybės atvejai
+153 - Materialinės atsakomybės sutartis
+154 - Žalos atlyginimo tvarka
+155 - Žalos dydžio nustatymas
+156 - Darbdavio materialinė atsakomybė
+157 - Žalos atlyginimas dėl nelaimingo atsitikimo darbe
+158 - Žalos atlyginimas dėl profesinės ligos
+159 - Laidojimo pašalpa
+160 - Neturtinės žalos atlyginimas
+
+XI. DARBUOTOJŲ ATSTOVAVIMAS (161-180)
+161 - Darbuotojų atstovavimo formos
+162 - Profesinė sąjunga
+163 - Profesinės sąjungos teisės
+164 - Profesinės sąjungos narių garantijos
+165 - Darbo tarybos sudarymas (įmonėse nuo 20 darbuotojų)
+166 - Darbo tarybos kompetencija
+167 - Darbo tarybos narių garantijos (patalpos, priemonės, finansavimas)
+168 - Darbuotojų atstovų pareigų atlikimo garantijos (60 val./metus)
+169 - Darbo tarybos rinkimai
+170 - Darbo tarybos sudėtis ir narių skaičius
+171 - Darbo tarybos pirmininkas
+172 - Narystė darbo taryboje
+173 - Darbo tarybos veiklos organizavimas
+174 - Darbo tarybos posėdžiai
+175 - Darbo tarybos sprendimai
+176 - Darbo tarybos veiklos pasibaigimas (reorganizacija, likvidavimas)
+177 - Darbuotojų patikėtinis (įmonėse iki 20 darbuotojų)
+178 - Darbuotojų atstovų apsauga nuo diskriminacijos
+179 - Garantijos atleidimo atveju
+180 - Profesinės sąjungos sutikimas atleisti
+
+XII. KOLEKTYVINIAI DARBO SANTYKIAI (181-202)
+181 - Kolektyvinių sutarčių rūšys
+182 - Nacionalinė kolektyvinė sutartis
+183 - Šakos kolektyvinė sutartis
+184 - Darbdavio kolektyvinė sutartis
+185 - Kolektyvinių derybų pradžia
+186 - Kolektyvinių derybų tvarka
+187 - Kolektyvinės sutarties turinys
+188 - Kolektyvinės sutarties forma
+189 - Kolektyvinės sutarties registravimas
+190 - Kolektyvinės sutarties galiojimas
+191 - Kolektyvinės sutarties pakeitimas
+192 - Kolektyvinės sutarties nutraukimas
+
+XIII. INFORMAVIMAS IR KONSULTAVIMAS (203-211)
+203 - Informavimo ir konsultavimo pareiga
+204 - Informavimo ir konsultavimo turinys
+205 - Informavimo tvarka
+206 - Konsultavimo tvarka
+207 - Europos darbo taryba
+208 - Informavimas ir konsultavimas verslo perdavimo atveju
+209 - Informavimas grupės atleidimo atveju
+210 - Darbuotojų atstovų dalyvavimas juridinio asmens valdyme (valdyba)
+211 - Darbuotojų atstovų skyrimo į valdymo organus tvarka
+
+XIV. DARBO GINČAI (212-240)
+212 - Darbo ginčų rūšys
+213 - Darbo ginčų komisija (DGK)
+214 - DGK sudėtis
+215 - Kreipimasis į DGK
+216 - Darbo ginčo nagrinėjimas DGK
+217 - DGK sprendimas
+218 - DGK sprendimo apskundimas teismui
+219 - Individualūs darbo ginčai teisme
+220 - Kolektyviniai darbo ginčai
+221 - Taikinimo procedūra
+222 - Darbo arbitražas
+223 - Streikas
+224 - Streiko paskelbimas
+225 - Streiko organizavimas
+226 - Streiko apribojimai
+227 - Lokautas
+
+XV. DARBUOTOJŲ SAUGA IR SVEIKATA (241-264)
+241 - Darbdavio pareigos užtikrinti saugą
+242 - Darbuotojo pareigos
+243 - Profesinės rizikos vertinimas
+244 - Darbuotojų mokymas
+245 - Sveikatos patikrinimai
+246 - Nelaimingi atsitikimai darbe
+247 - Profesinės ligos
+248 - Darbo higiena
+250 - Moterų apsauga
+251 - Nėščių moterų apsauga darbe
+252 - Jaunų asmenų darbas
+253 - Neįgaliųjų darbas
 
 Klausimas: ${query}
 
-Grąžink TIK skaičių sąrašą (be teksto), pvz.: 176, 170, 172
-Jei neaišku kokie straipsniai aktualūs, grąžink tuščią atsakymą.`;
+Grąžink TIK skaičių sąrašą (be teksto), pvz.: 62, 63, 61
+Pasirink 3-7 aktualiausius straipsnius.`;
 
   try {
     const result = await model.generateContent(prompt);
@@ -67,7 +276,7 @@ Jei neaišku kokie straipsniai aktualūs, grąžink tuščią atsakymą.`;
       .map(s => parseInt(s.trim()))
       .filter(n => !isNaN(n) && n >= 1 && n <= 264);
 
-    return numbers.slice(0, 5); // Max 5 articles
+    return numbers.slice(0, 7); // Max 7 articles
   } catch {
     return [];
   }
