@@ -202,7 +202,7 @@ export async function* streamRAGResponse(
   userContext?: ChatContext
 ): AsyncGenerator<string> {
   const model = getGenAI().getGenerativeModel({
-    model: 'gemini-2.0-flash-exp',
+    model: 'gemini-3-flash-preview',
   });
 
   const contextSection = context.length > 0
@@ -216,11 +216,17 @@ export async function* streamRAGResponse(
 - Tema: ${userContext.topic || 'bendra'}`
     : '';
 
+  const historySection = chatHistory.length > 0
+    ? `ANKSTESNIS POKALBIS:\n${chatHistory.map(m => `${m.role === 'user' ? 'Vartotojas' : 'Asistentas'}: ${m.content}`).join('\n\n')}`
+    : '';
+
   const fullPrompt = `${SYSTEM_PROMPT}
 
 ${userContextSection}
 
 ${contextSection}
+
+${historySection}
 
 VARTOTOJO KLAUSIMAS: ${query}
 
