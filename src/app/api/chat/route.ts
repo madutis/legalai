@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extractRelevantArticles } from '@/lib/gemini';
+import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extractRelevantArticles, MODELS } from '@/lib/gemini';
 import { searchSimilar, fetchArticles, SearchResult } from '@/lib/pinecone';
 
 export const runtime = 'nodejs';
@@ -9,12 +9,14 @@ interface ChatRequestBody {
   message: string;
   history?: ChatMessage[];
   context?: ChatContext;
+  useFallbackModel?: boolean;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ChatRequestBody = await request.json();
-    const { message, history = [], context } = body;
+    const { message, history = [], context, useFallbackModel = false } = body;
+    const modelToUse = useFallbackModel ? MODELS.fallback : MODELS.primary;
 
     if (!message || typeof message !== 'string') {
       return NextResponse.json(
@@ -81,7 +83,8 @@ export async function POST(request: NextRequest) {
             message,
             contextTexts,
             history,
-            context
+            context,
+            modelToUse
           )) {
             const data = { type: 'text', content: chunk };
             controller.enqueue(

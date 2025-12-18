@@ -190,15 +190,22 @@ Atsakyk į klausimą. Jei naudoji informaciją iš šaltinių, nurodyk šaltinio
   return { answer, citations };
 }
 
+// Available models for fallback
+export const MODELS = {
+  primary: 'gemini-3-flash-preview',
+  fallback: 'gemini-2.5-flash-preview-05-20',
+} as const;
+
 // Stream response for real-time output
 export async function* streamRAGResponse(
   query: string,
   context: string[],
   chatHistory: ChatMessage[] = [],
-  userContext?: ChatContext
+  userContext?: ChatContext,
+  modelName: string = MODELS.primary
 ): AsyncGenerator<string> {
   const model = getGenAI().getGenerativeModel({
-    model: 'gemini-3-flash-preview',
+    model: modelName,
   });
 
   const contextSection = context.length > 0

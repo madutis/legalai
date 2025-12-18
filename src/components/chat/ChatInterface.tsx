@@ -200,7 +200,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, isLoading, error, sendMessage, stopGeneration } = useChat({
+  const { messages, isLoading, error, canRetry, sendMessage, stopGeneration, retry } = useChat({
     topic,
     userRole,
     companySize,
@@ -352,8 +352,18 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
 
       {/* Error */}
       {error && (
-        <div className="mx-4 mb-2 px-4 py-2 bg-red-50 text-red-600 text-sm rounded-lg">
-          {error}
+        <div className="mx-4 mb-2 px-4 py-3 bg-red-50 text-red-600 text-sm rounded-lg flex items-center justify-between">
+          <span>{error}</span>
+          {canRetry && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={retry}
+              className="ml-3 text-red-600 border-red-200 hover:bg-red-100"
+            >
+              Bandyti dar kartą
+            </Button>
+          )}
         </div>
       )}
 
