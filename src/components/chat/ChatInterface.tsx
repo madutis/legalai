@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useChat } from '@/hooks/useChat';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,6 +8,155 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { RulingModal } from './RulingModal';
 import { ArticleModal } from './ArticleModal';
 import ReactMarkdown from 'react-markdown';
+
+// Parse structured questions from assistant response
+interface ParsedQuestion {
+  type: 'choice' | 'open';
+  question: string;
+  options?: string[];
+}
+
+function parseQuestions(text: string): { content: string; question: ParsedQuestion | null } {
+  // Check for choice question
+  const choiceMatch = text.match(/\[KLAUSIMAS\]\s*([\s\S]*?)\[\/KLAUSIMAS\]/);
+  if (choiceMatch) {
+    const inner = choiceMatch[1];
+    const lines = inner.trim().split('\n');
+    const questionText = lines[0];
+    const options = inner.match(/\[PASIRINKIMAS\]([^\[]+)/g)?.map(o => o.replace('[PASIRINKIMAS]', '').trim()) || [];
+
+    const contentWithoutQuestion = text.replace(choiceMatch[0], '').trim();
+    return {
+      content: contentWithoutQuestion,
+      question: {
+        type: 'choice',
+        question: questionText,
+        options,
+      },
+    };
+  }
+
+  // Check for open question
+  const openMatch = text.match(/\[ATVIRAS_KLAUSIMAS\]\s*([\s\S]*?)\[\/ATVIRAS_KLAUSIMAS\]/);
+  if (openMatch) {
+    const questionText = openMatch[1].trim();
+    const contentWithoutQuestion = text.replace(openMatch[0], '').trim();
+    return {
+      content: contentWithoutQuestion,
+      question: {
+        type: 'open',
+        question: questionText,
+      },
+    };
+  }
+
+  return { content: text, question: null };
+}
+
+// Component for rendering assistant messages with interactive questions
+function AssistantMessage({
+  content,
+  isLastMessage,
+  isLoading,
+  onOptionClick,
+  onArticleClick,
+}: {
+  content: string;
+  isLastMessage: boolean;
+  isLoading: boolean;
+  onOptionClick: (option: string) => void;
+  onArticleClick: (articleNum: number) => void;
+}) {
+  const { content: textContent, question } = useMemo(() => parseQuestions(content), [content]);
+  const processedContent = useMemo(() => processContent(textContent), [textContent]);
+
+  return (
+    <div className="prose prose-sm prose-slate max-w-none">
+      {/* Main content */}
+      {processedContent && (
+        <ReactMarkdown
+          components={{
+            p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
+            ul: ({ children }) => <ul className="mb-3 ml-4 list-disc">{children}</ul>,
+            ol: ({ children }) => <ol className="mb-3 ml-4 list-decimal">{children}</ol>,
+            li: ({ children }) => <li className="mb-1">{children}</li>,
+            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+            h1: ({ children }) => <h3 className="font-semibold text-base mb-2 mt-4">{children}</h3>,
+            h2: ({ children }) => <h4 className="font-semibold text-base mb-2 mt-3">{children}</h4>,
+            h3: ({ children }) => <h5 className="font-semibold mb-2 mt-2">{children}</h5>,
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-2 border-slate-300 pl-3 italic text-slate-600">
+                {children}
+              </blockquote>
+            ),
+            a: ({ href, children }) => {
+              const articleMatch = href?.match(/e-tar\.lt.*#part_(\d+)/);
+              if (articleMatch) {
+                const articleNum = parseInt(articleMatch[1]);
+                return (
+                  <button
+                    onClick={() => onArticleClick(articleNum)}
+                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                  >
+                    {children}
+                  </button>
+                );
+              }
+              return (
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 underline"
+                >
+                  {children}
+                </a>
+              );
+            },
+          }}
+        >
+          {processedContent}
+        </ReactMarkdown>
+      )}
+
+      {/* Interactive question - only show on last message when not loading */}
+      {question && isLastMessage && !isLoading && (
+        <div className="mt-4 pt-3 border-t border-slate-200">
+          <p className="font-medium text-slate-800 mb-3">{question.question}</p>
+          {question.type === 'choice' && question.options && (
+            <div className="flex flex-wrap gap-2">
+              {question.options.map((option, i) => (
+                <button
+                  key={i}
+                  onClick={() => onOptionClick(option)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium text-slate-700 transition-colors border border-slate-200 hover:border-slate-300"
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+          {question.type === 'open' && (
+            <p className="text-xs text-slate-500 italic">Įveskite atsakymą žemiau</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Process assistant text: remove citation anchors and linkify articles
+const processContent = (text: string): string => {
+  const eTarBase = 'https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_';
+  return text
+    // Remove citation anchors like [1], [2], etc.
+    .replace(/\s*\[\d+\]/g, '')
+    // Convert article references to links
+    .replace(
+      /(\d{1,3})(?:-(?:ojo|asis|ojo|ojo))?\s*(?:straipsn\w*|str\.)/gi,
+      (match, num) => `[${match}](${eTarBase}${num})`
+    );
+};
 
 interface ChatInterfaceProps {
   topic?: string;
@@ -78,19 +227,6 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     return null;
   };
 
-  // Process assistant text: remove citation anchors and linkify articles
-  const processContent = (text: string): string => {
-    const eTarBase = 'https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_';
-    return text
-      // Remove citation anchors like [1], [2], etc.
-      .replace(/\s*\[\d+\]/g, '')
-      // Convert article references to links
-      .replace(
-        /(\d{1,3})(?:-(?:ojo|asis|ojo|ojo))?\s*(?:straipsn\w*|str\.)/gi,
-        (match, num) => `[${match}](${eTarBase}${num})`
-      );
-  };
-
   return (
     <div className="h-full flex flex-col max-w-4xl mx-auto">
       {/* Messages container with proper scrolling */}
@@ -132,52 +268,16 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                     {message.role === 'user' ? (
                       <p className="text-sm whitespace-pre-wrap">{message.content}</p>
                     ) : (
-                      <div className="prose prose-sm prose-slate max-w-none">
-                        <ReactMarkdown
-                          components={{
-                            p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
-                            ul: ({ children }) => <ul className="mb-3 ml-4 list-disc">{children}</ul>,
-                            ol: ({ children }) => <ol className="mb-3 ml-4 list-decimal">{children}</ol>,
-                            li: ({ children }) => <li className="mb-1">{children}</li>,
-                            strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                            h1: ({ children }) => <h3 className="font-semibold text-base mb-2 mt-4">{children}</h3>,
-                            h2: ({ children }) => <h4 className="font-semibold text-base mb-2 mt-3">{children}</h4>,
-                            h3: ({ children }) => <h5 className="font-semibold mb-2 mt-2">{children}</h5>,
-                            blockquote: ({ children }) => (
-                              <blockquote className="border-l-2 border-slate-300 pl-3 italic text-slate-600">
-                                {children}
-                              </blockquote>
-                            ),
-                            a: ({ href, children }) => {
-                              // Check if it's an e-tar article link
-                              const articleMatch = href?.match(/e-tar\.lt.*#part_(\d+)/);
-                              if (articleMatch) {
-                                const articleNum = parseInt(articleMatch[1]);
-                                return (
-                                  <button
-                                    onClick={() => setSelectedArticleNumber(articleNum)}
-                                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
-                                  >
-                                    {children}
-                                  </button>
-                                );
-                              }
-                              return (
-                                <a
-                                  href={href}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="text-blue-600 hover:text-blue-800 underline"
-                                >
-                                  {children}
-                                </a>
-                              );
-                            },
-                          }}
-                        >
-                          {processContent(message.content)}
-                        </ReactMarkdown>
-                      </div>
+                      <AssistantMessage
+                        content={message.content}
+                        isLastMessage={message.id === messages[messages.length - 1]?.id}
+                        isLoading={isLoading}
+                        onOptionClick={(option) => {
+                          setInput('');
+                          sendMessage(option);
+                        }}
+                        onArticleClick={setSelectedArticleNumber}
+                      />
                     )}
 
                     {/* Sources */}
