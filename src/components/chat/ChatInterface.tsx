@@ -307,10 +307,8 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                       />
                     )}
 
-                    {/* Sources - only show for final answers (no questions) */}
-                    {message.sources && message.sources.length > 0 &&
-                     !message.content.includes('[KLAUSIMAS]') &&
-                     !message.content.includes('[ATVIRAS_KLAUSIMAS]') && (
+                    {/* Sources */}
+                    {message.sources && message.sources.length > 0 && (
                       <div className="mt-3 pt-3 border-t border-slate-100">
                         <p className="text-xs text-slate-400 mb-2">Šaltiniai:</p>
                         <div className="flex flex-wrap gap-1.5">
