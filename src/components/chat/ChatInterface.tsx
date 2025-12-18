@@ -148,16 +148,31 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                                 {children}
                               </blockquote>
                             ),
-                            a: ({ href, children }) => (
-                              <a
-                                href={href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-600 hover:text-blue-800 underline"
-                              >
-                                {children}
-                              </a>
-                            ),
+                            a: ({ href, children }) => {
+                              // Check if it's an e-tar article link
+                              const articleMatch = href?.match(/e-tar\.lt.*#part_(\d+)/);
+                              if (articleMatch) {
+                                const articleNum = parseInt(articleMatch[1]);
+                                return (
+                                  <button
+                                    onClick={() => setSelectedArticleNumber(articleNum)}
+                                    className="text-blue-600 hover:text-blue-800 underline cursor-pointer"
+                                  >
+                                    {children}
+                                  </button>
+                                );
+                              }
+                              return (
+                                <a
+                                  href={href}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 underline"
+                                >
+                                  {children}
+                                </a>
+                              );
+                            },
                           }}
                         >
                           {processContent(message.content)}
