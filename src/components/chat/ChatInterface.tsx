@@ -179,6 +179,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   const [selectedArticleNumber, setSelectedArticleNumber] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const { messages, isLoading, error, sendMessage, stopGeneration } = useChat({
     topic,
@@ -190,6 +191,13 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Focus input after response is complete
+  useEffect(() => {
+    if (!isLoading) {
+      inputRef.current?.focus();
+    }
+  }, [isLoading]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -334,6 +342,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       <div className="flex-shrink-0 border-t bg-white px-4 py-4">
         <form onSubmit={handleSubmit} className="flex gap-3 max-w-4xl mx-auto">
           <Textarea
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
