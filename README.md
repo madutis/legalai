@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Darbo teisės asistentas
 
-## Getting Started
+AI-powered Lithuanian employment law assistant. Get answers to labor law questions based on the Lithuanian Labor Code and Supreme Court (LAT) rulings.
 
-First, run the development server:
+## Tech Stack
+
+- **Frontend**: Next.js 16, React, Tailwind CSS, shadcn/ui
+- **AI**: Google Gemini 3 Flash (gemini-3-flash-preview)
+- **Vector DB**: Pinecone (RAG retrieval)
+- **Embeddings**: Google text-embedding-004
+
+## Features
+
+- RAG-based answers citing specific Labor Code articles
+- Hybrid search: Gemini article identification + semantic search
+- Clickable article references linking to e-TAR (official legal registry)
+- LAT ruling modal with full text display
+- Onboarding flow: role, company size, topic selection
+- Context-aware responses based on user profile
+
+## Data Sources
+
+- **Labor Code**: 264 articles, article-level chunking
+- **LAT Rulings**: ~4,000 chunks from Supreme Court decisions (2015-2025)
+
+## Setup
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Install dependencies
+npm install
+
+# Set environment variables
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Required env vars:
+```
+GOOGLE_GENERATIVE_AI_API_KEY=
+PINECONE_API_KEY=
+PINECONE_INDEX=law-agent
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+# Run development server
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+src/
+├── app/
+│   ├── page.tsx              # Landing page
+│   ├── chat/page.tsx         # Chat interface
+│   └── api/
+│       ├── chat/route.ts     # Chat API (streaming)
+│       ├── article/[articleNumber]/route.ts
+│       └── ruling/[docId]/route.ts
+├── components/
+│   └── chat/
+│       ├── ChatInterface.tsx
+│       ├── OnboardingModal.tsx
+│       ├── ArticleModal.tsx
+│       └── RulingModal.tsx
+├── lib/
+│   ├── gemini/index.ts       # Gemini API, RAG, article extraction
+│   └── pinecone/index.ts     # Vector search, article fetch
+└── hooks/
+    └── useChat.ts            # Chat state management
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Scripts
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# Ingest documents to Pinecone
+npx tsx scripts/ingest-documents.ts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Re-ingest Labor Code with article chunking
+npx tsx scripts/reingest-labor-code.ts
+```
 
-## Deploy on Vercel
+## Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Deployed on Vercel. Environment variables must be set in Vercel dashboard.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+vercel deploy --prod
+```
+
+## Disclaimer
+
+This system provides informational consultations only. For complex cases, consult a qualified lawyer.
