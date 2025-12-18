@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { OnboardingModal } from '@/components/chat/OnboardingModal';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 
 interface UserContext {
@@ -13,7 +14,7 @@ interface UserContext {
   topic: string;
 }
 
-export default function ChatPage() {
+function ChatPageContent() {
   const searchParams = useSearchParams();
   const topicFromUrl = searchParams.get('topic');
 
@@ -86,5 +87,28 @@ export default function ChatPage() {
         )}
       </main>
     </div>
+  );
+}
+
+function ChatPageLoading() {
+  return (
+    <div className="h-screen flex flex-col bg-slate-50">
+      <header className="border-b bg-white/95 backdrop-blur-sm flex-shrink-0">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <Skeleton className="h-8 w-48" />
+        </div>
+      </header>
+      <main className="flex-1 flex items-center justify-center">
+        <Skeleton className="h-12 w-64" />
+      </main>
+    </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={<ChatPageLoading />}>
+      <ChatPageContent />
+    </Suspense>
   );
 }
