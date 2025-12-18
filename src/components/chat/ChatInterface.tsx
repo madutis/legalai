@@ -119,25 +119,44 @@ function AssistantMessage({
         </ReactMarkdown>
       )}
 
-      {/* Interactive question - only show on last message when not loading */}
-      {question && isLastMessage && !isLoading && (
+      {/* Question display */}
+      {question && (
         <div className="mt-4 pt-3 border-t border-slate-200">
           <p className="font-medium text-slate-800 mb-3">{question.question}</p>
-          {question.type === 'choice' && question.options && (
-            <div className="flex flex-wrap gap-2">
-              {question.options.map((option, i) => (
-                <button
-                  key={i}
-                  onClick={() => onOptionClick(option)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium text-slate-700 transition-colors border border-slate-200 hover:border-slate-300"
-                >
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-          {question.type === 'open' && (
-            <p className="text-xs text-slate-500 italic">Įveskite atsakymą žemiau</p>
+          {/* Interactive buttons only for last message when not loading */}
+          {isLastMessage && !isLoading ? (
+            <>
+              {question.type === 'choice' && question.options && (
+                <div className="flex flex-wrap gap-2">
+                  {question.options.map((option, i) => (
+                    <button
+                      key={i}
+                      onClick={() => onOptionClick(option)}
+                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium text-slate-700 transition-colors border border-slate-200 hover:border-slate-300"
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {question.type === 'open' && (
+                <p className="text-xs text-slate-500 italic">Įveskite atsakymą žemiau</p>
+              )}
+            </>
+          ) : (
+            /* Static display for older messages */
+            question.type === 'choice' && question.options && (
+              <div className="flex flex-wrap gap-2">
+                {question.options.map((option, i) => (
+                  <span
+                    key={i}
+                    className="px-3 py-1.5 bg-slate-50 rounded-lg text-sm text-slate-500 border border-slate-100"
+                  >
+                    {option}
+                  </span>
+                ))}
+              </div>
+            )
           )}
         </div>
       )}
