@@ -60,6 +60,52 @@ export async function searchSimilar(
   }));
 }
 
+// Hybrid search: retrieve from legislation and rulings separately, then merge
+export async function searchHybrid(
+  embedding: number[],
+  legislationK: number = 8,
+  rulingsK: number = 4
+): Promise<SearchResult[]> {
+  const index = getIndex();
+
+  // Search legislation and rulings in parallel
+  const [legislationResults, rulingsResults] = await Promise.all([
+    index.query({
+      vector: embedding,
+      topK: legislationK,
+      includeMetadata: true,
+      filter: { docType: 'legislation' },
+    }),
+    index.query({
+      vector: embedding,
+      topK: rulingsK,
+      includeMetadata: true,
+      filter: { docType: 'ruling' },
+    }),
+  ]);
+
+  const mapResult = (match: any): SearchResult => ({
+    id: match.id,
+    score: match.score || 0,
+    text: (match.metadata?.text as string) || '',
+    metadata: {
+      docId: match.metadata?.docId as string,
+      docType: match.metadata?.docType as 'legislation' | 'ruling',
+      sourceFile: match.metadata?.sourceFile as string,
+      chunkIndex: match.metadata?.chunkIndex as number,
+      totalChunks: match.metadata?.totalChunks as number,
+      articleNumber: match.metadata?.articleNumber as number | undefined,
+      articleTitle: match.metadata?.articleTitle as string | undefined,
+    },
+  });
+
+  const legislation = (legislationResults.matches || []).map(mapResult);
+  const rulings = (rulingsResults.matches || []).map(mapResult);
+
+  // Merge and sort by score
+  return [...legislation, ...rulings].sort((a, b) => b.score - a.score);
+}
+
 // Fetch specific articles by ID
 export async function fetchArticles(articleNumbers: number[]): Promise<SearchResult[]> {
   const index = getIndex();

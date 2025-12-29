@@ -1,9 +1,38 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extractRelevantArticles, MODELS } from '@/lib/gemini';
-import { searchSimilar, fetchArticles, SearchResult } from '@/lib/pinecone';
+import { searchHybrid, fetchArticles, SearchResult } from '@/lib/pinecone';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
+
+// Extract article numbers explicitly mentioned in the query (fallback when AI extraction fails)
+function extractExplicitArticleNumbers(query: string): number[] {
+  const numbers = new Set<number>();
+
+  // Pattern 1: "56 straipsnis", "56 straipsnio", etc. (2+ digit numbers only)
+  const pattern1 = /(\d{2,3})\s*straipsn/gi;
+  let match;
+  while ((match = pattern1.exec(query)) !== null) {
+    const num = parseInt(match[1]);
+    if (num >= 1 && num <= 264) numbers.add(num);
+  }
+
+  // Pattern 2: "DK 56", "DK56" (any number, explicit DK reference)
+  const pattern2 = /DK\s*(\d+)/gi;
+  while ((match = pattern2.exec(query)) !== null) {
+    const num = parseInt(match[1]);
+    if (num >= 1 && num <= 264) numbers.add(num);
+  }
+
+  // Pattern 3: "str. 56"
+  const pattern3 = /str\.\s*(\d+)/gi;
+  while ((match = pattern3.exec(query)) !== null) {
+    const num = parseInt(match[1]);
+    if (num >= 1 && num <= 264) numbers.add(num);
+  }
+
+  return [...numbers];
+}
 
 interface ChatRequestBody {
   message: string;
@@ -25,19 +54,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 1. Use Gemini to identify potentially relevant articles
-    const relevantArticleNumbers = await extractRelevantArticles(message);
+    // 1. Extract explicitly mentioned article numbers from query (regex fallback)
+    const explicitArticles = extractExplicitArticleNumbers(message);
+    console.log('Explicit articles from regex:', explicitArticles);
 
-    // 2. Generate embedding for semantic search
+    // 2. Use Gemini to identify potentially relevant articles
+    const aiArticleNumbers = await extractRelevantArticles(message);
+    console.log('AI extracted articles:', aiArticleNumbers);
+
+    // 3. Merge: explicit mentions first, then AI suggestions (deduplicated)
+    const relevantArticleNumbers = [
+      ...explicitArticles,
+      ...aiArticleNumbers.filter(n => !explicitArticles.includes(n))
+    ].slice(0, 10);
+    console.log('Final article numbers:', relevantArticleNumbers);
+
+    // 4. Generate embedding for semantic search
     const queryEmbedding = await generateEmbedding(message);
 
-    // 3. Parallel: semantic search + direct article fetch
-    const [semanticResults, directArticles] = await Promise.all([
-      searchSimilar(queryEmbedding, 10),
+    // 3. Parallel: hybrid search (legislation + rulings) + direct article fetch
+    const [hybridResults, directArticles] = await Promise.all([
+      searchHybrid(queryEmbedding, 8, 4), // 8 legislation + 4 rulings
       fetchArticles(relevantArticleNumbers),
     ]);
 
-    // 4. Merge and deduplicate results (direct articles first, then semantic)
+    // 4. Merge and deduplicate results (direct articles first, then hybrid)
     const seenIds = new Set<string>();
     const searchResults: SearchResult[] = [];
 
@@ -47,8 +88,8 @@ export async function POST(request: NextRequest) {
         searchResults.push(article);
       }
     }
-    for (const result of semanticResults) {
-      if (!seenIds.has(result.id) && searchResults.length < 12) {
+    for (const result of hybridResults) {
+      if (!seenIds.has(result.id) && searchResults.length < 14) {
         seenIds.add(result.id);
         searchResults.push(result);
       }
