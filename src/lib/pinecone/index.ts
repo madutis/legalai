@@ -78,7 +78,7 @@ export async function searchHybrid(
     }),
     index.query({
       vector: embedding,
-      topK: rulingsK,
+      topK: rulingsK * 2, // Fetch more, then filter by score
       includeMetadata: true,
       filter: { docType: 'ruling' },
     }),
@@ -100,7 +100,12 @@ export async function searchHybrid(
   });
 
   const legislation = (legislationResults.matches || []).map(mapResult);
-  const rulings = (rulingsResults.matches || []).map(mapResult);
+
+  // Only include rulings with score > 0.68 (filters out irrelevant matches)
+  const rulings = (rulingsResults.matches || [])
+    .filter(m => (m.score || 0) >= 0.68)
+    .slice(0, rulingsK)
+    .map(mapResult);
 
   // Merge and sort by score
   return [...legislation, ...rulings].sort((a, b) => b.score - a.score);
