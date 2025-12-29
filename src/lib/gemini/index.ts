@@ -18,7 +18,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 
 // Extract relevant Labor Code article numbers from a query
 export async function extractRelevantArticles(query: string): Promise<number[]> {
-  const model = getGenAI().getGenerativeModel({ model: 'gemini-3-flash-preview' });
+  const model = getGenAI().getGenerativeModel({ model: 'gemini-2.5-flash' });
 
   const prompt = `Tu esi Lietuvos darbo teisės ekspertas. Vartotojas užduoda klausimą apie darbo teisę.
 Nustatyk, kurie Darbo kodekso straipsniai gali būti aktualūs šiam klausimui.
@@ -277,8 +277,22 @@ Pasirink 3-7 aktualiausius straipsnius.`;
       .filter(n => !isNaN(n) && n >= 1 && n <= 264);
 
     return numbers.slice(0, 7); // Max 7 articles
-  } catch {
-    return [];
+  } catch (error) {
+    console.error('extractRelevantArticles failed with primary model:', error);
+    // Try fallback model
+    try {
+      const fallbackModel = getGenAI().getGenerativeModel({ model: 'gemini-2.0-flash' });
+      const result = await fallbackModel.generateContent(prompt);
+      const text = result.response.text().trim();
+      const numbers = text
+        .split(/[,\s]+/)
+        .map(s => parseInt(s.trim()))
+        .filter(n => !isNaN(n) && n >= 1 && n <= 264);
+      return numbers.slice(0, 7);
+    } catch (fallbackError) {
+      console.error('extractRelevantArticles fallback also failed:', fallbackError);
+      return [];
+    }
   }
 }
 
@@ -290,6 +304,7 @@ KOMUNIKACIJOS STILIUS:
 - Būk profesionalus ir dalykiškas
 - Jei informacijos trūksta, tiesiog konstatuok faktą
 - Jei negali atsakyti, paaiškink kodėl
+- Naudok **bold** formatavimą svarbiausiems terminams, skaičiams, terminams ir išvadoms pabrėžti
 
 KLAUSIMŲ UŽDAVIMO STRATEGIJA:
 1. Jei gali atsakyti be papildomos informacijos - atsakyk iškart
@@ -327,9 +342,14 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 2. **Išsamus paaiškinimas** - detaliai paaiškink teisinį reglamentavimą, aplinkybes, išimtis
 3. **Konkretūs straipsniai** - cituok aktualius Darbo kodekso straipsnius su jų turiniu
 4. **Praktiniai aspektai** - ką konkrečiai darbdavys/darbuotojas turi daryti, kokie terminai, dokumentai
-5. **Teismų praktika** - jei aktualu, pateik LAT išaiškinimus ir precedentus
+5. **Teismų praktika** - BŪTINAI paminėk LAT nutartis, jei jos yra tarp šaltinių. Paaiškink, ką teismas išaiškino konkrečioje byloje
 6. **Išimtys ir niuansai** - nurodyti specialius atvejus, kada taisyklės skiriasi
-7. **Primink apie teisinę konsultaciją**
+7. Pabaigoje primink, kad sudėtingesniais atvejais verta kreiptis į darbo teisės specialistą
+
+ŠALTINIŲ NAUDOJIMAS:
+- Šaltiniai pažymėti [DARBO KODEKSAS, X straipsnis] arba [LAT NUTARTIS, METAI]
+- Jei tarp šaltinių yra LAT nutarčių - PRIVALAI jas paminėti atsakyme
+- Cituodamas nurodyk šaltinio numerį [1], [2] ir t.t.
 
 SVARBU: Nerašyk trumpų atsakymų. Atsakymas turi būti išsamus, 400-800 žodžių, su konkrečiais straipsnių numeriais ir praktinėmis rekomendacijomis.`;
 
@@ -361,7 +381,7 @@ export async function generateRAGResponse(
   userContext?: ChatContext
 ): Promise<RAGResponse> {
   const model = getGenAI().getGenerativeModel({
-    model: 'gemini-2.0-flash-exp', // Gemini 3 Flash when available, using 2.0 flash for now
+    model: 'gemini-2.5-flash',
   });
 
   // Build context section
@@ -416,8 +436,8 @@ Atsakyk į klausimą. Jei naudoji informaciją iš šaltinių, nurodyk šaltinio
 
 // Available models for fallback
 export const MODELS = {
-  primary: 'gemini-3-flash-preview',
-  fallback: 'gemini-2.5-flash-preview-05-20',
+  primary: 'gemini-2.5-flash',
+  fallback: 'gemini-2.0-flash',
 } as const;
 
 // Stream response for real-time output

@@ -110,7 +110,19 @@ export async function POST(request: NextRequest) {
           const rulingCount = searchResults.filter(r => r.metadata.docType === 'ruling').length;
           sendStatus(`Rasta ${legislationCount} straipsn., ${rulingCount} nutart. Ruošiu atsakymą...`);
 
-          const contextTexts = searchResults.map((r) => r.text);
+          // Label each source with its type for the LLM
+          const contextTexts = searchResults.map((r) => {
+            if (r.metadata.docType === 'legislation') {
+              const articleNum = r.metadata.articleNumber;
+              const title = r.metadata.articleTitle || '';
+              return `[DARBO KODEKSAS, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
+            } else if (r.metadata.docType === 'ruling') {
+              const yearMatch = r.metadata.sourceFile?.match(/(\d{4})/);
+              const year = yearMatch ? yearMatch[1] : '';
+              return `[LAT NUTARTIS${year ? `, ${year}` : ''}]\n${r.text}`;
+            }
+            return r.text;
+          });
 
           // Send search results metadata
           const metadata = {
