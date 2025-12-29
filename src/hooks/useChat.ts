@@ -7,6 +7,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   sources?: {
+    id: string; // Full chunk ID
     docId: string;
     docType: string;
     sourceFile: string;
@@ -23,6 +24,7 @@ interface ChatContext {
 export function useChat(context?: ChatContext) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [canRetry, setCanRetry] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -58,6 +60,7 @@ export function useChat(context?: ChatContext) {
     }
 
     setIsLoading(true);
+    setStatus(null);
     setError(null);
     setCanRetry(false);
     lastMessageRef.current = content;
@@ -108,7 +111,9 @@ export function useChat(context?: ChatContext) {
           try {
             const parsed = JSON.parse(data);
 
-            if (parsed.type === 'metadata') {
+            if (parsed.type === 'status') {
+              setStatus(parsed.status);
+            } else if (parsed.type === 'metadata') {
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id === assistantId ? { ...m, sources: parsed.sources } : m
@@ -116,6 +121,7 @@ export function useChat(context?: ChatContext) {
               );
             } else if (parsed.type === 'text') {
               receivedContent = true;
+              setStatus(null); // Clear status when text starts
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id === assistantId
@@ -186,6 +192,7 @@ export function useChat(context?: ChatContext) {
   return {
     messages,
     isLoading,
+    status,
     error,
     canRetry,
     sendMessage,

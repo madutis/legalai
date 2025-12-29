@@ -14,33 +14,16 @@ export async function GET(
 
     const index = getIndex();
 
-    // Query for all chunks with this docId
-    // We'll use a dummy vector and filter by metadata
-    const dummyVector = new Array(768).fill(0);
+    // Fetch the specific chunk by ID
+    const response = await index.fetch([docId]);
 
-    const response = await index.query({
-      vector: dummyVector,
-      topK: 100, // Max chunks per ruling
-      includeMetadata: true,
-      filter: { docId: { $eq: docId } },
-    });
-
-    if (!response.matches || response.matches.length === 0) {
+    const record = response.records?.[docId];
+    if (!record) {
       return NextResponse.json({ error: 'Ruling not found' }, { status: 404 });
     }
 
-    // Sort by chunkIndex and concatenate
-    const chunks = response.matches
-      .sort((a, b) => {
-        const aIndex = (a.metadata?.chunkIndex as number) || 0;
-        const bIndex = (b.metadata?.chunkIndex as number) || 0;
-        return aIndex - bIndex;
-      })
-      .map((m) => m.metadata?.text as string)
-      .filter(Boolean);
-
-    const fullText = chunks.join('\n\n');
-    const sourceFile = response.matches[0].metadata?.sourceFile as string;
+    const text = record.metadata?.text as string;
+    const sourceFile = record.metadata?.sourceFile as string;
 
     // Extract year and case info from filename
     const yearMatch = sourceFile?.match(/(\d{4})/);
@@ -54,8 +37,8 @@ export async function GET(
       docId,
       title,
       sourceFile,
-      text: fullText,
-      chunkCount: chunks.length,
+      text,
+      isRelevantChunk: true, // Indicates this is the specific relevant excerpt
     });
   } catch (error) {
     console.error('Error fetching ruling:', error);

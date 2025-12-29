@@ -69,44 +69,54 @@ export async function POST(request: NextRequest) {
     ].slice(0, 10);
     console.log('Final article numbers:', relevantArticleNumbers);
 
-    // 4. Generate embedding for semantic search
-    const queryEmbedding = await generateEmbedding(message);
-
-    // 3. Parallel: hybrid search (legislation + rulings) + direct article fetch
-    const [hybridResults, directArticles] = await Promise.all([
-      searchHybrid(queryEmbedding, 8, 4), // 8 legislation + 4 rulings
-      fetchArticles(relevantArticleNumbers),
-    ]);
-
-    // 4. Merge and deduplicate results (direct articles first, then hybrid)
-    const seenIds = new Set<string>();
-    const searchResults: SearchResult[] = [];
-
-    for (const article of directArticles) {
-      if (!seenIds.has(article.id)) {
-        seenIds.add(article.id);
-        searchResults.push(article);
-      }
-    }
-    for (const result of hybridResults) {
-      if (!seenIds.has(result.id) && searchResults.length < 14) {
-        seenIds.add(result.id);
-        searchResults.push(result);
-      }
-    }
-
-    // 3. Extract context from search results
-    const contextTexts = searchResults.map((r) => r.text);
-
-    // 4. Stream the response
+    // Stream the response with status updates
     const encoder = new TextEncoder();
     const stream = new ReadableStream({
       async start(controller) {
+        const sendStatus = (status: string) => {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'status', status })}\n\n`));
+        };
+
         try {
-          // Send search results metadata first
+          // Step 1: Generate embedding
+          sendStatus('Analizuoju klausimą...');
+          const queryEmbedding = await generateEmbedding(message);
+
+          // Step 2: Hybrid search + direct article fetch
+          sendStatus('Ieškau aktualių šaltinių...');
+          const [hybridResults, directArticles] = await Promise.all([
+            searchHybrid(queryEmbedding, 8, 4),
+            fetchArticles(relevantArticleNumbers),
+          ]);
+
+          // Merge and deduplicate results
+          const seenIds = new Set<string>();
+          const searchResults: SearchResult[] = [];
+
+          for (const article of directArticles) {
+            if (!seenIds.has(article.id)) {
+              seenIds.add(article.id);
+              searchResults.push(article);
+            }
+          }
+          for (const result of hybridResults) {
+            if (!seenIds.has(result.id) && searchResults.length < 14) {
+              seenIds.add(result.id);
+              searchResults.push(result);
+            }
+          }
+
+          const legislationCount = searchResults.filter(r => r.metadata.docType === 'legislation').length;
+          const rulingCount = searchResults.filter(r => r.metadata.docType === 'ruling').length;
+          sendStatus(`Rasta ${legislationCount} straipsn., ${rulingCount} nutart. Ruošiu atsakymą...`);
+
+          const contextTexts = searchResults.map((r) => r.text);
+
+          // Send search results metadata
           const metadata = {
             type: 'metadata',
             sources: searchResults.map((r) => ({
+              id: r.id, // Full chunk ID for fetching specific chunk
               docId: r.metadata.docId,
               docType: r.metadata.docType,
               sourceFile: r.metadata.sourceFile,

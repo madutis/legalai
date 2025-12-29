@@ -13,7 +13,7 @@ interface RulingData {
   title: string;
   sourceFile: string;
   text: string;
-  chunkCount: number;
+  isRelevantChunk?: boolean;
 }
 
 export function RulingModal({ docId, onClose }: RulingModalProps) {
@@ -86,9 +86,11 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
 
           {ruling && (
             <div className="prose prose-sm prose-slate max-w-none">
-              <p className="text-xs text-slate-400 mb-4">
-                Šaltinis: {ruling.sourceFile} ({ruling.chunkCount} dalys)
-              </p>
+              <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
+                <p className="text-xs text-amber-700">
+                  Rodoma aktuali ištrauka iš {ruling.sourceFile.replace('rulings/', '')}
+                </p>
+              </div>
               <div className="whitespace-pre-wrap text-sm leading-relaxed">
                 {ruling.text}
               </div>

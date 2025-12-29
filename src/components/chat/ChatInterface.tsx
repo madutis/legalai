@@ -4,7 +4,6 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { useChat } from '@/hooks/useChat';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Skeleton } from '@/components/ui/skeleton';
 import { RulingModal } from './RulingModal';
 import { ArticleModal } from './ArticleModal';
 import ReactMarkdown from 'react-markdown';
@@ -184,6 +183,7 @@ interface ChatInterfaceProps {
 }
 
 interface Source {
+  id: string; // Full chunk ID
   docId: string;
   docType: string;
   sourceFile: string;
@@ -200,15 +200,27 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, isLoading, error, canRetry, sendMessage, stopGeneration, retry } = useChat({
+  const { messages, isLoading, status, error, canRetry, sendMessage, stopGeneration, retry } = useChat({
     topic,
     userRole,
     companySize,
   });
 
-  // Auto-scroll to bottom when new messages arrive
+  // Track if user is near bottom (for smart auto-scroll)
+  const isNearBottomRef = useRef(true);
+
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    const threshold = 100; // pixels from bottom
+    isNearBottomRef.current = container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
+  };
+
+  // Only auto-scroll if user is near bottom (don't interrupt reading)
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isNearBottomRef.current) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
   }, [messages]);
 
   // Focus input after response is complete
@@ -223,6 +235,9 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     if (input.trim() && !isLoading) {
       sendMessage(input);
       setInput('');
+      // Always scroll to bottom when user sends a message
+      isNearBottomRef.current = true;
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
     }
   };
 
@@ -259,7 +274,8 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       {/* Messages container with proper scrolling */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto px-4 py-6"
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6"
       >
         {messages.length === 0 && (
           <div className="text-center text-slate-500 py-12">
@@ -278,17 +294,19 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
               className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div
-                className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[92%] sm:max-w-[85%] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 ${
                   message.role === 'user'
                     ? 'bg-slate-900 text-white'
                     : 'bg-white border border-slate-200 text-slate-900 shadow-sm'
                 }`}
               >
                 {message.role === 'assistant' && message.content === '' && isLoading ? (
-                  <div className="space-y-2 py-1">
-                    <Skeleton className="h-4 w-48" />
-                    <Skeleton className="h-4 w-64" />
-                    <Skeleton className="h-4 w-40" />
+                  <div className="flex items-center gap-2 py-1 text-sm text-slate-500">
+                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>{status || 'Ruošiuosi...'}</span>
                   </div>
                 ) : (
                   <>
@@ -320,10 +338,10 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                             .flatMap(m => m.sources || [])
                         : message.sources || [];
 
-                      // Deduplicate by docId + articleNumber
+                      // Deduplicate by full chunk ID
                       const seen = new Set<string>();
                       const uniqueSources = sourcesToShow.filter(s => {
-                        const key = `${s.docId}-${(s as Source).articleNumber || ''}`;
+                        const key = (s as Source).id || `${s.docId}-${(s as Source).articleNumber || ''}`;
                         if (seen.has(key)) return false;
                         seen.add(key);
                         return true;
@@ -348,7 +366,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                                   key={i}
                                   onClick={() => {
                                     if (s.source.docType === 'ruling') {
-                                      setSelectedRulingDocId(s.source.docId);
+                                      setSelectedRulingDocId(s.source.id); // Pass full chunk ID
                                     } else if (s.source.articleNumber) {
                                       setSelectedArticleNumber(s.source.articleNumber);
                                     }
@@ -392,15 +410,15 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       )}
 
       {/* Input */}
-      <div className="flex-shrink-0 border-t bg-white px-4 py-4">
-        <form onSubmit={handleSubmit} className="flex gap-3 max-w-4xl mx-auto">
+      <div className="flex-shrink-0 border-t bg-white px-3 sm:px-4 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-[calc(1rem+env(safe-area-inset-bottom))]">
+        <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 max-w-4xl mx-auto">
           <Textarea
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Įveskite savo klausimą apie darbo teisę..."
-            className="flex-1 min-h-[44px] max-h-32 resize-none rounded-xl"
+            placeholder="Įveskite klausimą..."
+            className="flex-1 min-h-[44px] max-h-32 resize-none rounded-xl text-base"
             disabled={isLoading}
           />
           {isLoading ? (
@@ -408,7 +426,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
               type="button"
               variant="outline"
               onClick={stopGeneration}
-              className="rounded-xl"
+              className="rounded-xl px-3 sm:px-4"
             >
               Stop
             </Button>
@@ -416,13 +434,16 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
             <Button
               type="submit"
               disabled={!input.trim()}
-              className="rounded-xl px-6"
+              className="rounded-xl px-4 sm:px-6"
             >
-              Siųsti
+              <span className="hidden sm:inline">Siųsti</span>
+              <svg className="w-5 h-5 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
             </Button>
           )}
         </form>
-        <p className="text-xs text-slate-400 mt-3 text-center">
+        <p className="text-xs text-slate-400 mt-2 sm:mt-3 text-center">
           Tai nėra teisinė konsultacija. Sudėtingais atvejais kreipkitės į teisininką.
         </p>
       </div>
