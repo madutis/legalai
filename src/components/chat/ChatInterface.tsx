@@ -190,6 +190,7 @@ interface Source {
   score: number;
   articleNumber?: number;
   articleTitle?: string;
+  title?: string; // For nutarimai
 }
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
@@ -258,6 +259,14 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       if (yearMatch) {
         return `LAT ${yearMatch[1]}${monthMatch ? ` ${monthMatch[1]}` : ''}`;
       }
+    }
+    if (source.docType === 'nutarimas') {
+      // Extract nutarimas number from docId like "nutarimas-496-2017"
+      const match = source.docId.match(/nutarimas-(\d+)-(\d+)/);
+      if (match) {
+        return `Nut. ${match[1]}`;
+      }
+      return 'Nutarimas';
     }
     return null; // Don't show unidentifiable sources
   };

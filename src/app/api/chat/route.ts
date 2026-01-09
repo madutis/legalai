@@ -108,7 +108,11 @@ export async function POST(request: NextRequest) {
 
           const legislationCount = searchResults.filter(r => r.metadata.docType === 'legislation').length;
           const rulingCount = searchResults.filter(r => r.metadata.docType === 'ruling').length;
-          sendStatus(`Rasta ${legislationCount} straipsn., ${rulingCount} nutart. Ruošiu atsakymą...`);
+          const nutarimaiCount = searchResults.filter(r => r.metadata.docType === 'nutarimas').length;
+          const parts = [`${legislationCount} straipsn.`];
+          if (rulingCount > 0) parts.push(`${rulingCount} nutart.`);
+          if (nutarimaiCount > 0) parts.push(`${nutarimaiCount} vyriaus. nutar.`);
+          sendStatus(`Rasta ${parts.join(', ')}. Ruošiu atsakymą...`);
 
           // Label each source with its type for the LLM
           const contextTexts = searchResults.map((r) => {
@@ -120,6 +124,9 @@ export async function POST(request: NextRequest) {
               const yearMatch = r.metadata.sourceFile?.match(/(\d{4})/);
               const year = yearMatch ? yearMatch[1] : '';
               return `[LAT NUTARTIS${year ? `, ${year}` : ''}]\n${r.text}`;
+            } else if (r.metadata.docType === 'nutarimas') {
+              const title = r.metadata.title || r.metadata.docId;
+              return `[VYRIAUSYBĖS NUTARIMAS: ${title}]\n${r.text}`;
             }
             return r.text;
           });

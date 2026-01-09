@@ -21,12 +21,13 @@ export interface SearchResult {
   text: string;
   metadata: {
     docId: string;
-    docType: 'legislation' | 'ruling';
+    docType: 'legislation' | 'ruling' | 'nutarimas';
     sourceFile: string;
     chunkIndex: number;
     totalChunks: number;
     articleNumber?: number;
     articleTitle?: string;
+    title?: string; // For nutarimai
   };
 }
 
@@ -60,16 +61,17 @@ export async function searchSimilar(
   }));
 }
 
-// Hybrid search: retrieve from legislation and rulings separately, then merge
+// Hybrid search: retrieve from legislation, rulings, and nutarimai separately, then merge
 export async function searchHybrid(
   embedding: number[],
   legislationK: number = 8,
-  rulingsK: number = 4
+  rulingsK: number = 4,
+  nutarimaiK: number = 2
 ): Promise<SearchResult[]> {
   const index = getIndex();
 
-  // Search legislation and rulings in parallel
-  const [legislationResults, rulingsResults] = await Promise.all([
+  // Search all document types in parallel
+  const [legislationResults, rulingsResults, nutarimaiResults] = await Promise.all([
     index.query({
       vector: embedding,
       topK: legislationK,
@@ -81,6 +83,12 @@ export async function searchHybrid(
       topK: rulingsK * 2, // Fetch more, then filter by score
       includeMetadata: true,
       filter: { docType: 'ruling' },
+    }),
+    index.query({
+      vector: embedding,
+      topK: nutarimaiK * 2,
+      includeMetadata: true,
+      filter: { docType: 'nutarimas' },
     }),
   ]);
 
@@ -96,6 +104,7 @@ export async function searchHybrid(
       totalChunks: match.metadata?.totalChunks as number,
       articleNumber: match.metadata?.articleNumber as number | undefined,
       articleTitle: match.metadata?.articleTitle as string | undefined,
+      title: match.metadata?.title as string | undefined, // For nutarimai
     },
   });
 
@@ -107,8 +116,14 @@ export async function searchHybrid(
     .slice(0, rulingsK)
     .map(mapResult);
 
+  // Only include nutarimai with score > 0.65
+  const nutarimai = (nutarimaiResults.matches || [])
+    .filter(m => (m.score || 0) >= 0.65)
+    .slice(0, nutarimaiK)
+    .map(mapResult);
+
   // Merge and sort by score
-  return [...legislation, ...rulings].sort((a, b) => b.score - a.score);
+  return [...legislation, ...rulings, ...nutarimai].sort((a, b) => b.score - a.score);
 }
 
 // Fetch specific articles by ID
