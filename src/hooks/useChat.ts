@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 
-interface Message {
+export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
@@ -12,6 +12,8 @@ interface Message {
     docType: string;
     sourceFile: string;
     score: number;
+    articleNumber?: number;
+    articleTitle?: string;
   }[];
 }
 
@@ -21,15 +23,25 @@ interface ChatContext {
   topic?: string;
 }
 
+// Check if a message is a final answer (no questions)
+function isFinalAnswer(content: string): boolean {
+  return !content.includes('[KLAUSIMAS]') && !content.includes('[ATVIRAS_KLAUSIMAS]') && content.length > 100;
+}
+
 export function useChat(context?: ChatContext) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [canRetry, setCanRetry] = useState(false);
+  const [consultationFinishedAt, setConsultationFinishedAt] = useState<number | null>(null);
+  const [followUpCount, setFollowUpCount] = useState(0);
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastMessageRef = useRef<string | null>(null);
   const triedFallbackRef = useRef(false);
+
+  const MAX_FOLLOW_UPS = 2;
+  const isConsultationComplete = consultationFinishedAt !== null && followUpCount >= MAX_FOLLOW_UPS;
 
   const sendMessageInternal = useCallback(async (
     content: string,
@@ -40,6 +52,11 @@ export function useChat(context?: ChatContext) {
 
     // Only add user message and assistant placeholder if this is a new message (not retry)
     if (!existingAssistantId) {
+      // Track follow-up if consultation already finished
+      if (consultationFinishedAt !== null) {
+        setFollowUpCount((prev) => prev + 1);
+      }
+
       const userMessage: Message = {
         id: Date.now().toString(),
         role: 'user',
@@ -139,6 +156,15 @@ export function useChat(context?: ChatContext) {
         }
       }
 
+      // Check if this is a final answer (consultation finished)
+      setMessages((prev) => {
+        const lastAssistant = prev.find((m) => m.id === assistantId);
+        if (lastAssistant && isFinalAnswer(lastAssistant.content) && consultationFinishedAt === null) {
+          setConsultationFinishedAt(Date.now());
+        }
+        return prev;
+      });
+
       // Success - reset fallback flag
       triedFallbackRef.current = false;
     } catch (err) {
@@ -164,13 +190,13 @@ export function useChat(context?: ChatContext) {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, context]);
+  }, [messages, context, consultationFinishedAt]);
 
   const sendMessage = useCallback(async (content: string) => {
-    if (!content.trim() || isLoading) return;
+    if (!content.trim() || isLoading || isConsultationComplete) return;
     triedFallbackRef.current = false;
     return sendMessageInternal(content, false);
-  }, [isLoading, sendMessageInternal]);
+  }, [isLoading, isConsultationComplete, sendMessageInternal]);
 
   const retry = useCallback(() => {
     if (lastMessageRef.current && !isLoading) {
@@ -189,6 +215,9 @@ export function useChat(context?: ChatContext) {
     setCanRetry(false);
   }, []);
 
+  const remainingFollowUps = Math.max(0, MAX_FOLLOW_UPS - followUpCount);
+  const isConsultationFinished = consultationFinishedAt !== null;
+
   return {
     messages,
     isLoading,
@@ -199,5 +228,10 @@ export function useChat(context?: ChatContext) {
     stopGeneration,
     clearMessages,
     retry,
+    // Consultation state
+    isConsultationFinished,
+    isConsultationComplete,
+    remainingFollowUps,
+    context,
   };
 }

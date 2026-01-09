@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { RulingModal } from './RulingModal';
 import { ArticleModal } from './ArticleModal';
+import { exportToPDF } from '@/lib/pdf-export';
 import ReactMarkdown from 'react-markdown';
 
 // Parse structured questions from assistant response
@@ -201,11 +202,32 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { messages, isLoading, status, error, canRetry, sendMessage, stopGeneration, retry } = useChat({
+  const {
+    messages,
+    isLoading,
+    status,
+    error,
+    canRetry,
+    sendMessage,
+    stopGeneration,
+    retry,
+    isConsultationFinished,
+    isConsultationComplete,
+    remainingFollowUps,
+    context,
+  } = useChat({
     topic,
     userRole,
     companySize,
   });
+
+  const handleExportPDF = () => {
+    exportToPDF({
+      messages,
+      context: { topic, userRole, companySize },
+      exportedAt: new Date(),
+    });
+  };
 
   // Track if user is near bottom (for smart auto-scroll)
   const isNearBottomRef = useRef(true);
@@ -420,38 +442,80 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
 
       {/* Input */}
       <div className="flex-shrink-0 border-t bg-white px-3 sm:px-4 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-[calc(1rem+env(safe-area-inset-bottom))]">
-        <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 max-w-4xl mx-auto">
-          <Textarea
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Įveskite klausimą..."
-            className="flex-1 min-h-[44px] max-h-32 resize-none rounded-xl text-base"
-            disabled={isLoading}
-          />
-          {isLoading ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={stopGeneration}
-              className="rounded-xl px-3 sm:px-4"
-            >
-              Stop
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              disabled={!input.trim()}
-              className="rounded-xl px-4 sm:px-6"
-            >
-              <span className="hidden sm:inline">Siųsti</span>
-              <svg className="w-5 h-5 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-              </svg>
-            </Button>
-          )}
-        </form>
+        {isConsultationComplete ? (
+          /* Consultation complete - show export option */
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="bg-slate-50 rounded-xl p-4 mb-3">
+              <p className="text-slate-600 mb-3">
+                Konsultacija baigta. Ačiū, kad naudojotės mūsų paslauga!
+              </p>
+              <Button
+                onClick={handleExportPDF}
+                variant="outline"
+                className="rounded-xl"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Eksportuoti PDF
+              </Button>
+            </div>
+          </div>
+        ) : (
+          /* Active input */
+          <>
+            {isConsultationFinished && remainingFollowUps > 0 && (
+              <div className="max-w-4xl mx-auto mb-2 flex items-center justify-between">
+                <p className="text-xs text-slate-500">
+                  Galite užduoti dar {remainingFollowUps} {remainingFollowUps === 1 ? 'papildomą klausimą' : 'papildomus klausimus'}
+                </p>
+                <Button
+                  onClick={handleExportPDF}
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-slate-500 hover:text-slate-700"
+                >
+                  <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  PDF
+                </Button>
+              </div>
+            )}
+            <form onSubmit={handleSubmit} className="flex gap-2 sm:gap-3 max-w-4xl mx-auto">
+              <Textarea
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder={isConsultationFinished ? "Papildomas klausimas..." : "Įveskite klausimą..."}
+                className="flex-1 min-h-[44px] max-h-32 resize-none rounded-xl text-base"
+                disabled={isLoading}
+              />
+              {isLoading ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={stopGeneration}
+                  className="rounded-xl px-3 sm:px-4"
+                >
+                  Stop
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  disabled={!input.trim()}
+                  className="rounded-xl px-4 sm:px-6"
+                >
+                  <span className="hidden sm:inline">Siųsti</span>
+                  <svg className="w-5 h-5 sm:hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </Button>
+              )}
+            </form>
+          </>
+        )}
         <p className="text-xs text-slate-400 mt-2 sm:mt-3 text-center">
           Tai nėra teisinė konsultacija. Sudėtingais atvejais kreipkitės į teisininką.
         </p>
