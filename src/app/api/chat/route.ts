@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
           // Step 2: Hybrid search + direct article fetch
           sendStatus('Ieškau aktualių šaltinių...');
           const [hybridResults, directArticles] = await Promise.all([
-            searchHybrid(queryEmbedding, 8, 4),
+            searchHybrid(queryEmbedding, 12, 6, 4),
             fetchArticles(relevantArticleNumbers),
           ]);
 
