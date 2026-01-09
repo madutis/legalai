@@ -1,0 +1,43 @@
+name: Update Labor Code from e-TAR
+
+on:
+  schedule:
+    # Run every Monday at 6:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  update-labor-code:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check for updates and re-ingest
+        env:
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          PINECONE_INDEX: ${{ secrets.PINECONE_INDEX }}
+          GOOGLE_GENERATIVE_AI_API_KEY: ${{ secrets.GOOGLE_GENERATIVE_AI_API_KEY }}
+        run: |
+          echo "Checking for Labor Code updates from e-TAR..."
+          npx tsx scripts/fetch-etar-labor-code.ts --ingest --force
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: labor-code-data
+          path: data/darbo-kodeksas-*.json
+          retention-days: 30
