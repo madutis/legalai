@@ -40,6 +40,16 @@ export default function Home() {
 
   const handleSelect = (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
+    // Auto-proceed to next step after selection
+    if (field === 'userRole' || field === 'companySize') {
+      setTimeout(() => setStep((s) => s + 1), 150);
+    } else if (field === 'topic') {
+      // Last step - save and redirect
+      setTimeout(() => {
+        localStorage.setItem('legalai-context', JSON.stringify({ ...data, [field]: value }));
+        router.push('/chat');
+      }, 150);
+    }
   };
 
   const handleNext = () => {
@@ -197,23 +207,28 @@ export default function Home() {
 
         {/* Features - only on step 1 */}
         {step === 1 && (
-          <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto mt-16">
-            <div className="text-center">
-              <div className="text-2xl mb-2">📚</div>
-              <div className="font-medium text-sm">Darbo kodeksas</div>
-              <div className="text-xs text-slate-500">264 straipsniai</div>
+          <>
+            <div className="grid md:grid-cols-3 gap-6 max-w-3xl mx-auto mt-16">
+              <div className="text-center">
+                <div className="text-2xl mb-2">📚</div>
+                <div className="font-medium text-sm">Darbo kodeksas</div>
+                <div className="text-xs text-slate-500">264 straipsniai</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl mb-2">⚖️</div>
+                <div className="font-medium text-sm">LAT praktika</div>
+                <div className="text-xs text-slate-500">2015-2025 sprendimai</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl mb-2">📋</div>
+                <div className="font-medium text-sm">Vyriausybės nutarimai</div>
+                <div className="text-xs text-slate-500">12 pagrindinių nutarimų</div>
+              </div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">⚖️</div>
-              <div className="font-medium text-sm">LAT praktika</div>
-              <div className="text-xs text-slate-500">2015-2025 sprendimai</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl mb-2">🔒</div>
-              <div className="font-medium text-sm">Konfidencialumas</div>
-              <div className="text-xs text-slate-500">Pokalbiai nesaugomi</div>
-            </div>
-          </div>
+            <p className="text-center text-sm text-slate-500 mt-6">
+              🔒 Jūsų pokalbiai nesaugomi ir lieka konfidencialūs
+            </p>
+          </>
         )}
 
         {/* Disclaimer */}

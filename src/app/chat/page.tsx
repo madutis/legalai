@@ -55,45 +55,44 @@ export default function ChatPage() {
 
   if (loading || !context) {
     return (
-      <div className="h-screen flex items-center justify-center bg-slate-50">
+      <div className="h-[100svh] flex items-center justify-center bg-slate-50">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
+    <div className="h-[100svh] flex flex-col bg-slate-50">
       {/* Header */}
       <header className="border-b bg-white/95 backdrop-blur-sm flex-shrink-0">
-        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl">⚖️</span>
-            <span className="font-semibold">Darbo teisės asistentas</span>
+        <div className="max-w-4xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between gap-2">
+          <Link href="/" className="flex items-center gap-2 min-w-0">
+            <span className="text-xl flex-shrink-0">⚖️</span>
+            <span className="font-semibold truncate text-sm sm:text-base">Darbo teisės asistentas</span>
           </Link>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={handleNewConsultation}>
-              Nauja konsultacija
-            </Button>
-          </div>
+          <Button variant="outline" size="sm" onClick={handleNewConsultation} className="flex-shrink-0 text-xs sm:text-sm">
+            <span className="hidden sm:inline">Nauja konsultacija</span>
+            <span className="sm:hidden">Nauja</span>
+          </Button>
         </div>
       </header>
 
-      {/* Context Summary */}
-      <div className="bg-slate-100 border-b px-4 py-2 flex-shrink-0">
-        <div className="max-w-4xl mx-auto flex items-center gap-4 text-sm">
-          <span className="text-slate-500">Kontekstas:</span>
-          <span className="bg-white px-2 py-1 rounded text-slate-700">
+      {/* Context Summary - hidden on very small screens, scrollable on medium */}
+      <div className="bg-slate-100 border-b px-3 sm:px-4 py-2 flex-shrink-0 overflow-x-auto">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 sm:gap-4 text-xs sm:text-sm min-w-max sm:min-w-0">
+          <span className="text-slate-500 hidden sm:inline">Kontekstas:</span>
+          <span className="bg-white px-2 py-1 rounded text-slate-700 whitespace-nowrap">
             {ROLE_LABELS[context.userRole] || context.userRole}
           </span>
-          <span className="bg-white px-2 py-1 rounded text-slate-700">
-            {context.companySize} darbuotojų
+          <span className="bg-white px-2 py-1 rounded text-slate-700 whitespace-nowrap">
+            {context.companySize} darb.
           </span>
-          <span className="bg-white px-2 py-1 rounded text-slate-700">
+          <span className="bg-white px-2 py-1 rounded text-slate-700 whitespace-nowrap">
             {TOPIC_LABELS[context.topic] || context.topic}
           </span>
           <button
             onClick={handleNewConsultation}
-            className="text-slate-400 hover:text-slate-600 ml-auto text-xs"
+            className="text-slate-400 hover:text-slate-600 ml-auto text-xs whitespace-nowrap"
           >
             Keisti
           </button>
