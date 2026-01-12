@@ -347,9 +347,11 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 7. Pabaigoje primink, kad sudėtingesniais atvejais verta kreiptis į darbo teisės specialistą
 
 ŠALTINIŲ NAUDOJIMAS:
-- Šaltiniai pažymėti [DARBO KODEKSAS, X straipsnis] arba [LAT NUTARTIS, METAI]
-- Jei tarp šaltinių yra LAT nutarčių - PRIVALAI jas paminėti atsakyme
+- Šaltiniai pažymėti [DARBO KODEKSAS, X straipsnis] arba [LAT NUTARTIS, Nr. XXX]
+- Jei tarp šaltinių yra LAT nutarčių - PRIVALAI jas paminėti atsakyme su bylos numeriu
+- LAT nutartyse nurodyta santrauka ir tema padės suprasti bylos esmę
 - Cituodamas nurodyk šaltinio numerį [1], [2] ir t.t.
+- Pavyzdys: "LAT byloje Nr. e3K-3-176-684/2024 teismas išaiškino, kad..."
 
 SVARBU: Nerašyk trumpų atsakymų. Atsakymas turi būti išsamus, 400-800 žodžių, su konkrečiais straipsnių numeriais ir praktinėmis rekomendacijomis.`;
 

@@ -28,6 +28,12 @@ export interface SearchResult {
     articleNumber?: number;
     articleTitle?: string;
     title?: string; // For nutarimai
+    // Ruling-specific fields
+    caseNumber?: string;
+    caseTitle?: string;
+    caseSummary?: string;
+    year?: string;
+    month?: string;
   };
 }
 
@@ -105,6 +111,12 @@ export async function searchHybrid(
       articleNumber: match.metadata?.articleNumber as number | undefined,
       articleTitle: match.metadata?.articleTitle as string | undefined,
       title: match.metadata?.title as string | undefined, // For nutarimai
+      // Ruling-specific fields
+      caseNumber: match.metadata?.caseNumber as string | undefined,
+      caseTitle: match.metadata?.caseTitle as string | undefined,
+      caseSummary: match.metadata?.caseSummary as string | undefined,
+      year: match.metadata?.year as string | undefined,
+      month: match.metadata?.month as string | undefined,
     },
   });
 

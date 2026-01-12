@@ -121,9 +121,23 @@ export async function POST(request: NextRequest) {
               const title = r.metadata.articleTitle || '';
               return `[DARBO KODEKSAS, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
             } else if (r.metadata.docType === 'ruling') {
-              const yearMatch = r.metadata.sourceFile?.match(/(\d{4})/);
-              const year = yearMatch ? yearMatch[1] : '';
-              return `[LAT NUTARTIS${year ? `, ${year}` : ''}]\n${r.text}`;
+              // Build rich context for LAT rulings with case number and summary
+              const caseNum = r.metadata.caseNumber;
+              const year = r.metadata.year || '';
+              const summary = r.metadata.caseSummary;
+              const title = r.metadata.caseTitle;
+
+              let header = '[LAT NUTARTIS';
+              if (caseNum) header += `, Nr. ${caseNum}`;
+              else if (year) header += `, ${year}`;
+              header += ']';
+
+              let content = '';
+              if (title) content += `Tema: ${title}\n`;
+              if (summary) content += `Santrauka: ${summary}\n\n`;
+              content += r.text;
+
+              return `${header}\n${content}`;
             } else if (r.metadata.docType === 'nutarimas') {
               const title = r.metadata.title || r.metadata.docId;
               return `[VYRIAUSYBĖS NUTARIMAS: ${title}]\n${r.text}`;
@@ -142,6 +156,10 @@ export async function POST(request: NextRequest) {
               score: r.score,
               articleNumber: r.metadata.articleNumber,
               articleTitle: r.metadata.articleTitle,
+              // Ruling-specific fields
+              caseNumber: r.metadata.caseNumber,
+              caseTitle: r.metadata.caseTitle,
+              caseSummary: r.metadata.caseSummary,
             })),
           };
           controller.enqueue(
