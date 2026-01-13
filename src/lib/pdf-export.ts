@@ -1,6 +1,7 @@
 'use client';
 
 import type { Message } from '@/hooks/useChat';
+import { getTopicById } from '@/lib/topics';
 
 interface ExportContext {
   topic?: string;
@@ -14,20 +15,38 @@ interface ExportData {
   exportedAt: Date;
 }
 
-// Remove markdown and special tags from text
-function cleanText(text: string): string {
+// Convert markdown to HTML for proper formatting
+function markdownToHtml(text: string): string {
   return text
     // Remove question tags
     .replace(/\[KLAUSIMAS\][\s\S]*?\[\/KLAUSIMAS\]/g, '')
     .replace(/\[ATVIRAS_KLAUSIMAS\][\s\S]*?\[\/ATVIRAS_KLAUSIMAS\]/g, '')
     .replace(/\[PASIRINKIMAS\]/g, '')
-    // Remove markdown bold/italic
-    .replace(/\*\*([^*]+)\*\*/g, '$1')
-    .replace(/\*([^*]+)\*/g, '$1')
     // Remove citation brackets
     .replace(/\[\d+\]/g, '')
+    // Escape HTML first (but preserve newlines for processing)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Convert markdown bold to HTML
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    // Convert markdown italic to HTML
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    // Convert markdown links [text](url) to HTML
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" style="color: #2563eb;">$1</a>')
+    // Convert numbered lists (lines starting with "1. ", "2. ", etc.)
+    .replace(/^(\d+)\.\s+(.+)$/gm, '<li style="margin-left: 20px;">$2</li>')
+    // Convert bullet lists (lines starting with "- " or "* ")
+    .replace(/^[-*]\s+(.+)$/gm, '<li style="margin-left: 20px;">$1</li>')
+    // Convert headers
+    .replace(/^###\s+(.+)$/gm, '<h4 style="font-weight: 600; margin: 15px 0 8px;">$1</h4>')
+    .replace(/^##\s+(.+)$/gm, '<h3 style="font-weight: 600; margin: 15px 0 8px;">$1</h3>')
+    .replace(/^#\s+(.+)$/gm, '<h3 style="font-weight: 700; margin: 15px 0 8px;">$1</h3>')
+    // Convert double newlines to paragraph breaks
+    .replace(/\n\n+/g, '</p><p style="margin: 10px 0;">')
+    // Convert single newlines to line breaks
+    .replace(/\n/g, '<br>')
     // Clean up extra whitespace
-    .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
 
@@ -52,15 +71,14 @@ function formatCompanySize(size: string): string {
   }
 }
 
-// Escape HTML special characters
+// Escape HTML special characters (for plain text like topic/context)
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;')
-    .replace(/\n/g, '<br>');
+    .replace(/'/g, '&#039;');
 }
 
 export function exportToPDF(data: ExportData): void {
@@ -78,20 +96,24 @@ export function exportToPDF(data: ExportData): void {
     const isUser = message.role === 'user';
     const label = isUser ? 'Klausimas:' : 'Atsakymas:';
     const labelColor = isUser ? '#166534' : '#1e40af';
-    const cleanedContent = escapeHtml(cleanText(message.content));
+    const formattedContent = isUser
+      ? escapeHtml(message.content)
+      : markdownToHtml(message.content);
 
     messagesHtml += `
-      <div style="margin-bottom: 20px;">
-        <p style="color: ${labelColor}; font-weight: bold; margin-bottom: 5px;">${label}</p>
-        <p style="margin: 0; line-height: 1.6;">${cleanedContent}</p>
+      <div style="margin-bottom: 24px;">
+        <p style="color: ${labelColor}; font-weight: bold; margin-bottom: 8px;">${label}</p>
+        <div style="margin: 0; line-height: 1.7;"><p style="margin: 10px 0;">${formattedContent}</p></div>
       </div>
     `;
   }
 
+  const topicLabel = data.context?.topic ? getTopicById(data.context.topic)?.labelLT : null;
+
   const contextHtml = data.context ? `
     <div style="margin-bottom: 20px;">
-      <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Vartotojo profilis:</h2>
-      ${data.context.topic ? `<p style="margin: 5px 0;">Tema: ${escapeHtml(data.context.topic)}</p>` : ''}
+      <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 10px;">Konsultacijos informacija:</h2>
+      ${topicLabel ? `<p style="margin: 5px 0;">Tema: ${escapeHtml(topicLabel)}</p>` : ''}
       ${data.context.userRole ? `<p style="margin: 5px 0;">Vaidmuo: ${formatRole(data.context.userRole)}</p>` : ''}
       ${data.context.companySize ? `<p style="margin: 5px 0;">Įmonės dydis: ${formatCompanySize(data.context.companySize)}</p>` : ''}
     </div>
@@ -160,7 +182,6 @@ export function exportToPDF(data: ExportData): void {
 
       <div class="divider"></div>
 
-      <h2 style="font-size: 14px; font-weight: bold; margin-bottom: 15px;">Pokalbis:</h2>
       ${messagesHtml}
 
       <div class="footer">
