@@ -352,6 +352,7 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 - LAT nutartyse nurodyta santrauka ir tema padės suprasti bylos esmę
 - Cituodamas nurodyk šaltinio numerį [1], [2] ir t.t.
 - Pavyzdys: "LAT byloje Nr. e3K-3-176-684/2024 teismas išaiškino, kad..."
+- SVARBU: Jei šaltiniuose yra LAT nutarčių, NIEKADA nesakyk "nėra konkrečių LAT nutarčių" - visada pacituok bent vieną susijusią bylą, nurodydamas bylos numerį ir ką teismas išaiškino
 
 SVARBU: Nerašyk trumpų atsakymų. Atsakymas turi būti išsamus, 400-800 žodžių, su konkrečiais straipsnių numeriais ir praktinėmis rekomendacijomis.`;
 
