@@ -53,6 +53,11 @@ function parseQuestions(text: string): { content: string; question: ParsedQuesti
   return { content: text, question: null };
 }
 
+// Map of case numbers to their document info for linking
+interface CaseNumberMap {
+  [caseNumber: string]: { docId: string; sourceUrl?: string; sourcePage?: number };
+}
+
 // Component for rendering assistant messages with interactive questions
 function AssistantMessage({
   content,
@@ -60,15 +65,36 @@ function AssistantMessage({
   isLoading,
   onOptionClick,
   onArticleClick,
+  onCaseClick,
+  sources,
 }: {
   content: string;
   isLastMessage: boolean;
   isLoading: boolean;
   onOptionClick: (option: string) => void;
   onArticleClick: (articleNum: number) => void;
+  onCaseClick: (docId: string) => void;
+  sources?: Source[];
 }) {
+  // Build case number lookup map from sources
+  const caseNumberMap = useMemo(() => {
+    const map: CaseNumberMap = {};
+    if (sources) {
+      for (const s of sources) {
+        if (s.caseNumber) {
+          map[s.caseNumber] = {
+            docId: s.id,
+            sourceUrl: s.sourceUrl,
+            sourcePage: s.sourcePage,
+          };
+        }
+      }
+    }
+    return map;
+  }, [sources]);
+
   const { content: textContent, question } = useMemo(() => parseQuestions(content), [content]);
-  const processedContent = useMemo(() => processContent(textContent), [textContent]);
+  const processedContent = useMemo(() => processContent(textContent, caseNumberMap), [textContent, caseNumberMap]);
 
   return (
     <div className="prose prose-sm prose-slate max-w-none">
@@ -90,6 +116,7 @@ function AssistantMessage({
               </blockquote>
             ),
             a: ({ href, children }) => {
+              // Handle article links (e-tar.lt)
               const articleMatch = href?.match(/e-tar\.lt.*#part_(\d+)/);
               if (articleMatch) {
                 const articleNum = parseInt(articleMatch[1]);
@@ -101,6 +128,23 @@ function AssistantMessage({
                     {children}
                   </button>
                 );
+              }
+              // Handle LAT case links (lat:// protocol)
+              const caseMatch = href?.match(/^lat:\/\/(.+)$/);
+              if (caseMatch) {
+                const caseNum = caseMatch[1];
+                const caseInfo = caseNumberMap[caseNum];
+                if (caseInfo) {
+                  return (
+                    <button
+                      onClick={() => onCaseClick(caseInfo.docId)}
+                      className="text-amber-700 hover:text-amber-900 underline cursor-pointer font-medium"
+                      title="Atidaryti LAT nutartį"
+                    >
+                      {children}
+                    </button>
+                  );
+                }
               }
               return (
                 <a
@@ -164,10 +208,11 @@ function AssistantMessage({
   );
 }
 
-// Process assistant text: remove citation anchors and linkify articles
-const processContent = (text: string): string => {
+// Process assistant text: remove citation anchors and linkify articles + case numbers
+const processContent = (text: string, caseNumberMap?: CaseNumberMap): string => {
   const eTarBase = 'https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_';
-  return text
+
+  let processed = text
     // Remove citation anchors like [1], [2], etc.
     .replace(/\s*\[\d+\]/g, '')
     // Convert article references to links
@@ -175,6 +220,23 @@ const processContent = (text: string): string => {
       /(\d{1,3})(?:-(?:ojo|asis|ojo|ojo))?\s*(?:straipsn\w*|str\.)/gi,
       (match, num) => `[${match}](${eTarBase}${num})`
     );
+
+  // Convert case numbers to clickable links if we have the map
+  if (caseNumberMap && Object.keys(caseNumberMap).length > 0) {
+    // Match case number patterns: e3K-3-176-684/2024, 3K-3-xxx-xxx/YYYY
+    // Also match with "Nr." prefix
+    const casePattern = /(?:Nr\.\s*)?([eE]?[0-9A-Z]+-\d+-\d+-\d+\/\d{4})/g;
+    processed = processed.replace(casePattern, (match, caseNum) => {
+      // Check if this case number is in our map
+      if (caseNumberMap[caseNum]) {
+        // Use lat:// protocol for case links
+        return `[${match}](lat://${caseNum})`;
+      }
+      return match; // Leave as plain text if not in our sources
+    });
+  }
+
+  return processed;
 };
 
 interface ChatInterfaceProps {
@@ -370,6 +432,18 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                           sendMessage(option);
                         }}
                         onArticleClick={setSelectedArticleNumber}
+                        onCaseClick={setSelectedRulingDocId}
+                        sources={(() => {
+                          // For final answers, provide all accumulated sources for case linking
+                          const isFinalAnswer = !message.content.includes('[KLAUSIMAS]') &&
+                            !message.content.includes('[ATVIRAS_KLAUSIMAS]');
+                          if (isFinalAnswer) {
+                            return messages
+                              .filter(m => m.role === 'assistant')
+                              .flatMap(m => m.sources || []) as Source[];
+                          }
+                          return (message.sources || []) as Source[];
+                        })()}
                       />
                     )}
 
