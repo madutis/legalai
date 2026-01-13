@@ -14,10 +14,28 @@ export async function GET(
 
     const index = getIndex();
 
-    // Fetch the specific chunk by ID
-    const response = await index.fetch([docId]);
+    // For nutarimai, always fetch the first chunk (intro/title) for better content
+    let fetchId = docId;
+    if (docId.includes('nutarimas-') && docId.includes('-chunk-')) {
+      // Extract base ID and fetch chunk-0 and chunk-1 for better content
+      const baseId = docId.replace(/-chunk-\d+$/, '');
+      const introIds = [`${baseId}-chunk-0`, `${baseId}-chunk-1`, docId];
+      const introResponse = await index.fetch(introIds);
 
-    const record = response.records?.[docId];
+      // Find first chunk with substantial content
+      for (const id of introIds) {
+        const rec = introResponse.records?.[id];
+        if (rec && (rec.metadata?.text as string)?.length > 100) {
+          fetchId = id;
+          break;
+        }
+      }
+    }
+
+    // Fetch the specific chunk by ID
+    const response = await index.fetch([fetchId]);
+
+    const record = response.records?.[fetchId];
     if (!record) {
       return NextResponse.json({ error: 'Ruling not found' }, { status: 404 });
     }
