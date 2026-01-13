@@ -160,6 +160,8 @@ export async function POST(request: NextRequest) {
               caseNumber: r.metadata.caseNumber,
               caseTitle: r.metadata.caseTitle,
               caseSummary: r.metadata.caseSummary,
+              sourceUrl: (r.metadata as any).sourceUrl,
+              sourcePage: (r.metadata as any).sourcePage,
             })),
           };
           controller.enqueue(

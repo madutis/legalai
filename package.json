@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "sync-lat": "npx tsx scripts/sync-lat-rulings.ts",
+    "sync-lat:force": "npx tsx scripts/sync-lat-rulings.ts --force"
   },
   "dependencies": {
     "@ai-sdk/google": "^2.0.49",

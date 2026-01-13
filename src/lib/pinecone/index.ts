@@ -34,6 +34,8 @@ export interface SearchResult {
     caseSummary?: string;
     year?: string;
     month?: string;
+    sourceUrl?: string;
+    sourcePage?: number;
   };
 }
 
@@ -117,6 +119,8 @@ export async function searchHybrid(
       caseSummary: match.metadata?.caseSummary as string | undefined,
       year: match.metadata?.year as string | undefined,
       month: match.metadata?.month as string | undefined,
+      sourceUrl: match.metadata?.sourceUrl as string | undefined,
+      sourcePage: match.metadata?.sourcePage as number | undefined,
     },
   });
 

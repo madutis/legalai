@@ -192,6 +192,12 @@ interface Source {
   articleNumber?: number;
   articleTitle?: string;
   title?: string; // For nutarimai
+  // LAT ruling fields
+  sourceUrl?: string;
+  sourcePage?: number;
+  caseNumber?: string;
+  caseTitle?: string;
+  caseSummary?: string;
 }
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
@@ -276,11 +282,17 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       return `${source.articleNumber} str.`;
     }
     if (source.docType === 'ruling') {
-      const yearMatch = source.sourceFile.match(/(\d{4})/);
-      const monthMatch = source.sourceFile.match(/LAT_\d{4}_([^.]+)/);
+      // Prefer case number if available
+      if (source.caseNumber) {
+        return `LAT ${source.caseNumber}`;
+      }
+      // Fallback to year/month from filename
+      const yearMatch = source.sourceFile?.match(/(\d{4})/);
+      const monthMatch = source.sourceFile?.match(/LAT_\d{4}_([^.]+)/);
       if (yearMatch) {
         return `LAT ${yearMatch[1]}${monthMatch ? ` ${monthMatch[1]}` : ''}`;
       }
+      return 'LAT nutartis';
     }
     if (source.docType === 'nutarimas') {
       // Extract nutarimas number from docId like "nutarimas-496-2017"
@@ -293,9 +305,14 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     return null; // Don't show unidentifiable sources
   };
 
-  const getSourceUrl = (source: Source) => {
+  const getSourceUrl = (source: Source): string | null => {
     if (source.docType === 'legislation' && source.articleNumber) {
       return `https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_${source.articleNumber}`;
+    }
+    if (source.docType === 'ruling' && source.sourceUrl) {
+      // Link directly to LAT PDF with page anchor
+      const pageAnchor = source.sourcePage ? `#page=${source.sourcePage}` : '';
+      return `${source.sourceUrl}${pageAnchor}`;
     }
     return null;
   };
@@ -392,24 +409,40 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                               }))
                               .filter((s) => s.label !== null)
                               .slice(0, 10) // Show more sources for final answer
-                              .map((s, i) => (
-                                <button
-                                  key={i}
-                                  onClick={() => {
-                                    if (s.source.docType === 'ruling') {
-                                      setSelectedRulingDocId(s.source.id); // Pass full chunk ID
-                                    } else if (s.source.articleNumber) {
-                                      setSelectedArticleNumber(s.source.articleNumber);
-                                    }
-                                  }}
-                                  className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
-                                >
-                                  {s.label}
-                                  <svg className="w-3 h-3 ml-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                  </svg>
-                                </button>
-                              ))}
+                              .map((s, i) => {
+                                const externalUrl = getSourceUrl(s.source);
+                                const isExternalLink = s.source.docType === 'ruling' && s.source.sourceUrl;
+
+                                return (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      if (isExternalLink && externalUrl) {
+                                        // Open LAT PDF in new tab
+                                        window.open(externalUrl, '_blank', 'noopener,noreferrer');
+                                      } else if (s.source.docType === 'ruling') {
+                                        // Fallback to modal for old data without sourceUrl
+                                        setSelectedRulingDocId(s.source.id);
+                                      } else if (s.source.articleNumber) {
+                                        setSelectedArticleNumber(s.source.articleNumber);
+                                      }
+                                    }}
+                                    className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
+                                    title={s.source.caseTitle || s.source.caseSummary || undefined}
+                                  >
+                                    {s.label}
+                                    {isExternalLink ? (
+                                      <svg className="w-3 h-3 ml-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                    ) : (
+                                      <svg className="w-3 h-3 ml-1 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                    )}
+                                  </button>
+                                );
+                              })}
                           </div>
                         </div>
                       );
