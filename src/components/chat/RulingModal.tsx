@@ -10,10 +10,14 @@ interface RulingModalProps {
 
 interface RulingData {
   docId: string;
+  docType: string;
   title: string;
+  caseTitle?: string;
+  caseSummary?: string;
   sourceFile: string;
+  sourceUrl?: string;
+  sourcePage?: number;
   text: string;
-  isRelevantChunk?: boolean;
 }
 
 export function RulingModal({ docId, onClose }: RulingModalProps) {
@@ -86,11 +90,32 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
 
           {ruling && (
             <div className="prose prose-sm prose-slate max-w-none">
-              <div className="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">
-                <p className="text-xs text-amber-700">
-                  Rodoma aktuali ištrauka iš {ruling.sourceFile.replace('rulings/', '')}
+              {/* Case title */}
+              {ruling.caseTitle && (
+                <div className="mb-4">
+                  <h3 className="font-semibold text-slate-800 mb-1">{ruling.caseTitle}</h3>
+                </div>
+              )}
+
+              {/* AI Summary */}
+              {ruling.caseSummary && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-4">
+                  <p className="text-xs text-blue-600 font-medium mb-1">Santrauka:</p>
+                  <p className="text-sm text-blue-800">{ruling.caseSummary}</p>
+                </div>
+              )}
+
+              {/* Source info */}
+              <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-4">
+                <p className="text-xs text-slate-500">
+                  {ruling.docType === 'nutarimas'
+                    ? `Vyriausybės nutarimas`
+                    : `LAT praktikos apžvalga`}
+                  {ruling.sourceFile && ` • ${ruling.sourceFile.replace('rulings/', '').replace('.pdf', '')}`}
                 </p>
               </div>
+
+              {/* Full text */}
               <div className="whitespace-pre-wrap text-sm leading-relaxed">
                 {ruling.text}
               </div>
@@ -99,8 +124,23 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t">
-          <Button variant="outline" onClick={onClose} className="w-full">
+        <div className="px-6 py-4 border-t flex gap-3">
+          {ruling?.sourceUrl && (
+            <Button
+              variant="default"
+              onClick={() => {
+                const pageAnchor = ruling.sourcePage ? `#page=${ruling.sourcePage}` : '';
+                window.open(`${ruling.sourceUrl}${pageAnchor}`, '_blank', 'noopener,noreferrer');
+              }}
+              className="flex-1"
+            >
+              <svg className="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Atidaryti PDF
+            </Button>
+          )}
+          <Button variant="outline" onClick={onClose} className={ruling?.sourceUrl ? '' : 'w-full'}>
             Uždaryti
           </Button>
         </div>

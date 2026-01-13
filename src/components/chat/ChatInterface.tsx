@@ -417,11 +417,8 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                                   <button
                                     key={i}
                                     onClick={() => {
-                                      if (isExternalLink && externalUrl) {
-                                        // Open LAT PDF in new tab
-                                        window.open(externalUrl, '_blank', 'noopener,noreferrer');
-                                      } else if (s.source.docType === 'ruling') {
-                                        // Fallback to modal for old data without sourceUrl
+                                      if (s.source.docType === 'ruling' || s.source.docType === 'nutarimas') {
+                                        // Show modal for rulings and nutarimai
                                         setSelectedRulingDocId(s.source.id);
                                       } else if (s.source.articleNumber) {
                                         setSelectedArticleNumber(s.source.articleNumber);
