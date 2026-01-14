@@ -37,7 +37,7 @@ export interface Consultation {
 // Message types
 export interface Citation {
   docId: string;
-  docType: 'legislation' | 'ruling';
+  docType: 'legislation' | 'lat_ruling' | 'nutarimas';
   title: string;
   section?: string;
   caseNumber?: string;
@@ -56,7 +56,7 @@ export interface Message {
 // Document types (for ingested legal documents)
 export interface ChunkMetadata {
   docId: string;
-  docType: 'legislation' | 'ruling';
+  docType: 'legislation' | 'lat_ruling' | 'nutarimas';
   sourceFile: string;
   sectionTitle?: string;
   caseNumber?: string;
@@ -66,7 +66,7 @@ export interface ChunkMetadata {
 
 export interface LegalDocument {
   id: string;
-  type: 'legislation' | 'ruling';
+  type: 'legislation' | 'lat_ruling' | 'nutarimas';
   title: string;
   sourceFile: string;
   fullText: string;
