@@ -458,22 +458,24 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                       />
                     )}
 
-                    {/* Sources - for final answers, show accumulated sources from all messages */}
+                    {/* Sources - only show sources actually cited in this message */}
                     {(() => {
-                      const isFinalAnswer = message.role === 'assistant' &&
-                        !message.content.includes('[KLAUSIMAS]') &&
-                        !message.content.includes('[ATVIRAS_KLAUSIMAS]');
+                      if (message.role !== 'assistant' || !message.sources?.length) return null;
 
-                      // For final answers, collect sources from all previous assistant messages
-                      const sourcesToShow = isFinalAnswer
-                        ? messages
-                            .filter(m => m.role === 'assistant')
-                            .flatMap(m => m.sources || [])
-                        : message.sources || [];
+                      // Extract cited source indices from message content [1], [2], etc.
+                      const citedIndices = new Set(
+                        [...message.content.matchAll(/\[(\d+)\]/g)]
+                          .map(m => parseInt(m[1]) - 1) // Convert to 0-indexed
+                      );
+
+                      // Filter to only sources that were actually cited
+                      const citedSources = citedIndices.size > 0
+                        ? message.sources.filter((_, i) => citedIndices.has(i))
+                        : []; // If no citations found, show nothing
 
                       // Deduplicate by full chunk ID
                       const seen = new Set<string>();
-                      const uniqueSources = sourcesToShow.filter(s => {
+                      const uniqueSources = citedSources.filter(s => {
                         const key = (s as Source).id || `${s.docId}-${(s as Source).articleNumber || ''}`;
                         if (seen.has(key)) return false;
                         seen.add(key);

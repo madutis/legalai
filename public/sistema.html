@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LegalAI Sistema - Techninė dokumentacija</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #1f2937;
+      background: #f9fafb;
+    }
+    h1 { color: #111827; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+    h2 { color: #1e40af; margin-top: 40px; border-left: 4px solid #2563eb; padding-left: 12px; }
+    h3 { color: #374151; margin-top: 25px; }
+    .section { background: white; padding: 25px; border-radius: 12px; margin: 20px 0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .highlight { background: #eff6ff; border: 1px solid #bfdbfe; padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .warning { background: #fef3c7; border: 1px solid #fcd34d; padding: 15px; border-radius: 8px; margin: 15px 0; }
+    code { background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-size: 14px; }
+    pre { background: #1f2937; color: #e5e7eb; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    th { background: #f3f4f6; font-weight: 600; }
+    tr:hover { background: #f9fafb; }
+    ul { padding-left: 20px; }
+    li { margin: 5px 0; }
+    .stats { display: flex; gap: 20px; flex-wrap: wrap; }
+    .stat { background: #2563eb; color: white; padding: 15px 25px; border-radius: 8px; text-align: center; }
+    .stat-number { font-size: 28px; font-weight: 700; }
+    .stat-label { font-size: 12px; opacity: 0.9; }
+    .case-list { max-height: 400px; overflow-y: auto; font-size: 13px; }
+    .case-list li { padding: 5px 0; border-bottom: 1px solid #f3f4f6; }
+    a { color: #2563eb; }
+  </style>
+</head>
+<body>
+
+<h1>LegalAI - Darbo teisės asistentas</h1>
+<p>Techninė dokumentacija apie sistemos veikimą, naudojamus duomenų šaltinius ir LLM promptus.</p>
+
+<div class="section">
+  <h2>1. Sistemos architektūra</h2>
+
+  <div class="highlight">
+    <strong>RAG (Retrieval-Augmented Generation)</strong> architektūra: sistema pirmiausia suranda aktualius teisinius dokumentus, tada naudoja LLM sugeneruoti atsakymą remiantis tais dokumentais.
+  </div>
+
+  <h3>Technologijų steko komponentai:</h3>
+  <table>
+    <tr><th>Komponentas</th><th>Technologija</th><th>Paskirtis</th></tr>
+    <tr><td>Frontend</td><td>Next.js 16, React, TailwindCSS</td><td>Vartotojo sąsaja</td></tr>
+    <tr><td>Backend API</td><td>Next.js API Routes (Node.js)</td><td>Serverio logika</td></tr>
+    <tr><td>Vektorinė DB</td><td>Pinecone</td><td>Semantinė paieška</td></tr>
+    <tr><td>SQL DB</td><td>SQLite (better-sqlite3)</td><td>LAT bylų saugojimas</td></tr>
+    <tr><td>LLM</td><td>Google Gemini 2.5 Flash</td><td>Atsakymų generavimas</td></tr>
+    <tr><td>Embeddings</td><td>Google text-embedding-004</td><td>Teksto vektorizacija</td></tr>
+    <tr><td>Hostingas</td><td>Vercel</td><td>Serverless deployment</td></tr>
+  </table>
+
+  <h3>Duomenų srautas:</h3>
+  <pre>
+1. Vartotojas užduoda klausimą
+        ↓
+2. Klausimo embedding generavimas (text-embedding-004)
+        ↓
+3. Hibridinė paieška Pinecone:
+   - Semantinė paieška (vector similarity)
+   - Metadata filtravimas (docType)
+        ↓
+4. Rezultatų praturtinimas:
+   - Legislation: grąžinamas pilnas straipsnio tekstas
+   - LAT rulings: full_text iš SQLite
+   - Nutarimai: tekstas iš Pinecone metadata
+        ↓
+5. Konteksto paruošimas LLM (su šaltinių žymėmis)
+        ↓
+6. Streaming atsakymo generavimas (Gemini 2.5 Flash)
+        ↓
+7. Atsakymas su nuorodomis į šaltinius
+  </pre>
+</div>
+
+<div class="section">
+  <h2>2. Duomenų šaltiniai</h2>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-number">264</div><div class="stat-label">DK straipsniai</div></div>
+    <div class="stat"><div class="stat-number">58</div><div class="stat-label">LAT nutartys</div></div>
+    <div class="stat"><div class="stat-number">13</div><div class="stat-label">Vyriausybės nutarimai</div></div>
+  </div>
+
+  <h3>2.1 Darbo kodeksas (legislation)</h3>
+  <p>Pilnas Lietuvos Respublikos darbo kodekso tekstas - 264 straipsniai, suskirstyti į skyrius:</p>
+  <ul>
+    <li><strong>I. Bendrosios nuostatos</strong> (1-20 str.) - paskirtis, principai, šalys</li>
+    <li><strong>II. Darbo sutartis</strong> (21-40 str.) - sudarymas, sąlygos, keitimas</li>
+    <li><strong>III. Darbo sutarties pasibaigimas</strong> (41-60 str.) - nutraukimo pagrindai</li>
+    <li><strong>IV. Nutraukimo apribojimai</strong> (61-65 str.) - garantijos</li>
+    <li><strong>V. Specialios darbo sutartys</strong> (66-100 str.) - terminuota, nuotolinė, laikina</li>
+    <li><strong>VI. Darbo laikas</strong> (101-120 str.) - normos, viršvalandžiai</li>
+    <li><strong>VII. Poilsio laikas</strong> (121-125 str.) - pertraukos, poilsis</li>
+    <li><strong>VIII. Atostogos</strong> (126-140 str.) - kasmetinės, tikslinės</li>
+    <li><strong>IX. Darbo užmokestis</strong> (141-150 str.) - apmokėjimas, išskaitos</li>
+    <li><strong>X. Materialinė atsakomybė</strong> (151-160 str.) - žalos atlyginimas</li>
+    <li><strong>XI. Darbuotojų atstovavimas</strong> (161-180 str.) - profesinės sąjungos, darbo tarybos</li>
+    <li><strong>XII. Kolektyviniai santykiai</strong> (181-202 str.) - kolektyvinės sutartys</li>
+    <li><strong>XIII. Informavimas ir konsultavimas</strong> (203-211 str.)</li>
+    <li><strong>XIV. Darbo ginčai</strong> (212-240 str.) - DGK, teismai, streikai</li>
+    <li><strong>XV. Darbuotojų sauga</strong> (241-264 str.) - sveikata, rizikos</li>
+  </ul>
+  <p><strong>Šaltinis:</strong> <a href="https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr" target="_blank">e-tar.lt - LR Darbo kodeksas</a></p>
+
+  <h3>2.2 LAT nutartys (lat_ruling)</h3>
+  <p>Lietuvos Aukščiausiojo Teismo civilinių bylų skyriaus nutartys darbo teisės klausimais, ištrauktos iš LAT praktikos apžvalgų (2018-2025).</p>
+
+  <div class="highlight">
+    <strong>Saugojimas:</strong> SQLite duomenų bazė (<code>data/lat.db</code>) - pilnas tekstas, santraukos, bylos numeriai. Pinecone - tik semantinei paieškai (embedding + metadata).
+  </div>
+
+  <div class="case-list">
+    <h4>Pilnas LAT bylų sąrašas (58 bylos):</h4>
+    <ul>
+      <li><strong>3K-3-108-1120/2025</strong> - Dėl darbo sutarties sudarymo fakto ir darbdavio pareigos sumokėti darbuotojui žalos atlyginimą nesudarius darbo sutarties</li>
+      <li><strong>3K-3-116-943/2021</strong> - Atleidimas už šiurkštų pažeidimą, nuotolinis darbas ir kompensacijos mažinimas</li>
+      <li><strong>3K-3-129-943/2021</strong> - Bankroto administratoriaus atsakomybė už neteisėtą darbuotojų atleidimą</li>
+      <li><strong>3K-3-132-969/2021</strong> - Profesinės sąjungos teisė atstovauti nariui teisme</li>
+      <li><strong>3K-3-150-313/2021</strong> - Darbovietės ir vietovės kaip darbo sąlygų keitimas</li>
+      <li><strong>3K-3-179-1075/2021</strong> - Išbandymo sąlygos nustatymas konkurso būdu atrinktiems darbuotojams</li>
+      <li><strong>3K-3-25-248/2021</strong> - Darbo sutarties nutraukimas dėl šiurkštaus pažeidimo</li>
+      <li><strong>3K-3-27-701/2019</strong> - Individualaus darbo ginčo nagrinėjimo DGK ir teisme santykis</li>
+      <li><strong>3K-3-417-421/2018</strong> - Profesinės sąjungos steigimo reikalavimai</li>
+      <li><strong>3K-3-485-695/2018</strong> - Darbuotojo visiškos materialinės atsakomybės taikymas</li>
+      <li><strong>3K-3-93-1120/2025</strong> - Nevienodas darbo užmokestis reorganizacijos metu</li>
+      <li><strong>3K-7-348-969/2022</strong> - Darbo ginčo jurisdikcija su užsienio elementu</li>
+      <li><strong>e3K-3-1-684/2022</strong> - Darbdavio pareiga mokėti netesybas pagal DK 147 str.</li>
+      <li><strong>e3K-3-11-701/2021</strong> - Laikinai einančio vadovo darbo sutarties galiojimas</li>
+      <li><strong>e3K-3-116-684/2022</strong> - Vienodas užmokestis laikiniesiems ir nuolatiniams darbuotojams</li>
+      <li><strong>e3K-3-117-687/2020</strong> - Informavimo ir konsultavimosi procedūros</li>
+      <li><strong>e3K-3-123-1075/2023</strong> - Žalos darbuotojo sveikatai atlyginimas</li>
+      <li><strong>e3K-3-128-1120/2025</strong> - Dvigubo darbo užmokesčio priteisimas</li>
+      <li><strong>e3K-3-140-684/2022</strong> - Darbo vietovės pakeitimas ir atleidimas</li>
+      <li><strong>e3K-3-142-684/2022</strong> - Dienpinigių už komandiruotes mokėjimas</li>
+      <li><strong>e3K-3-145-823/2020</strong> - Darbo ginčų teismingumas su tarptautiniu elementu</li>
+      <li><strong>e3K-3-151-611/2023</strong> - Darbuotojo atsakomybė nutraukus sutartį</li>
+      <li><strong>e3K-3-151-684/2022</strong> - Darbo santykių kvalifikavimas (darbas keliems darbdaviams)</li>
+      <li><strong>e3K-3-159-701/2021</strong> - Viešojo konkurso laimėtojo darbo sutarties įsigaliojimas</li>
+      <li><strong>e3K-3-17-684/2023</strong> - Nušalinimas atsisakius tikrintis sveikatą</li>
+      <li><strong>e3K-3-174-701/2021</strong> - Mokymo išlaidų atlyginimo sąlygos</li>
+      <li><strong>e3K-3-176-684/2024</strong> - Nuotolinio darbo organizavimas ir atleidimo neteisėtumas</li>
+      <li><strong>e3K-3-178-684/2019</strong> - Darbo užmokestis už darbą poilsio dienomis (suminė apskaita)</li>
+      <li><strong>e3K-3-187-421/2022</strong> - Darbo pareigų pažeidimo kvalifikavimas kaip šiurkštaus</li>
+      <li><strong>e3K-3-199-701/2020</strong> - Darbo sutarties nutraukimas darbdavio valia</li>
+      <li><strong>e3K-3-225-690/2018</strong> - Darbdavio regreso teisė į darbuotoją</li>
+      <li><strong>e3K-3-227-684/2021</strong> - Netiesioginė diskriminacija (profesinė sąjunga)</li>
+      <li><strong>e3K-3-238-943/2024</strong> - Biudžetinės įstaigos vadovo algos koeficientai</li>
+      <li><strong>e3K-3-244-248/2019</strong> - Atleidimas už antrą tokį patį pažeidimą</li>
+      <li><strong>e3K-3-257-1075/2021</strong> - Netesybos už pavėluotą mokėjimą</li>
+      <li><strong>e3K-3-271-684/2021</strong> - Biudžetinių įstaigų vadovų veiklos vertinimas</li>
+      <li><strong>e3K-3-28-701/2020</strong> - DK 220 ir 231 str. terminų kvalifikavimas</li>
+      <li><strong>e3K-3-281-1120/2023</strong> - Darbo pareigų pažeidimo pobūdis</li>
+      <li><strong>e3K-3-286-943/2021</strong> - Prastova ir diskriminacija dėl nėštumo</li>
+      <li><strong>e3K-3-291-684/2020</strong> - Nekonkuravimo susitarimas ir atlygintinumas</li>
+      <li><strong>e3K-3-3-403/2023</strong> - Pareiga siūlyti laisvas vietas atleidžiant</li>
+      <li><strong>e3K-3-332-701/2020</strong> - Kompensacija už nepanaudotas atostogas</li>
+      <li><strong>e3K-3-348-403/2020</strong> - Diskriminacija dėl priklausymo profesinei sąjungai</li>
+      <li><strong>e3K-3-359-701/2019</strong> - Darbo užmokestis mobiliajam darbuotojui</li>
+      <li><strong>e3K-3-392-684/2019</strong> - Laikinųjų darbuotojų direktyva ES agentūroms</li>
+      <li><strong>e3K-3-402-403/2018</strong> - Pertraukų tarp maršrutų įskaitymas į darbo laiką</li>
+      <li><strong>e3K-3-44-248/2019</strong> - Diskriminacija dėl pareiginės algos koeficientų</li>
+      <li><strong>e3K-3-49-1120/2025</strong> - Atleidimas už interesų konfliktą</li>
+      <li><strong>e3K-3-55-781/2022</strong> - Atleidimas reorganizavus įstaigą</li>
+      <li><strong>e3K-3-68-378/2024</strong> - Išmokų įskaitymas atleistam darbuotojui</li>
+      <li><strong>e3K-3-70-684/2025</strong> - Grąžinimas į pareigas pasibaigus kadencijai</li>
+      <li><strong>e3K-3-70-701/2023</strong> - Atleidimas atėmus specialias teises</li>
+      <li><strong>e3K-3-73-248/2019</strong> - Darbo užmokestis komandiruotam į užsienį</li>
+      <li><strong>e3K-3-85-701/2024</strong> - Darbo apmokėjimo sąlygų keitimas</li>
+      <li><strong>e3K-3-87-248/2020</strong> - Neteisėtai atleistam priteistinų kompensacijų dydis</li>
+      <li><strong>e3K-3-90-684/2024</strong> - Ilgalaikio darbo išmokos permokos grąžinimas</li>
+      <li><strong>e3K-3-95-1249/2025</strong> - Atleidimas kai funkcija perteklinė</li>
+      <li><strong>e3K-7-66-469/2024</strong> - Kolektyvinės sutarties sąlygų aiškinimas</li>
+    </ul>
+  </div>
+
+  <h3>2.3 Vyriausybės nutarimai (nutarimas)</h3>
+  <p>Darbo kodekso įgyvendinimo ir susijusių sričių teisės aktai:</p>
+
+  <table>
+    <tr><th>Nr.</th><th>Pavadinimas</th><th>Tema</th></tr>
+    <tr><td>496/2017</td><td>Dėl LR darbo kodekso įgyvendinimo</td><td>Specialios pertraukos, sezoninis darbas</td></tr>
+    <tr><td>1341/2002</td><td>Dėl valstybės valdomų įmonių vadovų darbo užmokesčio</td><td>VVĮ vadovų atlyginimai</td></tr>
+    <tr><td>518/2017</td><td>Dėl asmenų iki 18 metų įdarbinimo</td><td>Nepilnamečių darbas</td></tr>
+    <tr><td>469/2017</td><td>Dėl nėščių, pagimdžiusių, maitinančių darbuotojų</td><td>Motinystės apsauga</td></tr>
+    <tr><td>1118/2004</td><td>Dėl nelaimingų atsitikimų darbe tyrimo</td><td>Nelaimingi atsitikimai</td></tr>
+    <tr><td>487/2004</td><td>Dėl profesinių ligų tyrimo</td><td>Profesinės ligos</td></tr>
+    <tr><td>86/2001</td><td>Dėl ligos ir motinystės draudimo išmokų</td><td>Nedarbingumas, išmokos</td></tr>
+    <tr><td>1656/2004</td><td>Dėl nedarbo draudimo išmokų</td><td>Bedarbio pašalpa</td></tr>
+    <tr><td>309/2004</td><td>Dėl nelaimingų atsitikimų draudimo išmokų</td><td>Draudimo išmokos</td></tr>
+    <tr><td>495/2017</td><td>Dėl Garantinio fondo nuostatų</td><td>Bankrotas, garantijos</td></tr>
+    <tr><td>576/2017</td><td>Dėl Ilgalaikio darbo išmokų fondo</td><td>Ilgalaikio darbo išmokos</td></tr>
+    <tr><td>115/2003</td><td>Dėl darbo sutarties pavyzdinių formų</td><td>Sutarties forma</td></tr>
+    <tr><td>166/2004</td><td>Dėl DGK posėdžio protokolo formos</td><td>Darbo ginčai</td></tr>
+  </table>
+  <p><strong>Šaltinis:</strong> <a href="https://www.e-tar.lt" target="_blank">e-tar.lt</a> - Teisės aktų registras</p>
+</div>
+
+<div class="section">
+  <h2>3. LLM Promptai</h2>
+
+  <h3>3.1 Pagrindinis sistemos promptas (SYSTEM_PROMPT)</h3>
+  <p>Šis promptas naudojamas kiekvienam vartotojo klausimui atsakyti:</p>
+
+  <pre>
+Tu esi Lietuvos darbo teisės ekspertas-asistentas. Tavo tikslas - padėti
+vartotojams suprasti darbo teisės klausimus, remiantis Lietuvos Respublikos
+darbo kodeksu ir teismų praktika.
+
+KOMUNIKACIJOS STILIUS:
+- Niekada nesakyk "Atsiprašau", "Deja", "Gaila" ar panašių atsiprašymų
+- Būk profesionalus ir dalykiškas
+- Jei informacijos trūksta, tiesiog konstatuok faktą
+- Jei negali atsakyti, paaiškink kodėl
+- Naudok **bold** formatavimą svarbiausiems terminams
+
+KLAUSIMŲ UŽDAVIMO STRATEGIJA:
+1. Jei gali atsakyti be papildomos informacijos - atsakyk iškart
+2. Jei reikia patikslinti - užduok VIENĄ klausimą be jokio ilgo paaiškinimo
+3. Kai gauni atsakymą į klausimą:
+   - Jei reikia dar informacijos - užduok KITĄ klausimą
+   - Jei informacijos pakanka - TIK TADA pateik PILNĄ atsakymą
+
+KLAUSIMO FORMATAS:
+Pasirinkimo klausimas:
+[KLAUSIMAS]
+Klausimo tekstas?
+[PASIRINKIMAS]Pirmas variantas
+[PASIRINKIMAS]Antras variantas
+[/KLAUSIMAS]
+
+Atviras klausimas:
+[ATVIRAS_KLAUSIMAS]
+Kiek laiko darbuotojas dirba įmonėje?
+[/ATVIRAS_KLAUSIMAS]
+
+VARTOTOJO KONTEKSTO NAUDOJIMAS:
+- DARBDAVYS: pabrėžk pareigas, terminus, rizikas
+- DARBUOTOJAS: pabrėžk teises, apsaugos priemones
+- HR: praktines procedūras, terminus
+- Mažos įmonės (&lt;20): supaprastintos taisyklės
+
+GALUTINIO ATSAKYMO STRUKTŪRA:
+1. **Trumpas atsakymas** - vienu sakiniu
+2. **Išsamus paaiškinimas** - detalus teisinis reglamentavimas
+3. **Konkretūs straipsniai** - cituok DK straipsnius
+4. **Praktiniai aspektai** - ką daryti, terminai, dokumentai
+5. **Teismų praktika** - LAT nutartys su bylų numeriais
+6. **Išimtys ir niuansai** - specialūs atvejai
+7. Primink kreiptis į specialistą sudėtingais atvejais
+
+ŠALTINIŲ NAUDOJIMAS:
+- Šaltiniai pažymėti [DARBO KODEKSAS, X straipsnis] arba [LAT NUTARTIS, Nr. XXX]
+- Jei tarp šaltinių yra LAT nutarčių - PRIVALAI jas paminėti su bylos numeriu
+- Cituodamas nurodyk šaltinio numerį [1], [2] ir t.t.
+- Pavyzdys: "LAT byloje Nr. e3K-3-176-684/2024 teismas išaiškino, kad..."
+- LABAI SVARBU: Cituok TIK tuos LAT bylų numerius, kurie yra nurodyti šaltiniuose.
+  NIEKADA nekurk bylų numerių, kurių nėra tarp pateiktų šaltinių
+
+SVARBU: Atsakymas turi būti išsamus, 400-800 žodžių.
+  </pre>
+
+  <h3>3.2 Straipsnių identifikavimo promptas</h3>
+  <p>Prieš semantinę paiešką, sistema naudoja LLM identifikuoti potencialiai aktualius DK straipsnius:</p>
+
+  <pre>
+Tu esi Lietuvos darbo teisės ekspertas. Vartotojas užduoda klausimą apie
+darbo teisę. Nustatyk, kurie Darbo kodekso straipsniai gali būti aktualūs.
+
+DARBO KODEKSO STRAIPSNIŲ SĄRAŠAS:
+[Pilnas 264 straipsnių sąrašas su pavadinimais]
+
+Klausimas: ${query}
+
+Grąžink TIK skaičių sąrašą (be teksto), pvz.: 62, 63, 61
+Pasirink 3-7 aktualiausius straipsnius.
+  </pre>
+
+  <h3>3.3 Konteksto paruošimas</h3>
+  <p>Surasti šaltiniai formatuojami taip:</p>
+
+  <pre>
+// Darbo kodekso straipsnis:
+[DARBO KODEKSAS, 61 straipsnis: Darbo sutarties nutraukimo apribojimai]
+{pilnas straipsnio tekstas}
+
+// LAT nutartis:
+[LAT NUTARTIS, Nr. e3K-3-176-684/2024]
+Tema: Nuotolinio darbo organizavimas ir atleidimo neteisėtumas
+Santrauka: {AI sugeneruota santrauka}
+
+{pilnas bylos tekstas}
+
+// Vyriausybės nutarimas:
+[VYRIAUSYBĖS NUTARIMAS: Dėl nėščių darbuotojų darbo sąlygų]
+{nutarimo tekstas}
+  </pre>
+</div>
+
+<div class="section">
+  <h2>4. Paieškos mechanizmas</h2>
+
+  <h3>4.1 Hibridinė paieška</h3>
+  <p>Sistema naudoja dvigubą paieškos strategiją:</p>
+
+  <ol>
+    <li><strong>Semantinė paieška (vector similarity)</strong>
+      <ul>
+        <li>Klausimo tekstas konvertuojamas į 768-dimensijų vektorių</li>
+        <li>Pinecone suranda artimiausius dokumentų vektorius</li>
+        <li>Grąžinama 12 rezultatų (6 legislation + 4 lat_ruling + 2 nutarimas)</li>
+      </ul>
+    </li>
+    <li><strong>Tiesioginė straipsnių paieška</strong>
+      <ul>
+        <li>LLM identifikuoja konkrečius straipsnių numerius</li>
+        <li>Regex ištraukia eksplicitiškai paminėtus numerius</li>
+        <li>Straipsniai gaunami tiesiogiai iš Pinecone pagal ID</li>
+      </ul>
+    </li>
+  </ol>
+
+  <h3>4.2 Pinecone indekso struktūra</h3>
+  <table>
+    <tr><th>Laukas</th><th>Tipas</th><th>Aprašymas</th></tr>
+    <tr><td>id</td><td>string</td><td>Unikalus dokumento ID (pvz., "dk-art-61", "2024-kovas-e3K...")</td></tr>
+    <tr><td>values</td><td>float[768]</td><td>Embedding vektorius</td></tr>
+    <tr><td>metadata.docType</td><td>string</td><td>"legislation" | "lat_ruling" | "nutarimas"</td></tr>
+    <tr><td>metadata.docId</td><td>string</td><td>Dokumento identifikatorius</td></tr>
+    <tr><td>metadata.text</td><td>string</td><td>Dokumento tekstas (iki 8000 simbolių)</td></tr>
+    <tr><td>metadata.articleNumber</td><td>number</td><td>DK straipsnio numeris (legislation)</td></tr>
+    <tr><td>metadata.caseNumber</td><td>string</td><td>Bylos numeris (lat_ruling)</td></tr>
+  </table>
+
+  <h3>4.3 SQLite duomenų bazės schema</h3>
+  <pre>
+-- LAT PDF failai
+CREATE TABLE lat_pdfs (
+  id TEXT PRIMARY KEY,        -- "2024-kovas"
+  url TEXT NOT NULL,          -- Pilnas PDF URL
+  year INTEGER,
+  month TEXT,
+  status TEXT,                -- downloaded/extracted/processed
+  page_count INTEGER
+);
+
+-- LAT bylos (ištrauktos iš PDF)
+CREATE TABLE lat_cases (
+  id TEXT PRIMARY KEY,        -- "2024-kovas-e3K-3-176-684-2024"
+  pdf_id TEXT REFERENCES lat_pdfs(id),
+  case_number TEXT,           -- "e3K-3-176-684/2024"
+  title TEXT,                 -- Bylos tema
+  summary TEXT,               -- AI santrauka
+  full_text TEXT,             -- Pilnas bylos tekstas
+  page_start INTEGER,
+  is_labor_law BOOLEAN
+);
+
+-- Pinecone vektorių sąsaja
+CREATE TABLE lat_vectors (
+  case_id TEXT PRIMARY KEY REFERENCES lat_cases(id),
+  vector_id TEXT,             -- Pinecone vector ID
+  ingested_at TEXT
+);
+  </pre>
+</div>
+
+<div class="section">
+  <h2>5. Atnaujinimo procesas</h2>
+
+  <h3>5.1 LAT nutarčių atnaujinimas</h3>
+  <ol>
+    <li>Paleisti <code>scripts/lat/download-pdfs.ts</code> - parsiunčia naujus PDF</li>
+    <li>Paleisti <code>scripts/lat/extract-cases.ts</code> - ištraukia bylas su Claude</li>
+    <li>Paleisti <code>scripts/lat/ingest-to-pinecone.ts</code> - įkelia į Pinecone</li>
+    <li>Commit <code>data/lat.db</code> į git ir deploy</li>
+  </ol>
+
+  <h3>5.2 Darbo kodekso atnaujinimas</h3>
+  <p>Paleisti <code>scripts/ingest-dk.ts</code> su nauju DK tekstu.</p>
+
+  <h3>5.3 Nutarimų atnaujinimas</h3>
+  <p>Pridėti naują nutarimą į <code>scripts/ingest-nutarimai.ts</code> ir paleisti.</p>
+
+  <div class="warning">
+    <strong>Dėmesio:</strong> SQLite duomenų bazė yra bundinama į Vercel deployment. Po atnaujinimų būtina padaryti naują deploy.
+  </div>
+</div>
+
+<div class="section">
+  <h2>6. Limitacijos ir ateities planai</h2>
+
+  <h3>Dabartinės limitacijos:</h3>
+  <ul>
+    <li>LAT bylos tik iš praktikos apžvalgų (ne visos nutartys)</li>
+    <li>Tik darbo teisės sritis (ne civilinė, baudžiamoji ir kt.)</li>
+    <li>SQLite read-only serverless aplinkoje</li>
+    <li>LLM gali kartais "haliucinuoti" bylų numerius (sušvelninta promptu)</li>
+  </ul>
+
+  <h3>Galimi patobulinimai:</h3>
+  <ul>
+    <li>LITEKO integracija (tiesioginis LAT nutarčių gavimas)</li>
+    <li>Daugiau teisės sričių (civilinė, administracinė)</li>
+    <li>Vartotojų istorijos saugojimas</li>
+    <li>Fine-tuned modelis lietuvių teisinei kalbai</li>
+  </ul>
+</div>
+
+<footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">
+  <p>Dokumentacija sugeneruota: 2025-01-14</p>
+  <p>LegalAI v1.0 | <a href="https://legalai.lt">legalai.lt</a></p>
+</footer>
+
+</body>
+</html>
