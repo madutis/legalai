@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extractRelevantArticles, MODELS } from '@/lib/gemini';
 import { searchHybrid, fetchArticles, SearchResult } from '@/lib/pinecone';
-import { getCaseById } from '@/lib/db';
+import { getCaseById, getPdfById } from '@/lib/db';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -145,24 +145,40 @@ export async function POST(request: NextRequest) {
             return r.text;
           });
 
-          // Send search results metadata
+          // Send search results metadata (enrich LAT rulings with PDF URL from SQLite)
           const metadata = {
             type: 'metadata',
-            sources: searchResults.map((r) => ({
-              id: r.id, // Full chunk ID for fetching specific chunk
-              docId: r.metadata.docId,
-              docType: r.metadata.docType,
-              sourceFile: r.metadata.sourceFile,
-              score: r.score,
-              articleNumber: r.metadata.articleNumber,
-              articleTitle: r.metadata.articleTitle,
-              // Ruling-specific fields
-              caseNumber: r.metadata.caseNumber,
-              caseTitle: r.metadata.caseTitle,
-              caseSummary: r.metadata.caseSummary,
-              sourceUrl: (r.metadata as any).sourceUrl,
-              sourcePage: (r.metadata as any).sourcePage,
-            })),
+            sources: searchResults.map((r) => {
+              let sourceUrl = (r.metadata as any).sourceUrl;
+              let sourcePage = (r.metadata as any).sourcePage;
+              let caseNumber = r.metadata.caseNumber;
+
+              // For new LAT rulings, get URL from SQLite
+              if (r.metadata.docType === 'lat_ruling') {
+                const latCase = getCaseById(r.metadata.docId);
+                if (latCase) {
+                  const pdf = getPdfById(latCase.pdf_id);
+                  sourceUrl = pdf?.url || sourceUrl;
+                  sourcePage = latCase.page_start || sourcePage;
+                  caseNumber = latCase.case_number || caseNumber;
+                }
+              }
+
+              return {
+                id: r.id,
+                docId: r.metadata.docId,
+                docType: r.metadata.docType,
+                sourceFile: r.metadata.sourceFile,
+                score: r.score,
+                articleNumber: r.metadata.articleNumber,
+                articleTitle: r.metadata.articleTitle,
+                caseNumber,
+                caseTitle: r.metadata.caseTitle,
+                caseSummary: r.metadata.caseSummary,
+                sourceUrl,
+                sourcePage,
+              };
+            }),
           };
           controller.enqueue(
             encoder.encode(`data: ${JSON.stringify(metadata)}\n\n`)
