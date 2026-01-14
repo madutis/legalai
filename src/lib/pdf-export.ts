@@ -81,6 +81,36 @@ function escapeHtml(text: string): string {
     .replace(/'/g, '&#039;');
 }
 
+// Build source URL
+function getSourceUrl(source: any): string | null {
+  if (source.docType === 'legislation' && source.articleNumber) {
+    return `https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_${source.articleNumber}`;
+  }
+  if (source.docType === 'lat_ruling' && source.sourceUrl) {
+    const pageAnchor = source.sourcePage ? `#page=${source.sourcePage}` : '';
+    return `${source.sourceUrl}${pageAnchor}`;
+  }
+  if (source.docType === 'nutarimas' && source.sourceFile?.startsWith('e-tar.lt/')) {
+    const etarId = source.sourceFile.replace('e-tar.lt/', '');
+    return `https://www.e-tar.lt/portal/lt/legalAct/${etarId}`;
+  }
+  return null;
+}
+
+// Format source label
+function formatSourceLabel(source: any): string {
+  if (source.docType === 'legislation' && source.articleNumber) {
+    return `DK ${source.articleNumber} str.${source.articleTitle ? ` - ${source.articleTitle}` : ''}`;
+  }
+  if (source.docType === 'lat_ruling') {
+    return source.caseNumber ? `LAT Nr. ${source.caseNumber}` : 'LAT nutartis';
+  }
+  if (source.docType === 'nutarimas') {
+    return source.title || 'Vyriausybės nutarimas';
+  }
+  return source.docId || 'Šaltinis';
+}
+
 export function exportToPDF(data: ExportData): void {
   const dateStr = data.exportedAt.toLocaleDateString('lt-LT', {
     year: 'numeric',
@@ -89,6 +119,21 @@ export function exportToPDF(data: ExportData): void {
     hour: '2-digit',
     minute: '2-digit',
   });
+
+  // Collect all sources from messages
+  const allSources: any[] = [];
+  const seenIds = new Set<string>();
+  for (const message of data.messages) {
+    if (message.sources) {
+      for (const source of message.sources) {
+        const key = source.id || source.docId;
+        if (!seenIds.has(key)) {
+          seenIds.add(key);
+          allSources.push(source);
+        }
+      }
+    }
+  }
 
   // Build HTML content
   let messagesHtml = '';
@@ -183,6 +228,22 @@ export function exportToPDF(data: ExportData): void {
       <div class="divider"></div>
 
       ${messagesHtml}
+
+      ${allSources.length > 0 ? `
+        <div class="divider"></div>
+        <div style="margin-top: 20px;">
+          <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">Šaltiniai:</h3>
+          <ul style="margin: 0; padding-left: 20px; font-size: 11px;">
+            ${allSources.map(source => {
+              const url = getSourceUrl(source);
+              const label = formatSourceLabel(source);
+              return url
+                ? `<li style="margin: 5px 0;"><a href="${url}" style="color: #2563eb;">${escapeHtml(label)}</a></li>`
+                : `<li style="margin: 5px 0;">${escapeHtml(label)}</li>`;
+            }).join('')}
+          </ul>
+        </div>
+      ` : ''}
 
       <div class="footer">
         <p>Tai nėra teisinė konsultacija. Sudėtingais atvejais kreipkitės į teisininką.</p>
