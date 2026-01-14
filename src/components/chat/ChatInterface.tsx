@@ -145,6 +145,12 @@ function AssistantMessage({
                     </button>
                   );
                 }
+                // Case number mentioned but not in sources - render as non-clickable text
+                return (
+                  <span className="text-amber-700 font-medium" title="LAT nutartis">
+                    {children}
+                  </span>
+                );
               }
               return (
                 <a
