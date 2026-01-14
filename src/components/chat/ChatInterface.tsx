@@ -129,10 +129,15 @@ function AssistantMessage({
                   </button>
                 );
               }
-              // Handle LAT case links (lat:// protocol)
-              const caseMatch = href?.match(/^lat:\/\/(.+)$/);
-              if (caseMatch) {
-                const caseNum = caseMatch[1];
+
+              // Extract case number from link text or lat:// protocol
+              const childText = typeof children === 'string' ? children :
+                Array.isArray(children) ? children.join('') : '';
+              const caseNumFromText = childText.match(/([eE]?3K-\d+-\d+-\d+\/\d{4})/)?.[1];
+              const caseNumFromHref = href?.match(/^lat:\/\/(.+)$/)?.[1];
+              const caseNum = caseNumFromHref || caseNumFromText;
+
+              if (caseNum) {
                 const caseInfo = caseNumberMap[caseNum];
                 if (caseInfo) {
                   return (
@@ -152,6 +157,7 @@ function AssistantMessage({
                   </span>
                 );
               }
+
               return (
                 <a
                   href={href}
