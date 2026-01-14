@@ -133,7 +133,7 @@ function AssistantMessage({
               // Extract case number from link text or lat:// protocol
               const childText = typeof children === 'string' ? children :
                 Array.isArray(children) ? children.join('') : '';
-              const caseNumFromText = childText.match(/([eE]?3K-\d+-\d+-\d+\/\d{4})/)?.[1];
+              const caseNumFromText = childText.match(/([eE]?3K-\d+-\d+-\d+-?\/\d{4})/)?.[1];
               const caseNumFromHref = href?.match(/^lat:\/\/(.+)$/)?.[1];
               const caseNum = caseNumFromHref || caseNumFromText;
 
@@ -237,7 +237,7 @@ const processContent = (text: string, caseNumberMap?: CaseNumberMap): string => 
   if (caseNumberMap && Object.keys(caseNumberMap).length > 0) {
     // Match case number patterns: e3K-3-176-684/2024, 3K-3-xxx-xxx/YYYY
     // Also match with "Nr." prefix
-    const casePattern = /(?:Nr\.\s*)?([eE]?[0-9A-Z]+-\d+-\d+-\d+\/\d{4})/g;
+    const casePattern = /(?:Nr\.\s*)?([eE]?[0-9A-Z]+-\d+-\d+-\d+-?\/\d{4})/g;
     processed = processed.replace(casePattern, (match, caseNum) => {
       // Check if this case number is in our map
       if (caseNumberMap[caseNum]) {
