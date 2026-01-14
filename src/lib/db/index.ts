@@ -61,7 +61,24 @@ export type LatVectorInput = Omit<LatVector, 'ingested_at'>;
 // Database Connection
 // ============================================================================
 
-const DB_PATH = path.join(process.cwd(), 'data', 'lat.db');
+// Try multiple paths for Vercel compatibility
+function getDbPath(): string {
+  const possiblePaths = [
+    path.join(process.cwd(), 'data', 'lat.db'),
+    path.join(__dirname, '..', '..', '..', '..', 'data', 'lat.db'),
+    '/var/task/data/lat.db', // Vercel serverless path
+  ];
+
+  for (const p of possiblePaths) {
+    if (fs.existsSync(p)) {
+      return p;
+    }
+  }
+
+  // Default to cwd path, will error if not found
+  return possiblePaths[0];
+}
+
 const SCHEMA_PATH = path.join(process.cwd(), 'src', 'lib', 'db', 'schema.sql');
 
 let db: Database.Database | null = null;
@@ -71,20 +88,21 @@ let db: Database.Database | null = null;
  */
 export function getDb(): Database.Database {
   if (!db) {
-    // Ensure data directory exists
-    const dataDir = path.dirname(DB_PATH);
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    const dbPath = getDbPath();
+
+    // Check if database exists
+    if (!fs.existsSync(dbPath)) {
+      console.error('Database not found at:', dbPath);
+      console.error('CWD:', process.cwd());
+      console.error('__dirname:', __dirname);
+      throw new Error(`Database not found: ${dbPath}`);
     }
 
-    // Open database
-    db = new Database(DB_PATH);
+    // Open database in read-only mode for serverless
+    db = new Database(dbPath, { readonly: true, fileMustExist: true });
 
     // Enable foreign keys
     db.pragma('foreign_keys = ON');
-
-    // Initialize schema
-    initSchema(db);
   }
   return db;
 }
