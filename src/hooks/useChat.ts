@@ -48,7 +48,10 @@ export function useChat(context?: ChatContext) {
     useFallbackModel: boolean = false,
     existingAssistantId?: string
   ) => {
-    const assistantId = existingAssistantId || (Date.now() + 1).toString();
+    // Generate IDs together to avoid race condition where Date.now() changes between calls
+    const now = Date.now();
+    const userMessageId = now.toString();
+    const assistantId = existingAssistantId || (now + 1).toString();
 
     // Only add user message and assistant placeholder if this is a new message (not retry)
     if (!existingAssistantId) {
@@ -58,7 +61,7 @@ export function useChat(context?: ChatContext) {
       }
 
       const userMessage: Message = {
-        id: Date.now().toString(),
+        id: userMessageId,
         role: 'user',
         content,
       };
