@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extractRelevantArticles, MODELS } from '@/lib/gemini';
 import { searchHybrid, fetchArticles, SearchResult } from '@/lib/pinecone';
+import { getCaseById } from '@/lib/db';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
           }
 
           const legislationCount = searchResults.filter(r => r.metadata.docType === 'legislation').length;
-          const rulingCount = searchResults.filter(r => r.metadata.docType === 'ruling').length;
+          const rulingCount = searchResults.filter(r => r.metadata.docType === 'lat_ruling').length;
           const nutarimaiCount = searchResults.filter(r => r.metadata.docType === 'nutarimas').length;
           const parts = [`${legislationCount} straipsn.`];
           if (rulingCount > 0) parts.push(`${rulingCount} nutart.`);
@@ -120,12 +121,11 @@ export async function POST(request: NextRequest) {
               const articleNum = r.metadata.articleNumber;
               const title = r.metadata.articleTitle || '';
               return `[DARBO KODEKSAS, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
-            } else if (r.metadata.docType === 'ruling') {
-              // Build rich context for LAT rulings with case number and summary
-              const caseNum = r.metadata.caseNumber;
-              const year = r.metadata.year || '';
-              const summary = r.metadata.caseSummary;
-              const title = r.metadata.caseTitle;
+            } else if (r.metadata.docType === 'lat_ruling') {
+              // Fetch full text from SQLite for new LAT rulings
+              const latCase = getCaseById(r.metadata.docId);
+              const caseNum = latCase?.case_number || r.metadata.caseNumber;
+              const year = r.metadata.pdfId?.split('-')[0] || '';
 
               let header = '[LAT NUTARTIS';
               if (caseNum) header += `, Nr. ${caseNum}`;
@@ -133,9 +133,9 @@ export async function POST(request: NextRequest) {
               header += ']';
 
               let content = '';
-              if (title) content += `Tema: ${title}\n`;
-              if (summary) content += `Santrauka: ${summary}\n\n`;
-              content += r.text;
+              if (latCase?.title) content += `Tema: ${latCase.title}\n`;
+              if (latCase?.summary) content += `Santrauka: ${latCase.summary}\n\n`;
+              content += latCase?.full_text || r.text;
 
               return `${header}\n${content}`;
             } else if (r.metadata.docType === 'nutarimas') {

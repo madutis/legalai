@@ -21,7 +21,7 @@ export interface SearchResult {
   text: string;
   metadata: {
     docId: string;
-    docType: 'legislation' | 'ruling' | 'nutarimas';
+    docType: 'legislation' | 'nutarimas' | 'lat_ruling';
     sourceFile: string;
     chunkIndex: number;
     totalChunks: number;
@@ -36,6 +36,9 @@ export interface SearchResult {
     month?: string;
     sourceUrl?: string;
     sourcePage?: number;
+    // New LAT ruling fields
+    pdfId?: string;
+    summary?: string;
   };
 }
 
@@ -59,7 +62,7 @@ export async function searchSimilar(
     text: (match.metadata?.text as string) || '',
     metadata: {
       docId: match.metadata?.docId as string,
-      docType: match.metadata?.docType as 'legislation' | 'ruling',
+      docType: match.metadata?.docType as 'legislation' | 'nutarimas' | 'lat_ruling',
       sourceFile: match.metadata?.sourceFile as string,
       chunkIndex: match.metadata?.chunkIndex as number,
       totalChunks: match.metadata?.totalChunks as number,
@@ -69,7 +72,7 @@ export async function searchSimilar(
   }));
 }
 
-// Hybrid search: retrieve from legislation, rulings, and nutarimai separately, then merge
+// Hybrid search: retrieve from legislation, LAT rulings, and nutarimai separately, then merge
 export async function searchHybrid(
   embedding: number[],
   legislationK: number = 8,
@@ -79,7 +82,7 @@ export async function searchHybrid(
   const index = getIndex();
 
   // Search all document types in parallel
-  const [legislationResults, rulingsResults, nutarimaiResults] = await Promise.all([
+  const [legislationResults, latRulingsResults, nutarimaiResults] = await Promise.all([
     index.query({
       vector: embedding,
       topK: legislationK,
@@ -88,9 +91,9 @@ export async function searchHybrid(
     }),
     index.query({
       vector: embedding,
-      topK: rulingsK * 2, // Fetch more, then filter by score
+      topK: rulingsK * 2, // LAT rulings - fetch more, filter by score
       includeMetadata: true,
-      filter: { docType: 'ruling' },
+      filter: { docType: 'lat_ruling' },
     }),
     index.query({
       vector: embedding,
@@ -106,7 +109,7 @@ export async function searchHybrid(
     text: (match.metadata?.text as string) || '',
     metadata: {
       docId: match.metadata?.docId as string,
-      docType: match.metadata?.docType as 'legislation' | 'ruling',
+      docType: match.metadata?.docType as 'legislation' | 'nutarimas' | 'lat_ruling',
       sourceFile: match.metadata?.sourceFile as string,
       chunkIndex: match.metadata?.chunkIndex as number,
       totalChunks: match.metadata?.totalChunks as number,
@@ -121,14 +124,17 @@ export async function searchHybrid(
       month: match.metadata?.month as string | undefined,
       sourceUrl: match.metadata?.sourceUrl as string | undefined,
       sourcePage: match.metadata?.sourcePage as number | undefined,
+      // New LAT ruling fields
+      pdfId: match.metadata?.pdfId as string | undefined,
+      summary: match.metadata?.summary as string | undefined,
     },
   });
 
   const legislation = (legislationResults.matches || []).map(mapResult);
 
-  // Only include rulings with score > 0.68 (filters out irrelevant matches)
-  const rulings = (rulingsResults.matches || [])
-    .filter(m => (m.score || 0) >= 0.68)
+  // Include LAT rulings with score > 0.65
+  const latRulings = (latRulingsResults.matches || [])
+    .filter(m => (m.score || 0) >= 0.65)
     .slice(0, rulingsK)
     .map(mapResult);
 
@@ -139,7 +145,7 @@ export async function searchHybrid(
     .map(mapResult);
 
   // Merge and sort by score
-  return [...legislation, ...rulings, ...nutarimai].sort((a, b) => b.score - a.score);
+  return [...legislation, ...latRulings, ...nutarimai].sort((a, b) => b.score - a.score);
 }
 
 // Fetch specific articles by ID
@@ -157,7 +163,7 @@ export async function fetchArticles(articleNumbers: number[]): Promise<SearchRes
         text: (record.metadata?.text as string) || '',
         metadata: {
           docId: record.metadata?.docId as string,
-          docType: record.metadata?.docType as 'legislation' | 'ruling',
+          docType: record.metadata?.docType as 'legislation' | 'nutarimas' | 'lat_ruling',
           sourceFile: record.metadata?.sourceFile as string,
           chunkIndex: record.metadata?.chunkIndex as number,
           totalChunks: record.metadata?.totalChunks as number,

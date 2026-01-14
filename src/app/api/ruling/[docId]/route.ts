@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getIndex } from '@/lib/pinecone';
+import { getCaseById } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
@@ -12,6 +13,39 @@ export async function GET(
       return NextResponse.json({ error: 'docId is required' }, { status: 400 });
     }
 
+    // Check if this is a new LAT ruling (stored in SQLite)
+    // New IDs look like: "2024-kovas-e3K-3-68-378-2024"
+    const isNewLatRuling = /^\d{4}-[a-z]+-/.test(docId);
+
+    if (isNewLatRuling) {
+      // Fetch from SQLite database
+      const latCase = getCaseById(docId);
+
+      if (!latCase) {
+        return NextResponse.json({ error: 'Ruling not found' }, { status: 404 });
+      }
+
+      // Build PDF URL from pdf_id
+      const [year, month] = latCase.pdf_id.split('-');
+      const pdfFilename = `lat_aktuali_praktika_${month}_${year}.pdf`;
+      const sourceUrl = `https://www.lat.lt/data/public/uploads/${year}/${pdfFilename}`;
+
+      return NextResponse.json({
+        docId: latCase.id,
+        docType: 'lat_ruling',
+        title: latCase.case_number
+          ? `LAT Nr. ${latCase.case_number}`
+          : `LAT ${latCase.pdf_id}`,
+        caseTitle: latCase.title,
+        caseSummary: latCase.summary,
+        sourceFile: latCase.pdf_id,
+        sourceUrl,
+        sourcePage: latCase.page_start,
+        text: latCase.full_text,
+      });
+    }
+
+    // Fall back to Pinecone for old data (nutarimai, old rulings)
     const index = getIndex();
 
     // For nutarimai, always fetch the first chunk (intro/title) for better content
