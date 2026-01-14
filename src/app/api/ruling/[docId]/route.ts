@@ -80,8 +80,14 @@ export async function GET(
     const caseNumber = metadata?.caseNumber as string | undefined;
     const caseTitle = metadata?.caseTitle as string | undefined;
     const caseSummary = metadata?.caseSummary as string | undefined;
-    const sourceUrl = metadata?.sourceUrl as string | undefined;
     const sourcePage = metadata?.sourcePage as number | undefined;
+
+    // Build sourceUrl - for nutarimai, extract from sourceFile (e-tar.lt/ID)
+    let sourceUrl = metadata?.sourceUrl as string | undefined;
+    if (!sourceUrl && docType === 'nutarimas' && sourceFile?.startsWith('e-tar.lt/')) {
+      const etarId = sourceFile.replace('e-tar.lt/', '');
+      sourceUrl = `https://www.e-tar.lt/portal/lt/legalAct/${etarId}`;
+    }
 
     // Build title based on available data
     let title = docId;
