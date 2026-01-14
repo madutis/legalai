@@ -349,16 +349,15 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     if (source.docType === 'legislation' && source.articleNumber) {
       return `${source.articleNumber} str.`;
     }
-    if (source.docType === 'ruling') {
+    if (source.docType === 'ruling' || source.docType === 'lat_ruling') {
       // Prefer case number if available
       if (source.caseNumber) {
         return `LAT ${source.caseNumber}`;
       }
-      // Fallback to year/month from filename
-      const yearMatch = source.sourceFile?.match(/(\d{4})/);
-      const monthMatch = source.sourceFile?.match(/LAT_\d{4}_([^.]+)/);
+      // Fallback to year/month from filename or docId
+      const yearMatch = source.sourceFile?.match(/(\d{4})/) || source.docId?.match(/^(\d{4})-/);
       if (yearMatch) {
-        return `LAT ${yearMatch[1]}${monthMatch ? ` ${monthMatch[1]}` : ''}`;
+        return `LAT ${yearMatch[1]}`;
       }
       return 'LAT nutartis';
     }
@@ -377,7 +376,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     if (source.docType === 'legislation' && source.articleNumber) {
       return `https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_${source.articleNumber}`;
     }
-    if (source.docType === 'ruling' && source.sourceUrl) {
+    if ((source.docType === 'ruling' || source.docType === 'lat_ruling') && source.sourceUrl) {
       // Link directly to LAT PDF with page anchor
       const pageAnchor = source.sourcePage ? `#page=${source.sourcePage}` : '';
       return `${source.sourceUrl}${pageAnchor}`;
@@ -491,13 +490,13 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                               .slice(0, 10) // Show more sources for final answer
                               .map((s, i) => {
                                 const externalUrl = getSourceUrl(s.source);
-                                const isExternalLink = s.source.docType === 'ruling' && s.source.sourceUrl;
+                                const isExternalLink = (s.source.docType === 'ruling' || s.source.docType === 'lat_ruling') && s.source.sourceUrl;
 
                                 return (
                                   <button
                                     key={i}
                                     onClick={() => {
-                                      if (s.source.docType === 'ruling' || s.source.docType === 'nutarimas') {
+                                      if (s.source.docType === 'ruling' || s.source.docType === 'lat_ruling' || s.source.docType === 'nutarimas') {
                                         // Show modal for rulings and nutarimai
                                         setSelectedRulingDocId(s.source.id);
                                       } else if (s.source.articleNumber) {
