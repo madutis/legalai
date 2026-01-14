@@ -132,9 +132,9 @@ export async function searchHybrid(
 
   const legislation = (legislationResults.matches || []).map(mapResult);
 
-  // Include LAT rulings with score > 0.65
+  // Include top LAT rulings without score threshold - let LLM decide relevance
+  // We only have 58 quality cases, all relevant to labor law
   const latRulings = (latRulingsResults.matches || [])
-    .filter(m => (m.score || 0) >= 0.65)
     .slice(0, rulingsK)
     .map(mapResult);
 
