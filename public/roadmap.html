@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LegalAI - HR Įrankių Plėtros Planas</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      line-height: 1.6;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      color: #1f2937;
+      background: #f9fafb;
+    }
+    h1 {
+      color: #111827;
+      border-bottom: 3px solid #2563eb;
+      padding-bottom: 10px;
+      font-size: 28px;
+    }
+    h2 {
+      color: #1e40af;
+      margin-top: 50px;
+      border-left: 4px solid #2563eb;
+      padding-left: 12px;
+      font-size: 20px;
+    }
+    h3 {
+      color: #374151;
+      margin-top: 30px;
+      font-size: 16px;
+    }
+    h4 {
+      color: #4b5563;
+      margin-top: 20px;
+      font-size: 14px;
+    }
+    .section {
+      background: white;
+      padding: 25px 30px;
+      border-radius: 12px;
+      margin: 20px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .highlight {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .warning {
+      background: #fef3c7;
+      border: 1px solid #fcd34d;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .success {
+      background: #d1fae5;
+      border: 1px solid #6ee7b7;
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    code {
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    pre {
+      background: #1f2937;
+      color: #e5e7eb;
+      padding: 20px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th {
+      background: #f3f4f6;
+      font-weight: 600;
+    }
+    tr:hover {
+      background: #f9fafb;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin: 8px 0;
+    }
+    .feature-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px;
+      margin: 15px 0;
+    }
+    .feature-card h4 {
+      margin-top: 0;
+      color: #1e40af;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-card .emoji {
+      font-size: 20px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    .tag-free { background: #d1fae5; color: #065f46; }
+    .tag-paid { background: #dbeafe; color: #1e40af; }
+    .tag-premium { background: #fae8ff; color: #86198f; }
+    .tag-high { background: #fee2e2; color: #991b1b; }
+    .phase {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      margin: 20px 0;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      border-left: 4px solid #2563eb;
+    }
+    .phase-number {
+      background: #2563eb;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .phase-content {
+      flex: 1;
+    }
+    .phase-content h4 {
+      margin: 0 0 10px 0;
+      color: #1e40af;
+    }
+    .pricing-table {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin: 20px 0;
+    }
+    .pricing-card {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+    }
+    .pricing-card.featured {
+      border-color: #2563eb;
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1);
+    }
+    .pricing-card h4 {
+      margin: 0;
+      color: #374151;
+    }
+    .pricing-card .price {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1e40af;
+      margin: 10px 0;
+    }
+    .pricing-card .price span {
+      font-size: 14px;
+      color: #6b7280;
+      font-weight: 400;
+    }
+    .pricing-card ul {
+      text-align: left;
+      padding-left: 20px;
+      margin: 15px 0;
+    }
+    .pricing-card li {
+      margin: 8px 0;
+      font-size: 13px;
+    }
+    .lat-reference {
+      background: #fef3c7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #92400e;
+    }
+    a { color: #2563eb; }
+    .toc {
+      background: #f8fafc;
+      padding: 20px 25px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+    }
+    .toc h3 {
+      margin-top: 0;
+    }
+    .toc ul {
+      columns: 2;
+      -webkit-columns: 2;
+      -moz-columns: 2;
+    }
+    .toc li {
+      margin: 5px 0;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    .stat {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stat-number {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .stat-label {
+      font-size: 12px;
+      opacity: 0.9;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>LegalAI - HR Įrankių Plėtros Planas</h1>
+<p>Funkcionalumo plėtros strategija, skirta mažų ir vidutinių įmonių HR specialistams Lietuvoje.</p>
+
+<div class="toc">
+  <h3>Turinys</h3>
+  <ul>
+    <li><a href="#pain-points">HR Problemos</a></li>
+    <li><a href="#calculators">Skaičiuotuvai</a></li>
+    <li><a href="#wizards">Vedliai ir gidai</a></li>
+    <li><a href="#generators">Dokumentų generatoriai</a></li>
+    <li><a href="#compliance">Atitikties įrankiai</a></li>
+    <li><a href="#situations">Situacijų sprendimai</a></li>
+    <li><a href="#roadmap">Plėtros planas</a></li>
+    <li><a href="#pricing">Kainodaros modelis</a></li>
+  </ul>
+</div>
+
+<div class="section" id="pain-points">
+  <h2>HR Problemos, Kurias Galime Išspręsti</h2>
+
+  <table>
+    <tr>
+      <th>Problema</th>
+      <th>Dažnumas</th>
+      <th>Nerimo lygis</th>
+      <th>Mūsų pranašumas</th>
+    </tr>
+    <tr>
+      <td>"Kaip apskaičiuoti šią išmoką?"</td>
+      <td>Kasdien</td>
+      <td>Vidutinis</td>
+      <td>Aiškios DK taisyklės</td>
+    </tr>
+    <tr>
+      <td>"Ar šis atleidimas teisėtas?"</td>
+      <td>Kas mėnesį</td>
+      <td><strong>Labai aukštas</strong></td>
+      <td>LAT precedentai</td>
+    </tr>
+    <tr>
+      <td>"Kokių dokumentų reikia?"</td>
+      <td>Kas savaitę</td>
+      <td>Vidutinis</td>
+      <td>Kontroliniai sąrašai</td>
+    </tr>
+    <tr>
+      <td>"Ar atitinku reikalavimus?"</td>
+      <td>Kas ketvirtį</td>
+      <td>Aukštas</td>
+      <td>Pilnas DK + nutarimai</td>
+    </tr>
+    <tr>
+      <td>"Kaip elgtis šioje situacijoje?"</td>
+      <td>Kas savaitę</td>
+      <td>Aukštas</td>
+      <td>Q&A + gidai</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section" id="calculators">
+  <h2>🧮 Skaičiuotuvai</h2>
+  <p>Lengviausia sukurti, didelis naudojimas, greita vertė vartotojui.</p>
+
+  <div class="feature-card">
+    <h4><span class="emoji">💰</span> Išeitinės išmokos skaičiuotuvas <span class="tag tag-free">Nemokama</span></h4>
+    <p><strong>Įvestis:</strong> Stažas, atleidimo tipas, atlyginimas, apsaugos statusas</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Tiksli išeitinės suma</li>
+      <li>Teisinis pagrindas (DK 57, 58, 59 ir kt.)</li>
+      <li>Mokėjimo terminas</li>
+    </ul>
+    <div class="highlight">
+      <strong>Kodėl vertinga:</strong> Dažniausiai ieškomas HR klausimas, lengva suklysti
+    </div>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📅</span> Įspėjimo termino skaičiuotuvas <span class="tag tag-free">Nemokama</span></h4>
+    <p><strong>Įvestis:</strong> Stažas, atleidimo tipas, apsaugos statusas</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Įspėjimo terminas (1-3 mėnesiai)</li>
+      <li>Ar galima sutrumpinti?</li>
+      <li>Kompensacijos vietoj įspėjimo galimybė</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">🧾</span> Galutinio atsiskaitymo skaičiuotuvas <span class="tag tag-free">Nemokama</span></h4>
+    <p><strong>Įvestis:</strong> Paskutinė darbo diena, nepanaudotos atostogos, atlyginimas, premijos</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Bendra mokėtina suma</li>
+      <li>Mokėjimo terminas (kitas mokėjimo diena)</li>
+      <li>Delspinigiai už pavėlavimą (DK 147 str.)</li>
+      <li>Išskaidymas pagal komponentus</li>
+    </ul>
+    <p class="lat-reference">LAT byla: e3K-3-1-684/2022 (delspinigiai)</p>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">🏖️</span> Atostogų skaičiuotuvas <span class="tag tag-free">Nemokama</span></h4>
+    <p><strong>Įvestis:</strong> Darbo pradžios data, kategorija (neįgalumas, nepilnamečiai vaikai ir kt.)</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Kasmetinės atostogų dienos (20-40)</li>
+      <li>Sukaupta iki šios dienos</li>
+      <li>Perkėlimo limitai</li>
+      <li>Piniginė vertė</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">⏰</span> Viršvalandžių skaičiuotuvas <span class="tag tag-free">Nemokama</span></h4>
+    <p><strong>Įvestis:</strong> Įprastos valandos, viršvalandžiai, naktinis darbas, šventės</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Bendras apmokėjimas su išskaidymu</li>
+      <li>Atitikties patikrinimas (max limitai)</li>
+      <li>Alternatyvus poilsio laikas</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">✈️</span> Komandiruotės dienpinigių skaičiuotuvas <span class="tag tag-free">Nemokama</span></h4>
+    <p><strong>Įvestis:</strong> Paskirties šalis, trukmė</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Dienos norma (pagal Vyriausybės tarifus)</li>
+      <li>Atlyginamos išlaidos</li>
+      <li>Reikalinga dokumentacija</li>
+    </ul>
+    <p class="lat-reference">LAT bylos: e3K-3-73-248/2019, e3K-3-142-684/2022</p>
+  </div>
+</div>
+
+<div class="section" id="wizards">
+  <h2>🧙 Vedliai ir Gidai</h2>
+  <p>Valdomi procesai sudėtingoms situacijoms.</p>
+
+  <div class="feature-card">
+    <h4><span class="emoji">🚪</span> Atleidimo vedlys <span class="tag tag-paid">Mokama</span> <span class="tag tag-high">Aukšta vertė</span></h4>
+    <pre>
+1 žingsnis: Kodėl atleidžiate?
+  → Šalių susitarimas
+  → Darbuotojo iniciatyva
+  → Perteklinė funkcija (be kaltės)
+  → Darbo rezultatai (su kalte)
+  → Šiurkštus pažeidimas
+
+2 žingsnis: Darbuotojo duomenys
+  → Apsaugos statuso tikrinimas (nėščia, neįgalus, profesinė sąjunga ir kt.)
+  → Stažo skaičiavimas
+
+3 žingsnis: Sugeneruojama
+  → Reikalingas įspėjimo terminas
+  → Dokumentų kontrolinis sąrašas
+  → Žingsnis po žingsnio laiko juosta
+  → Pranešimo laiško projektas
+  → Išeitinės išmokos skaičiavimas
+  → Rizikos įvertinimas
+
+4 žingsnis: Peržiūra su LAT precedentais
+  → Panašios bylos ir rezultatai
+    </pre>
+    <p class="lat-reference">LAT bylos: e3K-3-199-701/2020, e3K-3-55-781/2022, e3K-3-49-1120/2025</p>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">⚠️</span> Drausminių priemonių gidas <span class="tag tag-paid">Mokama</span></h4>
+    <p>Situacija → Rekomenduojamas veiksmo lygis:</p>
+    <ul>
+      <li>Žodinis įspėjimas (kada tinkamas)</li>
+      <li>Rašytinis įspėjimas (šablonas)</li>
+      <li>Paskutinis įspėjimas (šablonas)</li>
+      <li>Atleidimo slenkstis</li>
+    </ul>
+    <p>Dokumentacijos reikalavimai kiekviename lygyje. Apskundimo procedūra.</p>
+    <p class="lat-reference">LAT bylos: e3K-3-187-421/2022, 3K-3-25-248/2021</p>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📉</span> Grupinio atleidimo planuotojas <span class="tag tag-paid">Mokama</span></h4>
+    <p><strong>Įvestis:</strong> Darbuotojų skaičius, planuojami mažinimai</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Ar tai "grupinis atleidimas"? (slenksčiai)</li>
+      <li>Pranešimo reikalavimai (Užimtumo tarnyba)</li>
+      <li>Atrankos kriterijų gairės</li>
+      <li>Saugomų darbuotojų identifikavimas</li>
+      <li>Laiko juosta su visais terminais</li>
+      <li>Kaštų prognozė</li>
+    </ul>
+    <p class="lat-reference">LAT bylos: e3K-3-55-781/2022, e3K-3-3-403/2023</p>
+  </div>
+</div>
+
+<div class="section" id="generators">
+  <h2>📄 Dokumentų Generatoriai</h2>
+  <p>Automatinis teisingų dokumentų kūrimas.</p>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📝</span> Darbo sutarties generatorius <span class="tag tag-premium">Premium</span></h4>
+    <p><strong>Sutarties tipo pasirinkimas:</strong></p>
+    <ul>
+      <li>Neterminuota</li>
+      <li>Terminuota + pagrindimo pagalbininkas</li>
+      <li>Ne visas darbo laikas</li>
+      <li>Nuotolinis/hibridinis darbas</li>
+      <li>Sezoninis</li>
+      <li>Pameistrystė</li>
+    </ul>
+    <p>Valdomi klausimai → Sugeneruojama atitinkanti sutartis</p>
+    <p><strong>Pasirenkamos sąlygos su rizikos įspėjimais:</strong></p>
+    <ul>
+      <li>Nekonkuravimas (su reikalaujama kompensacija)</li>
+      <li>Mokymosi išlaidų susigrąžinimas</li>
+      <li>Konfidencialumas</li>
+    </ul>
+    <p class="lat-reference">LAT bylos: e3K-3-291-684/2020 (nekonkuravimas), e3K-3-174-701/2021 (mokymai)</p>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📋</span> Vidaus darbo tvarkos taisyklių generatorius <span class="tag tag-premium">Premium</span></h4>
+    <p>Įmonėms nuo 20 darbuotojų (privaloma)</p>
+    <p><strong>Skyriai:</strong></p>
+    <ul>
+      <li>Darbo laikas ir grafikai</li>
+      <li>Atostogų procedūros</li>
+      <li>Drausmės taisyklės</li>
+      <li>Saugos reikalavimai</li>
+      <li>Duomenų apsauga</li>
+      <li>Elgesio kodeksas</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📚</span> Politikų šablonų biblioteka <span class="tag tag-paid">Mokama</span></h4>
+    <ul>
+      <li>Nuotolinio darbo politika</li>
+      <li>Kovos su priekabiavimu politika</li>
+      <li>Socialinių tinklų politika</li>
+      <li>Pranešimų apie pažeidimus procedūra</li>
+      <li>Duomenų apsaugos (BDAR) politika</li>
+      <li>Lygių galimybių politika</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">✉️</span> Įspėjimo laiško generatorius <span class="tag tag-paid">Mokama</span></h4>
+    <p><strong>Įvestis:</strong> Pažeidimo tipas, detalės, ankstesni įspėjimai</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Tinkamai struktūrizuotas įspėjimas</li>
+      <li>Reikalingi elementai pagal DK</li>
+      <li>Atsakymo terminas</li>
+      <li>Pasekmių aprašymas</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="compliance">
+  <h2>📊 Atitikties Įrankiai</h2>
+  <p>Užtikrinkite, kad jūsų HR procesai atitinka reikalavimus.</p>
+
+  <div class="feature-card">
+    <h4><span class="emoji">✅</span> HR Atitikties Auditas <span class="tag tag-premium">Premium</span></h4>
+    <p>Savianalizės įrankis visose srityse:</p>
+    <pre>
+□ Darbo sutartys (visos pasirašytos, visos privalomos sąlygos)
+□ Darbo laiko apskaita (vedama, neviršija limitų)
+□ Atostogų apskaita (tiksli, atitinkanti)
+□ Saugos mokymai (galiojantys)
+□ Sveikatos patikrinimai (kur reikia)
+□ Vidaus politikos (jei 20+ darbuotojų)
+□ Duomenų apsauga (BDAR atitiktis)
+□ Darbo užmokesčio lygybė (vienodas už vienodą darbą)
+
+Rezultatas: Atitikties balas + prioritetizuoti veiksmai
+    </pre>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📅</span> HR Kalendorius / Terminų Sekimas <span class="tag tag-paid">Mokama</span></h4>
+    <p>Automatiniai priminimai:</p>
+    <ul>
+      <li>Sutarčių pasibaigimas (terminuotos)</li>
+      <li>Išbandymo laikotarpio pabaiga</li>
+      <li>Atostogų metų terminai</li>
+      <li>Saugos mokymų atnaujinimai</li>
+      <li>Sveikatos patikrinimų grafikai</li>
+      <li>Privalomų ataskaitų terminai</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">⏱️</span> Darbo Laiko Atitikties Monitorius <span class="tag tag-premium">Premium</span></h4>
+    <p><strong>Įvestis:</strong> Darbuotojų grafikai/darbo laiko apskaita</p>
+    <p><strong>Išvestis:</strong></p>
+    <ul>
+      <li>Max savaitės valandų atitiktis</li>
+      <li>Poilsio laiko atitiktis</li>
+      <li>Viršvalandžių kaupimosi įspėjimai</li>
+      <li>Nakties darbo limitai</li>
+      <li>Metiniai viršvalandžių limitai</li>
+    </ul>
+  </div>
+</div>
+
+<div class="section" id="situations">
+  <h2>🆘 Situacijų Sprendimai</h2>
+  <p>Pagalba specifinėse HR situacijose.</p>
+
+  <div class="feature-card">
+    <h4><span class="emoji">🤰</span> Nėštumo/Tėvystės Atostogų Navigatorius <span class="tag tag-paid">Mokama</span></h4>
+    <p><strong>Laiko juostos generatorius:</strong></p>
+    <ul>
+      <li>Pranešimas gautas → teisės aktyvuotos</li>
+      <li>Nėštumo atostogų skaičiavimas</li>
+      <li>Gimdymo atostogos</li>
+      <li>Vaiko priežiūros atostogų variantai (1 arba 2 metai)</li>
+      <li>Partnerio tėvystės atostogos</li>
+      <li>Grįžimo į darbą planavimas</li>
+      <li>Apsaugos laikotarpis po grįžimo</li>
+    </ul>
+    <p>Pritaikymo reikalavimai kiekviename etape</p>
+    <p class="lat-reference">LAT byla: e3K-3-286-943/2021 (diskriminacija dėl nėštumo)</p>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">🚨</span> Nelaimingo Atsitikimo Protokolas <span class="tag tag-paid">Mokama</span></h4>
+    <ul>
+      <li>Neatidėliotinų veiksmų kontrolinis sąrašas</li>
+      <li>Tyrimo reikalavimai</li>
+      <li>Pranešimų terminai (kam, kada)</li>
+      <li>Dokumentacijos šablonai</li>
+      <li>Tolesni veiksmai</li>
+      <li>Draudimo reikalavimų gairės</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <h4><span class="emoji">📖</span> HR Situacijų Biblioteka <span class="tag tag-paid">Mokama</span></h4>
+    <p>Dažni scenarijai su gairėmis:</p>
+    <ul>
+      <li>Darbuotojas atsisako pasirašyti naujas sutarties sąlygas</li>
+      <li>Darbuotojas nuolat vėluoja</li>
+      <li>Įtariamas darbo laiko vagystė</li>
+      <li>Darbuotojas dirba konkurentui</li>
+      <li>Netinkamas elgesys socialiniuose tinkluose</li>
+      <li>Medicininės dokumentacijos prašymas</li>
+      <li>Atsistatydinimo tvarkymas nedarbingumo metu</li>
+      <li>Darbuotojas negrįžta iš atostogų</li>
+    </ul>
+    <p>Kiekvienam: Teisinis pagrindas, rekomenduojami žingsniai, rizikos, šablonai</p>
+  </div>
+</div>
+
+<div class="section" id="roadmap">
+  <h2>🗺️ Plėtros Planas</h2>
+
+  <div class="phase">
+    <div class="phase-number">1</div>
+    <div class="phase-content">
+      <h4>Skaičiuotuvai (2-3 savaitės)</h4>
+      <p><em>Nemokamas lygis - vartotojų pritraukimas</em></p>
+      <ul>
+        <li>Išeitinės išmokos skaičiuotuvas</li>
+        <li>Įspėjimo termino skaičiuotuvas</li>
+        <li>Galutinio atsiskaitymo skaičiuotuvas</li>
+        <li>Atostogų skaičiuotuvas</li>
+        <li>Viršvalandžių skaičiuotuvas</li>
+      </ul>
+      <div class="success">
+        <strong>Kodėl pirma:</strong> Didelė paieškų apimtis, paprastas I/O, greita vertė, kuria pasitikėjimą
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-number">2</div>
+    <div class="phase-content">
+      <h4>Atleidimo Paketas (3-4 savaitės)</h4>
+      <p><em>Pagrindinis mokamas funkcionalumas</em></p>
+      <ul>
+        <li>Atleidimo vedlys</li>
+        <li>Įspėjimo laiško generatorius</li>
+        <li>Drausminių priemonių gidas</li>
+        <li>Grupinio atleidimo planuotojas</li>
+      </ul>
+      <div class="success">
+        <strong>Kodėl antra:</strong> Didžiausio nerimo sritis, didžiausia teisinė rizika, aiškus monetizavimas
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-number">3</div>
+    <div class="phase-content">
+      <h4>Dokumentų Generatoriai (4-6 savaitės)</h4>
+      <p><em>Premium funkcionalumas</em></p>
+      <ul>
+        <li>Sutarčių generatorius</li>
+        <li>Politikų šablonai</li>
+        <li>Vidaus taisyklių generatorius</li>
+      </ul>
+      <div class="success">
+        <strong>Kodėl trečia:</strong> Didesnis sudėtingumas, didesnė vertė, prenumeratos variklis
+      </div>
+    </div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-number">4</div>
+    <div class="phase-content">
+      <h4>Atitiktis ir Analizė (nuolat)</h4>
+      <p><em>Enterprise lygis</em></p>
+      <ul>
+        <li>Sutarčių analizatorius</li>
+        <li>Atitikties auditas</li>
+        <li>HR kalendorius</li>
+        <li>Darbo laiko monitorius</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="section" id="pricing">
+  <h2>💳 Kainodaros Modelis</h2>
+
+  <div class="pricing-table">
+    <div class="pricing-card">
+      <h4>Nemokama</h4>
+      <div class="price">€0</div>
+      <ul>
+        <li>Q&A pokalbiai (3/dieną)</li>
+        <li>Baziniai skaičiuotuvai</li>
+        <li>DK straipsnių peržiūra</li>
+      </ul>
+    </div>
+
+    <div class="pricing-card">
+      <h4>Starter</h4>
+      <div class="price">€29<span>/mėn</span></div>
+      <ul>
+        <li>Visi skaičiuotuvai</li>
+        <li>Atleidimo vedlys</li>
+        <li>5 dokumentai/mėn</li>
+        <li>El. pašto palaikymas</li>
+      </ul>
+    </div>
+
+    <div class="pricing-card featured">
+      <h4>Professional</h4>
+      <div class="price">€79<span>/mėn</span></div>
+      <ul>
+        <li>Visos funkcijos</li>
+        <li>Neribotas dokumentų kiekis</li>
+        <li>Atitikties įrankiai</li>
+        <li>Sutarčių analizė (5/mėn)</li>
+        <li>Prioritetinis palaikymas</li>
+      </ul>
+    </div>
+
+    <div class="pricing-card">
+      <h4>Enterprise</h4>
+      <div class="price">Individualu</div>
+      <ul>
+        <li>API prieiga</li>
+        <li>White-label</li>
+        <li>Dedikuotas palaikymas</li>
+        <li>Individualūs sprendimai</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Už vienetą kainos</h3>
+  <table>
+    <tr>
+      <th>Paslauga</th>
+      <th>Kaina</th>
+    </tr>
+    <tr>
+      <td>Sutarties analizė</td>
+      <td>€19</td>
+    </tr>
+    <tr>
+      <td>Individualus dokumentas</td>
+      <td>€9</td>
+    </tr>
+    <tr>
+      <td>Atitikties auditas</td>
+      <td>€49</td>
+    </tr>
+  </table>
+</div>
+
+<div class="section">
+  <h2>🚀 Greiti Laimėjimai (Šią Savaitę)</h2>
+
+  <p>Jei norite pradėti mažais žingsniais:</p>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-number">1-2d</div>
+      <div class="stat-label">Išeitinės skaičiuotuvas</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">1d</div>
+      <div class="stat-label">Įspėjimo termino skaič.</div>
+    </div>
+    <div class="stat">
+      <div class="stat-number">1-2d</div>
+      <div class="stat-label">Atleidimo tipo pasirinkimas</div>
+    </div>
+  </div>
+
+  <p>Šie trys įrankiai reikšmingai padidintų platformos vertę ir galėtų būti integruoti į esamą pokalbių sąsają kaip greitos prieigos įrankiai.</p>
+</div>
+
+<div class="section">
+  <h2>💡 Mūsų Konkurencinis Pranašumas</h2>
+
+  <div class="highlight">
+    <p>Dauguma sutarčių analizės įrankių yra bendriniai. Mes turime:</p>
+    <ul>
+      <li><strong>Pilnas Lietuvos Darbo kodeksas</strong> - ne tik santraukos</li>
+      <li><strong>58 realios LAT bylos</strong> - faktiniai precedentai sutarčių ginčuose</li>
+      <li><strong>Vyriausybės nutarimai</strong> - įgyvendinimo detalės</li>
+      <li><strong>Lietuvių kalbos prompt'ai</strong> - išbandyti ir patobulinti</li>
+    </ul>
+    <p>Tai daro mūsų analizę žymiai vertingesnę nei bendrinės AI sutarčių peržiūros.</p>
+  </div>
+</div>
+
+<footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">
+  <p>Dokumentas sugeneruotas: 2025-01-14</p>
+  <p>LegalAI Produkto Plėtros Planas | <a href="https://legalai.lt">legalai.lt</a></p>
+</footer>
+
+</body>
+</html>
