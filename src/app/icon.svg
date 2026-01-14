@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="6" fill="#1e3a5f"/>
+  <g stroke="#c9a227" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Center pole -->
+    <path d="M16 5v22"/>
+    <!-- Horizontal beam -->
+    <path d="M4 9h24"/>
+    <!-- Left scale pan with strings -->
+    <path d="M7 9l-3 10h6l-3-10"/>
+    <path d="M4 19a3 3 0 0 0 6 0"/>
+    <!-- Right scale pan with strings -->
+    <path d="M25 9l-3 10h6l-3-10"/>
+    <path d="M22 19a3 3 0 0 0 6 0"/>
+    <!-- Center pivot -->
+    <circle cx="16" cy="8" r="2" fill="#c9a227"/>
+  </g>
+</svg>
