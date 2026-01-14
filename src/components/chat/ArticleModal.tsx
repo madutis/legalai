@@ -53,15 +53,15 @@ export function ArticleModal({ articleNumber, onClose }: ArticleModalProps) {
       className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col">
+      <div className="bg-card rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-lg font-semibold">
             {loading ? 'Kraunama...' : `${articleNumber} straipsnis`}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -73,18 +73,18 @@ export function ArticleModal({ articleNumber, onClose }: ArticleModalProps) {
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {loading && (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           )}
 
           {error && (
-            <div className="text-red-600 py-8 text-center">
+            <div className="text-destructive py-8 text-center">
               <p>{error}</p>
             </div>
           )}
 
           {article && (
-            <div className="prose prose-sm prose-slate max-w-none">
+            <div className="prose prose-sm max-w-none">
               {article.title && (
                 <h3 className="text-base font-semibold mb-4">{article.title}</h3>
               )}
@@ -96,7 +96,7 @@ export function ArticleModal({ articleNumber, onClose }: ArticleModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t flex gap-3">
+        <div className="px-6 py-4 border-t border-border flex gap-3">
           <Button variant="outline" onClick={onClose} className="flex-1">
             Uždaryti
           </Button>

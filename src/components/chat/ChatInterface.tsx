@@ -111,7 +111,7 @@ function AssistantMessage({
             h2: ({ children }) => <h4 className="font-semibold text-base mb-2 mt-3">{children}</h4>,
             h3: ({ children }) => <h5 className="font-semibold mb-2 mt-2">{children}</h5>,
             blockquote: ({ children }) => (
-              <blockquote className="border-l-2 border-slate-300 pl-3 italic text-slate-600">
+              <blockquote className="border-l-2 border-border pl-3 italic text-muted-foreground">
                 {children}
               </blockquote>
             ),
@@ -177,8 +177,8 @@ function AssistantMessage({
 
       {/* Question display */}
       {question && (
-        <div className="mt-4 pt-3 border-t border-slate-200">
-          <p className="font-medium text-slate-800 mb-3">{question.question}</p>
+        <div className="mt-4 pt-3 border-t border-border">
+          <p className="font-medium text-foreground mb-3">{question.question}</p>
           {/* Interactive buttons only for last message when not loading */}
           {isLastMessage && !isLoading ? (
             <>
@@ -188,7 +188,7 @@ function AssistantMessage({
                     <button
                       key={i}
                       onClick={() => onOptionClick(option)}
-                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg text-sm font-medium text-slate-700 transition-colors border border-slate-200 hover:border-slate-300"
+                      className="px-4 py-2 bg-muted hover:bg-accent rounded-lg text-sm font-medium text-foreground transition-colors border border-border hover:border-muted-foreground/50"
                     >
                       {option}
                     </button>
@@ -196,7 +196,7 @@ function AssistantMessage({
                 </div>
               )}
               {question.type === 'open' && (
-                <p className="text-xs text-slate-500 italic">Įveskite atsakymą žemiau</p>
+                <p className="text-xs text-muted-foreground italic">Įveskite atsakymą žemiau</p>
               )}
             </>
           ) : (
@@ -206,7 +206,7 @@ function AssistantMessage({
                 {question.options.map((option, i) => (
                   <span
                     key={i}
-                    className="px-3 py-1.5 bg-slate-50 rounded-lg text-sm text-slate-500 border border-slate-100"
+                    className="px-3 py-1.5 bg-muted/50 rounded-lg text-sm text-muted-foreground border border-border"
                   >
                     {option}
                   </span>
@@ -391,15 +391,15 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   };
 
   return (
-    <div className="h-full flex flex-col max-w-4xl mx-auto">
+    <div className="h-full flex flex-col">
       {/* Messages container with proper scrolling */}
       <div
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6"
+        className="flex-1 overflow-y-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl mx-auto w-full"
       >
         {messages.length === 0 && (
-          <div className="text-center text-slate-500 py-12">
+          <div className="text-center text-muted-foreground py-12">
             <p className="text-lg mb-2">Sveiki! 👋</p>
             <p className="text-sm max-w-md mx-auto">
               Užduokite klausimą apie Lietuvos darbo teisę ir aš pasistengsiu padėti,
@@ -417,12 +417,12 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
               <div
                 className={`max-w-[92%] sm:max-w-[85%] rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 ${
                   message.role === 'user'
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-white border border-slate-200 text-slate-900 shadow-sm'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card border border-border text-card-foreground shadow-sm'
                 }`}
               >
                 {message.role === 'assistant' && message.content === '' && isLoading ? (
-                  <div className="flex items-center gap-2 py-1 text-sm text-slate-500">
+                  <div className="flex items-center gap-2 py-1 text-sm text-muted-foreground">
                     <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -485,8 +485,8 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                       if (uniqueSources.length === 0) return null;
 
                       return (
-                        <div className="mt-3 pt-3 border-t border-slate-100">
-                          <p className="text-xs text-slate-400 mb-2">Šaltiniai:</p>
+                        <div className="mt-3 pt-3 border-t border-border">
+                          <p className="text-xs text-muted-foreground mb-2">Šaltiniai:</p>
                           <div className="flex flex-wrap gap-1.5">
                             {uniqueSources
                               .map((source) => ({
@@ -511,7 +511,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                                         setSelectedArticleNumber(s.source.articleNumber);
                                       }
                                     }}
-                                    className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors cursor-pointer"
+                                    className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-muted text-muted-foreground hover:bg-accent transition-colors cursor-pointer"
                                     title={s.source.caseTitle || s.source.caseSummary || undefined}
                                   >
                                     {s.label}
@@ -558,12 +558,12 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       )}
 
       {/* Input */}
-      <div className="flex-shrink-0 border-t bg-white px-3 sm:px-4 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-[calc(1rem+env(safe-area-inset-bottom))]">
+      <div className="flex-shrink-0 border-t bg-background px-3 sm:px-4 py-3 sm:py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:pb-[calc(1rem+env(safe-area-inset-bottom))]">
         {isConsultationComplete ? (
           /* Consultation complete - show export option */
           <div className="max-w-4xl mx-auto text-center">
-            <div className="bg-slate-50 rounded-xl p-4 mb-3">
-              <p className="text-slate-600 mb-3">
+            <div className="bg-muted rounded-xl p-4 mb-3">
+              <p className="text-muted-foreground mb-3">
                 Konsultacija baigta. Ačiū, kad naudojotės mūsų paslauga!
               </p>
               <Button
@@ -583,14 +583,14 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
           <>
             {isConsultationFinished && remainingFollowUps > 0 && (
               <div className="max-w-4xl mx-auto mb-2 flex items-center justify-between">
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-muted-foreground">
                   Galite užduoti dar {remainingFollowUps} {remainingFollowUps === 1 ? 'papildomą klausimą' : 'papildomus klausimus'}
                 </p>
                 <Button
                   onClick={handleExportPDF}
                   variant="ghost"
                   size="sm"
-                  className="text-xs text-slate-500 hover:text-slate-700"
+                  className="text-xs text-muted-foreground hover:text-foreground"
                 >
                   <svg className="w-3 h-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -633,7 +633,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
             </form>
           </>
         )}
-        <p className="text-xs text-slate-400 mt-2 sm:mt-3 text-center">
+        <p className="text-xs text-muted-foreground/70 mt-2 sm:mt-3 text-center">
           Tai nėra teisinė konsultacija. Sudėtingais atvejais kreipkitės į teisininką.
         </p>
       </div>

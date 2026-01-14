@@ -58,15 +58,15 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
       className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col">
+      <div className="bg-card rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <h2 className="text-lg font-semibold">
             {loading ? 'Kraunama...' : ruling?.title || 'LAT sprendimas'}
           </h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-muted rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -78,36 +78,36 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {loading && (
             <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
           )}
 
           {error && (
-            <div className="text-red-600 py-8 text-center">
+            <div className="text-destructive py-8 text-center">
               <p>{error}</p>
             </div>
           )}
 
           {ruling && (
-            <div className="prose prose-sm prose-slate max-w-none">
+            <div className="prose prose-sm max-w-none">
               {/* Case title */}
               {ruling.caseTitle && (
                 <div className="mb-4">
-                  <h3 className="font-semibold text-slate-800 mb-1">{ruling.caseTitle}</h3>
+                  <h3 className="font-semibold mb-1">{ruling.caseTitle}</h3>
                 </div>
               )}
 
               {/* AI Summary */}
               {ruling.caseSummary && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg px-3 py-2 mb-4">
-                  <p className="text-xs text-blue-600 font-medium mb-1">Santrauka:</p>
-                  <p className="text-sm text-blue-800">{ruling.caseSummary}</p>
+                <div className="bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg px-3 py-2 mb-4">
+                  <p className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">Santrauka:</p>
+                  <p className="text-sm text-blue-800 dark:text-blue-200">{ruling.caseSummary}</p>
                 </div>
               )}
 
               {/* Source info */}
-              <div className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 mb-4">
-                <p className="text-xs text-slate-500">
+              <div className="bg-muted border border-border rounded-lg px-3 py-2 mb-4">
+                <p className="text-xs text-muted-foreground">
                   {ruling.docType === 'nutarimas'
                     ? `Vyriausybės nutarimas`
                     : `LAT praktikos apžvalga`}
@@ -124,7 +124,7 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t flex gap-3">
+        <div className="px-6 py-4 border-t border-border flex gap-3">
           {ruling?.sourceUrl && (
             <Button
               variant="default"

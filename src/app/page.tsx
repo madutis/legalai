@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const ROLES = [
   { id: 'employer', label: 'Darbdavys', description: 'Vadovauju įmonei arba esu atsakingas už darbuotojus' },
@@ -74,14 +75,15 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+      <header className="border-b bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl">⚖️</span>
             <span className="font-semibold text-lg">Darbo teisės asistentas</span>
           </div>
+          <ThemeToggle />
         </div>
       </header>
 
@@ -90,10 +92,10 @@ export default function Home() {
         {/* Hero - only on step 1 */}
         {step === 1 && (
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-3">
+            <h1 className="text-3xl font-bold text-foreground mb-3">
               Lietuvos darbo teisės konsultacijos
             </h1>
-            <p className="text-slate-600 max-w-xl mx-auto">
+            <p className="text-muted-foreground max-w-xl mx-auto">
               Gaukite atsakymus paremtus Darbo kodeksu ir teismų praktika
             </p>
           </div>
@@ -105,7 +107,7 @@ export default function Home() {
             <div
               key={s}
               className={`h-2 w-16 rounded-full transition-colors ${
-                s <= step ? 'bg-slate-900' : 'bg-slate-200'
+                s <= step ? 'bg-primary' : 'bg-muted'
               }`}
             />
           ))}
@@ -125,12 +127,12 @@ export default function Home() {
                   onClick={() => handleSelect('userRole', role.id)}
                   className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
                     data.userRole === role.id
-                      ? 'border-slate-900 bg-slate-50'
-                      : 'border-slate-200 hover:border-slate-300'
+                      ? 'border-primary bg-muted'
+                      : 'border-border hover:border-muted-foreground/50'
                   }`}
                 >
                   <div className="font-medium">{role.label}</div>
-                  <div className="text-sm text-slate-500">{role.description}</div>
+                  <div className="text-sm text-muted-foreground">{role.description}</div>
                 </button>
               ))}
             </CardContent>
@@ -152,12 +154,12 @@ export default function Home() {
                     onClick={() => handleSelect('companySize', size.id)}
                     className={`p-4 rounded-xl border-2 text-left transition-all ${
                       data.companySize === size.id
-                        ? 'border-slate-900 bg-slate-50'
-                        : 'border-slate-200 hover:border-slate-300'
+                        ? 'border-primary bg-muted'
+                        : 'border-border hover:border-muted-foreground/50'
                     }`}
                   >
                     <div className="font-medium">{size.label}</div>
-                    <div className="text-sm text-slate-500">{size.description}</div>
+                    <div className="text-sm text-muted-foreground">{size.description}</div>
                   </button>
                 ))}
               </div>
@@ -180,8 +182,8 @@ export default function Home() {
                     onClick={() => handleSelect('topic', topic.id)}
                     className={`p-4 rounded-xl border-2 text-left transition-all ${
                       data.topic === topic.id
-                        ? 'border-slate-900 bg-slate-50'
-                        : 'border-slate-200 hover:border-slate-300'
+                        ? 'border-primary bg-muted'
+                        : 'border-border hover:border-muted-foreground/50'
                     }`}
                   >
                     <span className="text-2xl mb-1 block">{topic.icon}</span>
@@ -212,27 +214,27 @@ export default function Home() {
               <div className="text-center">
                 <div className="text-2xl mb-2">📚</div>
                 <div className="font-medium text-sm">Darbo kodeksas</div>
-                <div className="text-xs text-slate-500">264 straipsniai</div>
+                <div className="text-xs text-muted-foreground">264 straipsniai</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl mb-2">⚖️</div>
                 <div className="font-medium text-sm">LAT praktika</div>
-                <div className="text-xs text-slate-500">2015-2025 sprendimai</div>
+                <div className="text-xs text-muted-foreground">2015-2025 sprendimai</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl mb-2">📋</div>
                 <div className="font-medium text-sm">Vyriausybės nutarimai</div>
-                <div className="text-xs text-slate-500">12 pagrindinių nutarimų</div>
+                <div className="text-xs text-muted-foreground">12 pagrindinių nutarimų</div>
               </div>
             </div>
-            <p className="text-center text-sm text-slate-500 mt-6">
+            <p className="text-center text-sm text-muted-foreground mt-6">
               🔒 Jūsų pokalbiai nesaugomi ir lieka konfidencialūs
             </p>
           </>
         )}
 
         {/* Disclaimer */}
-        <p className="text-center text-xs text-slate-400 mt-12 max-w-md mx-auto">
+        <p className="text-center text-xs text-muted-foreground/70 mt-12 max-w-md mx-auto">
           Ši sistema teikia tik informacinio pobūdžio konsultacijas.
           Sudėtingesniais atvejais kreipkitės į teisininką.
         </p>
