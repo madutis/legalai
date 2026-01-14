@@ -213,8 +213,12 @@ export function exportToPDF(data: ExportData): void {
         }
 
         @media print {
+          @page {
+            margin: 0;
+          }
+
           body {
-            padding: 20px;
+            padding: 15mm;
           }
         }
       </style>
