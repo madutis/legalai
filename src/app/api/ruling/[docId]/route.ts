@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getIndex } from '@/lib/pinecone';
-import { getCaseById } from '@/lib/db';
+import { getCaseById, getPdfById } from '@/lib/db';
 
 export async function GET(
   request: NextRequest,
@@ -25,10 +25,9 @@ export async function GET(
         return NextResponse.json({ error: 'Ruling not found' }, { status: 404 });
       }
 
-      // Build PDF URL from pdf_id
-      const [year, month] = latCase.pdf_id.split('-');
-      const pdfFilename = `lat_aktuali_praktika_${month}_${year}.pdf`;
-      const sourceUrl = `https://www.lat.lt/data/public/uploads/${year}/${pdfFilename}`;
+      // Get PDF URL from database
+      const pdf = getPdfById(latCase.pdf_id);
+      const sourceUrl = pdf?.url || null;
 
       return NextResponse.json({
         docId: latCase.id,
