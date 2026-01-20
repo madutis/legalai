@@ -37,7 +37,7 @@ export interface Consultation {
 // Message types
 export interface Citation {
   docId: string;
-  docType: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq';
+  docType: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq' | 'vdi_doc';
   title: string;
   section?: string;
   caseNumber?: string;
@@ -45,6 +45,11 @@ export interface Citation {
   // VDI FAQ-specific fields
   question?: string;
   category?: string;
+  // VDI Doc-specific fields
+  chunkIndex?: number;
+  totalChunks?: number;
+  tier?: number;
+  topics?: string;
 }
 
 export interface Message {
@@ -59,20 +64,25 @@ export interface Message {
 // Document types (for ingested legal documents)
 export interface ChunkMetadata {
   docId: string;
-  docType: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq';
+  docType: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq' | 'vdi_doc';
   sourceFile: string;
   sectionTitle?: string;
   caseNumber?: string;
   date?: string;
   chunkIndex: number;
+  totalChunks?: number;
+  title?: string;
   // VDI FAQ-specific fields
   question?: string;
   category?: string;
+  // VDI Doc-specific fields
+  tier?: number;
+  topics?: string;
 }
 
 export interface LegalDocument {
   id: string;
-  type: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq';
+  type: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq' | 'vdi_doc';
   title: string;
   sourceFile: string;
   fullText: string;
