@@ -121,6 +121,18 @@ function cleanText(text: string): string {
     .trim();
 }
 
+// Sanitize ID to ASCII only (Pinecone requirement)
+function sanitizeId(id: string): string {
+  return id
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .replace(/[^\x00-\x7F]/g, '') // Remove non-ASCII
+    .replace(/[^a-zA-Z0-9-_]/g, '-') // Replace special chars with dash
+    .replace(/-+/g, '-') // Collapse multiple dashes
+    .replace(/^-|-$/g, '') // Trim dashes from ends
+    .slice(0, 100); // Limit length
+}
+
 function chunkContent(text: string, chunkSize: number = 1500, overlap: number = 200): string[] {
   const chunks: string[] = [];
   let start = 0;
@@ -209,12 +221,13 @@ async function ingestDocuments(
     if (!dryRun) {
       try {
         const embedding = await generateEmbedding(chunk.text);
+        const sanitizedDocId = sanitizeId(chunk.docId);
 
         vectors.push({
-          id: `vdi-doc-${chunk.docId}-chunk-${chunk.chunkIndex}`,
+          id: `vdi-doc-${sanitizedDocId}-chunk-${chunk.chunkIndex}`,
           values: embedding,
           metadata: {
-            docId: `vdi-doc-${chunk.docId}`,
+            docId: `vdi-doc-${sanitizedDocId}`,
             docType: 'vdi_doc',
             title: chunk.title.slice(0, 500),
             text: chunk.text.slice(0, 8000),
