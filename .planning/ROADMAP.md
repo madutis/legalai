@@ -14,7 +14,7 @@ None
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: VDI FAQ Ingestion** - Add VDI FAQ as citable knowledge source
+- [x] **Phase 1: VDI FAQ Ingestion** - Add VDI FAQ as citable knowledge source
 - [ ] **Phase 1.1: VDI Legal Docs** - Selective ingestion of VDI teisės aktai (INSERTED)
 - [ ] **Phase 2: Contract Templates** - Employment contract template generation
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. VDI FAQ Ingestion | 2/3 | In progress | - |
+| 1. VDI FAQ Ingestion | 3/3 | ✓ Complete | 2026-01-20 |
 | 1.1. VDI Legal Docs | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
