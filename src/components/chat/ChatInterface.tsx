@@ -346,6 +346,9 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     if (source.docType === 'vdi_faq') {
       return 'VDI DUK';
     }
+    if (source.docType === 'vdi_doc') {
+      return source.title ? `VDI: ${source.title.slice(0, 30)}${source.title.length > 30 ? '...' : ''}` : 'VDI Dokumentas';
+    }
     return null;
   };
 
@@ -359,6 +362,9 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     }
     if (source.docType === 'vdi_faq') {
       return 'https://vdi.lrv.lt/lt/dazniausiai-uzduodami-klausimai/';
+    }
+    if (source.docType === 'vdi_doc' && source.sourceUrl) {
+      return source.sourceUrl;
     }
     return null;
   };
@@ -478,7 +484,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                               .filter((s) => s.label !== null)
                               .slice(0, 10)
                               .map((s, i) => {
-                                const isExternalLink = ((s.source.docType === 'lat_ruling') && s.source.sourceUrl) || s.source.docType === 'vdi_faq';
+                                const isExternalLink = ((s.source.docType === 'lat_ruling') && s.source.sourceUrl) || s.source.docType === 'vdi_faq' || (s.source.docType === 'vdi_doc' && s.source.sourceUrl);
 
                                 return (
                                   <button
@@ -486,6 +492,8 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                                     onClick={() => {
                                       if (s.source.docType === 'vdi_faq') {
                                         window.open('https://vdi.lrv.lt/lt/dazniausiai-uzduodami-klausimai/', '_blank');
+                                      } else if (s.source.docType === 'vdi_doc' && s.source.sourceUrl) {
+                                        window.open(s.source.sourceUrl, '_blank');
                                       } else if (s.source.docType === 'lat_ruling' || s.source.docType === 'nutarimas') {
                                         setSelectedRulingDocId(s.source.id);
                                       } else if (s.source.articleNumber) {
