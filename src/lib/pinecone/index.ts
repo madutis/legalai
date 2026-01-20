@@ -21,13 +21,13 @@ export interface SearchResult {
   text: string;
   metadata: {
     docId: string;
-    docType: 'legislation' | 'nutarimas' | 'lat_ruling' | 'vdi_faq';
+    docType: 'legislation' | 'nutarimas' | 'lat_ruling' | 'vdi_faq' | 'vdi_doc';
     sourceFile: string;
     chunkIndex: number;
     totalChunks: number;
     articleNumber?: number;
     articleTitle?: string;
-    title?: string; // For nutarimai
+    title?: string; // For nutarimai and vdi_doc
     // Ruling-specific fields
     caseNumber?: string;
     caseTitle?: string;
@@ -42,6 +42,9 @@ export interface SearchResult {
     // VDI FAQ fields
     question?: string;
     category?: string;
+    // VDI Doc fields
+    tier?: number;
+    topics?: string;
   };
 }
 
@@ -75,18 +78,19 @@ export async function searchSimilar(
   }));
 }
 
-// Hybrid search: retrieve from legislation, LAT rulings, nutarimai, and VDI FAQ separately, then merge
+// Hybrid search: retrieve from legislation, LAT rulings, nutarimai, VDI FAQ, and VDI docs separately, then merge
 export async function searchHybrid(
   embedding: number[],
   legislationK: number = 8,
   rulingsK: number = 4,
   nutarimaiK: number = 2,
-  vdiFaqK: number = 4
+  vdiFaqK: number = 4,
+  vdiDocsK: number = 3
 ): Promise<SearchResult[]> {
   const index = getIndex();
 
   // Search all document types in parallel
-  const [legislationResults, latRulingsResults, nutarimaiResults, vdiFaqResults] = await Promise.all([
+  const [legislationResults, latRulingsResults, nutarimaiResults, vdiFaqResults, vdiDocsResults] = await Promise.all([
     index.query({
       vector: embedding,
       topK: legislationK,
@@ -111,6 +115,12 @@ export async function searchHybrid(
       includeMetadata: true,
       filter: { docType: 'vdi_faq' },
     }),
+    index.query({
+      vector: embedding,
+      topK: vdiDocsK * 2,
+      includeMetadata: true,
+      filter: { docType: 'vdi_doc' },
+    }),
   ]);
 
   const mapResult = (match: any): SearchResult => ({
@@ -119,13 +129,13 @@ export async function searchHybrid(
     text: (match.metadata?.text as string) || '',
     metadata: {
       docId: match.metadata?.docId as string,
-      docType: match.metadata?.docType as 'legislation' | 'nutarimas' | 'lat_ruling' | 'vdi_faq',
+      docType: match.metadata?.docType as 'legislation' | 'nutarimas' | 'lat_ruling' | 'vdi_faq' | 'vdi_doc',
       sourceFile: match.metadata?.sourceFile as string,
       chunkIndex: match.metadata?.chunkIndex as number,
       totalChunks: match.metadata?.totalChunks as number,
       articleNumber: match.metadata?.articleNumber as number | undefined,
       articleTitle: match.metadata?.articleTitle as string | undefined,
-      title: match.metadata?.title as string | undefined, // For nutarimai
+      title: match.metadata?.title as string | undefined, // For nutarimai and vdi_doc
       // Ruling-specific fields
       caseNumber: match.metadata?.caseNumber as string | undefined,
       caseTitle: match.metadata?.caseTitle as string | undefined,
@@ -140,6 +150,9 @@ export async function searchHybrid(
       // VDI FAQ fields
       question: match.metadata?.question as string | undefined,
       category: match.metadata?.category as string | undefined,
+      // VDI Doc fields
+      tier: match.metadata?.tier as number | undefined,
+      topics: match.metadata?.topics as string | undefined,
     },
   });
 
@@ -163,8 +176,14 @@ export async function searchHybrid(
     .slice(0, vdiFaqK)
     .map(mapResult);
 
+  // Only include VDI docs with score > 0.65
+  const vdiDocs = (vdiDocsResults.matches || [])
+    .filter(m => (m.score || 0) >= 0.65)
+    .slice(0, vdiDocsK)
+    .map(mapResult);
+
   // Merge and sort by score
-  return [...legislation, ...latRulings, ...nutarimai, ...vdiFaq].sort((a, b) => b.score - a.score);
+  return [...legislation, ...latRulings, ...nutarimai, ...vdiFaq, ...vdiDocs].sort((a, b) => b.score - a.score);
 }
 
 // Fetch specific articles by ID

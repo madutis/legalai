@@ -276,9 +276,10 @@ async function discoverContent(dryRun: boolean): Promise<ContentManifest> {
 
   if (fs.existsSync(manifestPath)) {
     try {
-      existingManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
-      console.log(`Found existing manifest with ${existingManifest.items.length} items\n`);
-      existingManifest.items.forEach(item => seenUrls.add(item.url));
+      const parsed: ContentManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+      existingManifest = parsed;
+      console.log(`Found existing manifest with ${parsed.items.length} items\n`);
+      parsed.items.forEach(item => seenUrls.add(item.url));
     } catch {
       console.log('Could not parse existing manifest, starting fresh\n');
     }

@@ -111,10 +111,12 @@ export async function POST(request: NextRequest) {
           const rulingCount = searchResults.filter(r => r.metadata.docType === 'lat_ruling').length;
           const nutarimaiCount = searchResults.filter(r => r.metadata.docType === 'nutarimas').length;
           const vdiFaqCount = searchResults.filter(r => r.metadata.docType === 'vdi_faq').length;
+          const vdiDocsCount = searchResults.filter(r => r.metadata.docType === 'vdi_doc').length;
           const parts = [`${legislationCount} straipsn.`];
           if (rulingCount > 0) parts.push(`${rulingCount} nutart.`);
           if (nutarimaiCount > 0) parts.push(`${nutarimaiCount} vyriaus. nutar.`);
           if (vdiFaqCount > 0) parts.push(`${vdiFaqCount} VDI DUK`);
+          if (vdiDocsCount > 0) parts.push(`${vdiDocsCount} VDI dok.`);
           sendStatus(`Rasta ${parts.join(', ')}. Ruošiu atsakymą...`);
 
           // Label each source with its type for the LLM
@@ -147,6 +149,10 @@ export async function POST(request: NextRequest) {
               const question = r.metadata.question || '';
               const category = r.metadata.category ? ` (${r.metadata.category})` : '';
               return `[VDI DUK${category}]\nKlausimas: ${question}\nAtsakymas: ${r.text}`;
+            } else if (r.metadata.docType === 'vdi_doc') {
+              const title = r.metadata.title || 'VDI dokumentas';
+              const topics = (r.metadata as any).topics ? ` (${(r.metadata as any).topics})` : '';
+              return `[VDI DOKUMENTAS: ${title}${topics}]\n${r.text}`;
             }
             return r.text;
           });
@@ -186,6 +192,10 @@ export async function POST(request: NextRequest) {
                 // VDI FAQ fields
                 question: r.metadata.question,
                 category: r.metadata.category,
+                // VDI Doc fields
+                title: r.metadata.title,
+                tier: (r.metadata as any).tier,
+                topics: (r.metadata as any).topics,
               };
             }),
           };
