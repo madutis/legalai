@@ -191,8 +191,9 @@ async function ingestVdiFaq(faqItems: FAQItem[], index: ReturnType<Pinecone['ind
   for (let i = 0; i < faqItems.length; i++) {
     const item = faqItems[i];
 
-    // Combine question and answer for embedding
-    const textForEmbedding = `Klausimas: ${item.question}\n\nAtsakymas: ${item.answer}`;
+    // Embed question only for better question-matching retrieval
+    // (Answer is stored in metadata.text for display after retrieval)
+    const textForEmbedding = item.question;
 
     console.log(`Processing ${i + 1}/${faqItems.length}: ${item.question.slice(0, 60)}...`);
 
