@@ -110,9 +110,11 @@ export async function POST(request: NextRequest) {
           const legislationCount = searchResults.filter(r => r.metadata.docType === 'legislation').length;
           const rulingCount = searchResults.filter(r => r.metadata.docType === 'lat_ruling').length;
           const nutarimaiCount = searchResults.filter(r => r.metadata.docType === 'nutarimas').length;
+          const vdiFaqCount = searchResults.filter(r => r.metadata.docType === 'vdi_faq').length;
           const parts = [`${legislationCount} straipsn.`];
           if (rulingCount > 0) parts.push(`${rulingCount} nutart.`);
           if (nutarimaiCount > 0) parts.push(`${nutarimaiCount} vyriaus. nutar.`);
+          if (vdiFaqCount > 0) parts.push(`${vdiFaqCount} VDI DUK`);
           sendStatus(`Rasta ${parts.join(', ')}. Ruošiu atsakymą...`);
 
           // Label each source with its type for the LLM
@@ -141,6 +143,10 @@ export async function POST(request: NextRequest) {
             } else if (r.metadata.docType === 'nutarimas') {
               const title = r.metadata.title || r.metadata.docId;
               return `[VYRIAUSYBĖS NUTARIMAS: ${title}]\n${r.text}`;
+            } else if (r.metadata.docType === 'vdi_faq') {
+              const question = r.metadata.question || '';
+              const category = r.metadata.category ? ` (${r.metadata.category})` : '';
+              return `[VDI DUK${category}]\nKlausimas: ${question}\nAtsakymas: ${r.text}`;
             }
             return r.text;
           });
@@ -177,6 +183,9 @@ export async function POST(request: NextRequest) {
                 caseSummary: r.metadata.caseSummary,
                 sourceUrl,
                 sourcePage,
+                // VDI FAQ fields
+                question: r.metadata.question,
+                category: r.metadata.category,
               };
             }),
           };
