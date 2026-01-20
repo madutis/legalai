@@ -88,7 +88,7 @@ Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. VDI FAQ Ingestion | 0/TBD | Not started | - |
+| 1. VDI FAQ Ingestion | 1/3 | In progress | - |
 | 1.1. VDI Legal Docs | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
