@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 1.1 — VDI Legal Docs
+**Current focus:** Phase 2 — Labor Code
 
 ## Current Position
 
-Phase: 1.1 of 7 (VDI Legal Docs)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-20 — Completed 01.1-01-PLAN.md
+Phase: 2 of 7 (Labor Code)
+Plan: Ready to start
+Status: Phase 1.1 complete
+Last activity: 2026-01-20 — Completed 01.1-02-PLAN.md
 
-Progress: ██░░░░░░░░ 18%
+Progress: ██░░░░░░░░ 22%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 8 min
-- Total execution time: 31 min
+- Total plans completed: 5
+- Average duration: 15 min
+- Total execution time: 76 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 1 | 3 | 24 min | 8 min |
-| 1.1 | 1 | 7 min | 7 min |
+| 1.1 | 2 | 52 min | 26 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (12m), 01-02 (2m), 01-03 (10m), 01.1-01 (7m)
+- Last 5 plans: 01-01 (12m), 01-02 (2m), 01-03 (10m), 01.1-01 (7m), 01.1-02 (45m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -50,6 +50,8 @@ Recent decisions affecting current work:
 | 01-03 | Embed question-only for FAQ | Q+A embeddings caused poor retrieval; question-only gives exact matches |
 | 01.1-01 | Use unpdf for PDF extraction | Simpler API than pdf-parse v2, already in deps |
 | 01.1-01 | Gemini 2.0 Flash for classification | Fast and accurate for relevance scoring |
+| 01.1-02 | 1500 char chunks with 200 overlap | Balance context vs granularity for PDF content |
+| 01.1-02 | vdiDocsK default 3 | Supplementary source alongside FAQ (4) and nutarimai (5) |
 
 ### Pending Todos
 
@@ -62,5 +64,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-20
-Stopped at: Completed 01.1-01-PLAN.md
+Stopped at: Completed 01.1-02-PLAN.md (Phase 1.1 complete)
 Resume file: None
