@@ -51,7 +51,7 @@ async function fetchVdiFaqPage(): Promise<string> {
 function parseVdiFaqHtml(html: string): FAQItem[] {
   const $ = cheerio.load(html);
   const faqItems: FAQItem[] = [];
-  let currentCategory = 'VDI DUK'; // Default category
+  const currentCategory = 'VDI DUK'; // Default category
 
   // The VDI FAQ page uses a nested accordion structure:
   // - Top-level accordions (accordion-1, etc.) are categories
