@@ -15,6 +15,7 @@ None
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
 - [ ] **Phase 1: VDI FAQ Ingestion** - Add VDI FAQ as citable knowledge source
+- [ ] **Phase 1.1: VDI Legal Docs** - Selective ingestion of VDI teisės aktai (INSERTED)
 - [ ] **Phase 2: Contract Templates** - Employment contract template generation
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
 - [ ] **Phase 4: User Onboarding** - Registration and onboarding flow
@@ -31,9 +32,21 @@ None
 **Research topics**: VDI website structure, scraping approach, content format, update strategy
 **Plans**: TBD
 
+### Phase 1.1: VDI Legal Docs (INSERTED)
+**Goal**: Selective ingestion of VDI teisės aktai based on accountant relevance
+**Depends on**: Phase 1
+**Research**: Likely (LLM classification, selective scraping)
+**Research topics**: Document classification criteria, LLM relevance scoring, Tier 1/2 prioritization
+**Plans**: TBD
+
+**Scope guidance from user:**
+- Tier 1 (must-have): Employment contracts, working time/pay regs, VDU calculation, leave management
+- Tier 2 (high-value): Occupational safety reporting, termination-related acts
+- Use LLM to classify/score documents for relevance
+
 ### Phase 2: Contract Templates
 **Goal**: Generate employment contract templates with user context
-**Depends on**: Phase 1
+**Depends on**: Phase 1.1
 **Research**: Unlikely (internal patterns, existing RAG)
 **Plans**: TBD
 
@@ -71,11 +84,12 @@ None
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. VDI FAQ Ingestion | 0/TBD | Not started | - |
+| 1.1. VDI Legal Docs | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
 | 4. User Onboarding | 0/TBD | Not started | - |
