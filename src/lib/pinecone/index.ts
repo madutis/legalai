@@ -85,7 +85,7 @@ export async function searchHybrid(
   rulingsK: number = 4,
   nutarimaiK: number = 2,
   vdiFaqK: number = 4,
-  vdiDocsK: number = 3
+  vdiDocsK: number = 4
 ): Promise<SearchResult[]> {
   const index = getIndex();
 
@@ -176,9 +176,9 @@ export async function searchHybrid(
     .slice(0, vdiFaqK)
     .map(mapResult);
 
-  // Only include VDI docs with score > 0.65
+  // Only include VDI docs with score > 0.60 (lower threshold for chunked PDFs)
   const vdiDocs = (vdiDocsResults.matches || [])
-    .filter(m => (m.score || 0) >= 0.65)
+    .filter(m => (m.score || 0) >= 0.60)
     .slice(0, vdiDocsK)
     .map(mapResult);
 
