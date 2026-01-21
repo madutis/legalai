@@ -36,7 +36,7 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
 const ROLES = [
   { id: 'employer', label: 'Darbdavys', description: 'Vadovauju įmonei arba esu atsakingas už darbuotojus' },
   { id: 'employee', label: 'Darbuotojas', description: 'Dirbu pagal darbo sutartį' },
-  { id: 'hr', label: 'HR specialistas', description: 'Dirbu personalo srityje' },
+  { id: 'hr', label: 'HR / Buhalteris', description: 'Dirbu personalo srityje arba tvarkau darbo santykius' },
   { id: 'other', label: 'Kita', description: 'Studentas, teisininkas ar kitas' },
 ];
 

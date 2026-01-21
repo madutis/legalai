@@ -55,7 +55,7 @@ function formatRole(role: string): string {
   switch (role) {
     case 'employer': return 'Darbdavys';
     case 'employee': return 'Darbuotojas';
-    case 'hr': return 'HR specialistas';
+    case 'hr': return 'HR / Buhalteris';
     default: return role || 'Nenurodyta';
   }
 }

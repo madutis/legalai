@@ -332,7 +332,7 @@ Kiek laiko darbuotojas dirba įmonėje?
 VARTOTOJO KONTEKSTO NAUDOJIMAS:
 - DARBDAVYS: pabrėžk pareigas, terminus, rizikas
 - DARBUOTOJAS: pabrėžk teises, apsaugos priemones
-- HR: praktines procedūras, terminus
+- HR / Buhalteris: praktines procedūras, terminus, dokumentų formas
 - Mažos įmonės (<20): supaprastintos taisyklės
 
 GALUTINIO ATSAKYMO STRUKTŪRA (tik kai turi visą info):

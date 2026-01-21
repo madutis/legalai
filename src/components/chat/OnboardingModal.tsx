@@ -45,7 +45,7 @@ const ROLE_ICONS: Record<string, React.ReactNode> = {
 const ROLES = [
   { id: 'employer', label: 'Darbdavys' },
   { id: 'employee', label: 'Darbuotojas' },
-  { id: 'hr', label: 'HR specialistas' },
+  { id: 'hr', label: 'HR / Buhalteris' },
   { id: 'other', label: 'Kita' },
 ];
 
