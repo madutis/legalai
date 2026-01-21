@@ -73,6 +73,8 @@ export interface ChunkMetadata {
   chunkIndex: number;
   totalChunks?: number;
   title?: string;
+  // Legislation-specific fields
+  lawCode?: string; // e.g., 'DK' for Darbo Kodeksas, 'DSS' for DSS Įstatymas
   // VDI FAQ-specific fields
   question?: string;
   category?: string;

@@ -28,6 +28,8 @@ export interface SearchResult {
     articleNumber?: number;
     articleTitle?: string;
     title?: string; // For nutarimai and vdi_doc
+    // Legislation-specific fields
+    lawCode?: string; // e.g., 'DK' for Darbo Kodeksas, 'DSS' for DSS Įstatymas
     // Ruling-specific fields
     caseNumber?: string;
     caseTitle?: string;
@@ -136,6 +138,8 @@ export async function searchHybrid(
       articleNumber: match.metadata?.articleNumber as number | undefined,
       articleTitle: match.metadata?.articleTitle as string | undefined,
       title: match.metadata?.title as string | undefined, // For nutarimai and vdi_doc
+      // Legislation-specific fields
+      lawCode: match.metadata?.lawCode as string | undefined,
       // Ruling-specific fields
       caseNumber: match.metadata?.caseNumber as string | undefined,
       caseTitle: match.metadata?.caseTitle as string | undefined,
