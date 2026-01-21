@@ -77,12 +77,17 @@ const TOPIC_ICONS: Record<string, React.ReactNode> = {
       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
     </svg>
   ),
-  council: (
+  disciplinary: (
     <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  ),
+  material: (
+    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      <path d="M3 3l18 18" />
     </svg>
   ),
   contracts: (
@@ -106,7 +111,8 @@ const TOPICS = [
   { id: 'termination', label: 'Atleidimas' },
   { id: 'leave', label: 'Atostogos' },
   { id: 'wages', label: 'Darbo užmokestis' },
-  { id: 'council', label: 'Darbo taryba' },
+  { id: 'disciplinary', label: 'Drausminė atsakomybė' },
+  { id: 'material', label: 'Materialinė atsakomybė' },
   { id: 'contracts', label: 'Darbo sutartys' },
   { id: 'other', label: 'Kitas klausimas' },
 ];
@@ -318,7 +324,7 @@ export default function Home() {
                       <div className={`mb-1 flex justify-center group-hover:scale-110 transition-transform ${data.topic === topic.id ? 'text-gold' : 'text-muted-foreground'}`}>
                         {TOPIC_ICONS[topic.id]}
                       </div>
-                      <span className="font-medium text-xs">{topic.label}</span>
+                      <span className="font-medium text-xs block leading-snug">{topic.label}</span>
                     </button>
                   ))}
                 </div>
