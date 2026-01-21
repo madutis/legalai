@@ -107,24 +107,15 @@ export async function POST(request: NextRequest) {
             }
           }
 
-          const legislationCount = searchResults.filter(r => r.metadata.docType === 'legislation').length;
-          const rulingCount = searchResults.filter(r => r.metadata.docType === 'lat_ruling').length;
-          const nutarimaiCount = searchResults.filter(r => r.metadata.docType === 'nutarimas').length;
-          const vdiFaqCount = searchResults.filter(r => r.metadata.docType === 'vdi_faq').length;
-          const vdiDocsCount = searchResults.filter(r => r.metadata.docType === 'vdi_doc').length;
-          const parts = [`${legislationCount} straipsn.`];
-          if (rulingCount > 0) parts.push(`${rulingCount} nutart.`);
-          if (nutarimaiCount > 0) parts.push(`${nutarimaiCount} vyriaus. nutar.`);
-          if (vdiFaqCount > 0) parts.push(`${vdiFaqCount} VDI DUK`);
-          if (vdiDocsCount > 0) parts.push(`${vdiDocsCount} VDI dok.`);
-          sendStatus(`Rasta ${parts.join(', ')}. Ruošiu atsakymą...`);
+          sendStatus(`Rasta ${searchResults.length} dokumentų. Ruošiu atsakymą...`);
 
           // Label each source with its type for the LLM
           const contextTexts = searchResults.map((r) => {
             if (r.metadata.docType === 'legislation') {
               const articleNum = r.metadata.articleNumber;
               const title = r.metadata.articleTitle || '';
-              return `[DARBO KODEKSAS, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
+              const lawLabel = (r.metadata as any).lawCode === 'DSS' ? 'DSS ĮSTATYMAS' : 'DARBO KODEKSAS';
+              return `[${lawLabel}, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
             } else if (r.metadata.docType === 'lat_ruling') {
               // Fetch full text from SQLite for new LAT rulings
               const latCase = getCaseById(r.metadata.docId);
@@ -184,6 +175,7 @@ export async function POST(request: NextRequest) {
                 score: r.score,
                 articleNumber: r.metadata.articleNumber,
                 articleTitle: r.metadata.articleTitle,
+                lawCode: (r.metadata as any).lawCode,
                 caseNumber,
                 caseTitle: r.metadata.caseTitle,
                 caseSummary: r.metadata.caseSummary,
