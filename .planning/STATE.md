@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 1.2 of 7 (Darbo Sauga)
-Plan: 1 of 3 in current phase
+Plan: 2 of 3 in current phase
 Status: In progress
-Last activity: 2026-01-21 — Completed 01.2-01-PLAN.md
+Last activity: 2026-01-21 — Completed 01.2-02-PLAN.md
 
-Progress: ██░░░░░░░░ 25%
+Progress: ███░░░░░░░ 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
-- Average duration: 15 min
-- Total execution time: 88 min
+- Total plans completed: 7
+- Average duration: 18 min
+- Total execution time: 125 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: ██░░░░░░░░ 25%
 |-------|-------|-------|----------|
 | 1 | 3 | 24 min | 8 min |
 | 1.1 | 2 | 52 min | 26 min |
-| 1.2 | 1 | 12 min | 12 min |
+| 1.2 | 2 | 49 min | 25 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-02 (2m), 01-03 (10m), 01.1-01 (7m), 01.1-02 (45m), 01.2-01 (12m)
+- Last 5 plans: 01-03 (10m), 01.1-01 (7m), 01.1-02 (45m), 01.2-01 (12m), 01.2-02 (37m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -55,6 +55,8 @@ Recent decisions affecting current work:
 | 01.1-02 | vdiDocsK default 3 | Supplementary source alongside FAQ (4) and nutarimai (5) |
 | 01.2-01 | e-TAR DOCX download for DSS | Same pattern as Darbo Kodeksas for consistency |
 | 01.2-01 | lawCode=DSS for DSS Įstatymas | Enables citation formatting: "DSS 12 str." vs "DK 57 str." |
+| 01.2-02 | Include all 95 Tier 1+2 docs | LLM classified more as essential/useful than 10-15 target |
+| 01.2-02 | category=safety in metadata | Enables filtered search for safety-specific queries |
 
 ### Pending Todos
 
@@ -67,5 +69,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 01.2-01-PLAN.md (DSS Įstatymas ingested)
+Stopped at: Completed 01.2-02-PLAN.md (VDI safety documents ingested)
 Resume file: None
