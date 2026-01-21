@@ -25,7 +25,8 @@ const TOPIC_LABELS: Record<string, string> = {
   termination: 'Atleidimas',
   leave: 'Atostogos',
   wages: 'Darbo užmokestis',
-  council: 'Darbo taryba',
+  disciplinary: 'Drausminė atsakomybė',
+  material: 'Materialinė atsakomybė',
   contracts: 'Darbo sutartys',
   other: 'Kitas klausimas',
 };
@@ -60,12 +61,17 @@ const TOPIC_ICONS: Record<string, React.ReactNode> = {
       <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
     </svg>
   ),
-  council: (
+  disciplinary: (
     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  ),
+  material: (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+      <path d="M3 3l18 18" />
     </svg>
   ),
   contracts: (

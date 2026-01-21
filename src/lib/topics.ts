@@ -98,6 +98,38 @@ export const TOPICS: TopicConfig[] = [
     ],
   },
   {
+    id: 'disciplinary',
+    labelLT: 'Drausminė atsakomybė',
+    labelEN: 'Disciplinary Liability',
+    questions: [
+      {
+        id: 'disciplinary_type',
+        textLT: 'Koks drausminės atsakomybės klausimas?',
+        options: [
+          { value: 'warning', labelLT: 'Įspėjimas' },
+          { value: 'dismissal', labelLT: 'Atleidimas už pažeidimą' },
+          { value: 'procedure', labelLT: 'Procedūra' },
+        ],
+      },
+    ],
+  },
+  {
+    id: 'material',
+    labelLT: 'Materialinė atsakomybė',
+    labelEN: 'Material Liability',
+    questions: [
+      {
+        id: 'material_type',
+        textLT: 'Koks materialinės atsakomybės klausimas?',
+        options: [
+          { value: 'damage', labelLT: 'Žalos atlyginimas' },
+          { value: 'limits', labelLT: 'Atsakomybės ribos' },
+          { value: 'procedure', labelLT: 'Išieškojimo tvarka' },
+        ],
+      },
+    ],
+  },
+  {
     id: 'contracts',
     labelLT: 'Darbo sutartys',
     labelEN: 'Contracts',
@@ -109,24 +141,6 @@ export const TOPICS: TopicConfig[] = [
           { value: 'conditions', labelLT: 'Sąlygų keitimas' },
           { value: 'violations', labelLT: 'Pažeidimai' },
           { value: 'interpretation', labelLT: 'Interpretacija' },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'discrimination',
-    labelLT: 'Diskriminacija',
-    labelEN: 'Discrimination',
-    questions: [
-      {
-        id: 'discrimination_type',
-        textLT: 'Kokio tipo diskriminacija?',
-        options: [
-          { value: 'gender', labelLT: 'Lyties' },
-          { value: 'age', labelLT: 'Amžiaus' },
-          { value: 'disability', labelLT: 'Negalios' },
-          { value: 'ethnicity', labelLT: 'Etninė' },
-          { value: 'other', labelLT: 'Kita' },
         ],
       },
     ],

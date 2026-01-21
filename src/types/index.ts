@@ -19,8 +19,9 @@ export type ConsultationTopic =
   | 'termination'
   | 'leave'
   | 'wages'
+  | 'disciplinary'
+  | 'material'
   | 'contracts'
-  | 'discrimination'
   | 'other';
 
 export type ConsultationStatus = 'active' | 'completed';
