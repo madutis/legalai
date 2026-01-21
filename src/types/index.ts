@@ -22,6 +22,7 @@ export type ConsultationTopic =
   | 'disciplinary'
   | 'material'
   | 'contracts'
+  | 'safety'
   | 'other';
 
 export type ConsultationStatus = 'active' | 'completed';

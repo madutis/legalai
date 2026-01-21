@@ -146,6 +146,24 @@ export const TOPICS: TopicConfig[] = [
     ],
   },
   {
+    id: 'safety',
+    labelLT: 'Darbo sauga',
+    labelEN: 'Occupational Safety',
+    questions: [
+      {
+        id: 'safety_type',
+        textLT: 'Koks darbo saugos klausimas?',
+        options: [
+          { value: 'training', labelLT: 'Instruktavimas/mokymai' },
+          { value: 'incident', labelLT: 'Nelaimingas atsitikimas' },
+          { value: 'remote', labelLT: 'Nuotolinis darbas' },
+          { value: 'rules', labelLT: 'Taisyklės/dokumentai' },
+          { value: 'general', labelLT: 'Bendri reikalavimai' },
+        ],
+      },
+    ],
+  },
+  {
     id: 'other',
     labelLT: 'Kita',
     labelEN: 'Other',
