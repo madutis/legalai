@@ -355,47 +355,58 @@ export default function Home() {
             <div className="divider-elegant text-muted-foreground text-xs mb-6">
               <span>Duomenų šaltiniai</span>
             </div>
-            <div className="grid grid-cols-3 gap-3 max-w-xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-2xl mx-auto">
               {[
                 {
+                  title: 'Darbo kodeksas',
+                  desc: '264 straipsniai',
+                  accent: 'from-blue-500/10 to-blue-600/5',
+                  iconColor: 'text-blue-600 dark:text-blue-400',
                   icon: (
-                    <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
                       <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                      <path d="M8 7h8M8 11h8M8 15h5" />
                     </svg>
                   ),
-                  title: 'Darbo kodeksas',
-                  desc: '264 straipsniai su komentarais',
-                  accent: 'from-blue-500/10 to-blue-600/5',
-                  iconColor: 'text-blue-600 dark:text-blue-400'
                 },
                 {
-                  icon: (
-                    <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M12 3 2 8l10 5 10-5-10-5z" />
-                      <path d="m2 8 10 5 10-5" />
-                      <path d="M12 13v8" />
-                      <path d="M20 8v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8" />
-                    </svg>
-                  ),
                   title: 'LAT praktika',
-                  desc: '58 nutartys (2015-2025)',
+                  desc: '58 nutartys',
                   accent: 'from-gold/10 to-amber-600/5',
-                  iconColor: 'text-gold'
+                  iconColor: 'text-gold',
+                  icon: (
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 2v20" />
+                      <path d="M2 6h20" />
+                      <path d="M4 6l2 8h-4l2-8" />
+                      <path d="M20 6l2 8h-4l2-8" />
+                    </svg>
+                  ),
                 },
                 {
+                  title: 'VDI šaltiniai',
+                  desc: '260 DUK + dokumentai',
+                  accent: 'from-purple-500/10 to-purple-600/5',
+                  iconColor: 'text-purple-600 dark:text-purple-400',
                   icon: (
-                    <svg className="w-10 h-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                      <path d="M8 9h8M8 13h6" />
+                    </svg>
+                  ),
+                },
+                {
+                  title: 'LRV nutarimai',
+                  desc: '12 nutarimų',
+                  accent: 'from-emerald-500/10 to-emerald-600/5',
+                  iconColor: 'text-emerald-600 dark:text-emerald-400',
+                  icon: (
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
                       <polyline points="14,2 14,8 20,8" />
                       <path d="M9 15 11 17 15 13" />
                     </svg>
                   ),
-                  title: 'Vyriausybės nutarimai',
-                  desc: '12 pagrindinių nutarimų',
-                  accent: 'from-emerald-500/10 to-emerald-600/5',
-                  iconColor: 'text-emerald-600 dark:text-emerald-400'
                 },
               ].map((item, i) => (
                 <div
@@ -404,29 +415,7 @@ export default function Home() {
                   style={{ animationDelay: `${400 + i * 100}ms` }}
                 >
                   <div className={`mb-2 flex justify-center ${item.iconColor}`}>
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      {item.title === 'Darbo kodeksas' && (
-                        <>
-                          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-                        </>
-                      )}
-                      {item.title === 'LAT praktika' && (
-                        <>
-                          <path d="M12 2v20" />
-                          <path d="M2 6h20" />
-                          <path d="M4 6l2 8h-4l2-8" />
-                          <path d="M20 6l2 8h-4l2-8" />
-                        </>
-                      )}
-                      {item.title === 'Vyriausybės nutarimai' && (
-                        <>
-                          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                          <polyline points="14,2 14,8 20,8" />
-                          <path d="M9 15 11 17 15 13" />
-                        </>
-                      )}
-                    </svg>
+                    {item.icon}
                   </div>
                   <div className="font-serif font-semibold text-foreground text-sm">{item.title}</div>
                   <div className="text-xs text-muted-foreground">{item.desc}</div>
