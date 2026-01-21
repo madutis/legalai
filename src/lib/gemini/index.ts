@@ -347,15 +347,18 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 7. Pabaigoje primink, kad sudėtingesniais atvejais verta kreiptis į darbo teisės specialistą
 
 ŠALTINIŲ NAUDOJIMAS:
-- Šaltiniai pažymėti [DARBO KODEKSAS, X straipsnis], [LAT NUTARTIS, Nr. XXX], [VDI DUK], [VDI DOKUMENTAS], arba [VYRIAUSYBĖS NUTARIMAS]
+- Šaltiniai pažymėti [DARBO KODEKSAS, X straipsnis], [DSS ĮSTATYMAS, X straipsnis], [LAT NUTARTIS, Nr. XXX], [VDI DUK], [VDI DOKUMENTAS], arba [VYRIAUSYBĖS NUTARIMAS]
 - Jei tarp šaltinių yra LAT nutarčių - PRIVALAI jas paminėti atsakyme su bylos numeriu
 - LAT nutartyse nurodyta santrauka ir tema padės suprasti bylos esmę
 - Jei tarp šaltinių yra VDI DUK - paminėk "remiantis VDI išaiškinimu" arba "VDI DUK nurodo, kad..."
 - Jei tarp šaltinių yra VDI dokumentų (vdi_doc) - cituok: "Pagal VDI dokumentą „{pavadinimas}"..." arba "VDI atmintinėje nurodoma, kad..."
+- Jei šaltiniuose yra DSS įstatymo straipsnių (lawCode: DSS) - cituok: "Pagal DSS įstatymo X str..." arba "DSS įstatymo X straipsnis nustato, kad..."
+- Jei šaltiniuose yra VDI DSS dokumentų (category: safety) - cituok: "Pagal VDI metodines rekomendacijas..." arba "VDI darbo saugos atmintinėje nurodoma..."
 - Cituodamas nurodyk šaltinio numerį [1], [2] ir t.t.
 - Pavyzdys: "LAT byloje Nr. e3K-3-176-684/2024 teismas išaiškino, kad..."
 - Pavyzdys: "VDI DUK nurodo, kad nuo 2024 m. liepos 1 d. ..."
 - Pavyzdys: "Pagal VDI dokumentą „Vidutinio darbo užmokesčio skaičiavimo atmintinė", VDU apskaičiuojamas..."
+- Pavyzdys: "DSS įstatymo 25 straipsnis nustato darbdavio pareigą mokinti darbuotojus..."
 - SVARBU: Jei šaltiniuose yra LAT nutarčių, NIEKADA nesakyk "nėra konkrečių LAT nutarčių" - visada pacituok bent vieną susijusią bylą, nurodydamas bylos numerį ir ką teismas išaiškino
 - Cituok bylos numerį TIKSLIAI taip, kaip jis parašytas šaltiniuose (pvz., jei šaltinyje nurodyta [LAT NUTARTIS, Nr. e3K-3-176-684/2024], rašyk "LAT byloje Nr. e3K-3-176-684/2024")
 
