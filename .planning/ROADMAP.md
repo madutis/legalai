@@ -16,7 +16,9 @@ None
 
 - [x] **Phase 1: VDI FAQ Ingestion** - Add VDI FAQ as citable knowledge source
 - [x] **Phase 1.1: VDI Legal Docs** - Selective ingestion of VDI teisės aktai (INSERTED)
+- [ ] **Phase 1.2: Darbo Sauga** - Occupational safety guidance ingestion + topic (INSERTED)
 - [ ] **Phase 2: Contract Templates** - Employment contract template generation
+- [ ] **Phase 2.1: Safety Rules Generator** - Darbo saugos taisyklės generator (INSERTED)
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
 - [ ] **Phase 4: User Onboarding** - Registration and onboarding flow
 - [ ] **Phase 5: Account Management** - User profile and settings
@@ -44,11 +46,50 @@ None
 - Tier 2 (high-value): Occupational safety reporting, termination-related acts
 - Use LLM to classify/score documents for relevance
 
+### Phase 1.2: Darbo Sauga (INSERTED)
+**Goal**: Ingest VDI occupational safety methodological recommendations and add "Darbo sauga" topic
+**Depends on**: Phase 1.1
+**Research**: Unlikely (follows VDI docs pattern)
+**Plans**: 3 estimated
+
+**Scope:**
+- Crawl VDI MR_grid.aspx for methodological recommendations (245 total docs)
+- Filter to Tier 1+2 relevant for accountants (~10-15 docs)
+- Key docs: instruktavimas, nuotolinis darbas, smurto prevencija, nelaimingi atsitikimai
+- Add "Darbo sauga" topic to landing page and chat
+- Update search and LLM prompts for DSS citations
+
+**PRD:** .planning/phases/01.2-darbo-sauga/PRD.md
+
 ### Phase 2: Contract Templates
 **Goal**: Generate employment contract templates with user context
-**Depends on**: Phase 1.1
+**Depends on**: Phase 1.2
 **Research**: Unlikely (internal patterns, existing RAG)
 **Plans**: TBD
+
+### Phase 2.1: Safety Rules Generator (INSERTED)
+**Goal**: Generate customized Darbo saugos taisyklės based on company profile
+**Depends on**: Phase 1.2 (DSS content), Phase 2 (template generation patterns)
+**Research**: Unlikely (builds on Phase 2 patterns)
+**Plans**: 3-4 estimated
+
+**Features:**
+- Company profile input: size, industry (EVRK), work types, hazards
+- RAG-powered clause generation from DSS įstatymas + VDI rekomendacijos
+- Conditional sections based on hazards (PPE, VDU work, heights, etc.)
+- Standard template structure with customizable content
+
+**Template sections:**
+1. Bendrosios nuostatos
+2. Darbdavio pareigos (from DSS įstatymas)
+3. Darbuotojo teisės ir pareigos
+4. Instruktavimo tvarka (from VDI rekomendacijos)
+5. Darbo vietos reikalavimai
+6. Asmeninės apsaugos priemonės (conditional)
+7. Nelaimingų atsitikimų tyrimas
+8. Atsakomybė
+
+**PRD:** To be created (extends Phase 1.2 PRD concept)
 
 ### Phase 3: Landing Page
 **Goal**: Create conversion-focused landing page explaining value proposition
@@ -84,13 +125,15 @@ None
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 1.1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 1.1 → 1.2 → 2 → 2.1 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. VDI FAQ Ingestion | 3/3 | ✓ Complete | 2026-01-20 |
 | 1.1. VDI Legal Docs | 2/2 | ✓ Complete | 2026-01-20 |
+| 1.2. Darbo Sauga | 0/3 | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
+| 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
 | 4. User Onboarding | 0/TBD | Not started | - |
 | 5. Account Management | 0/TBD | Not started | - |
