@@ -17,6 +17,7 @@ None
 - [x] **Phase 1: VDI FAQ Ingestion** - Add VDI FAQ as citable knowledge source
 - [x] **Phase 1.1: VDI Legal Docs** - Selective ingestion of VDI teisės aktai (INSERTED)
 - [x] **Phase 1.2: Darbo Sauga** - Occupational safety guidance ingestion + topic (INSERTED)
+- [ ] **Phase 1.3: Fire Safety Law** - Priešgaisrinės saugos įstatymas ingestion (INSERTED)
 - [ ] **Phase 2: Contract Templates** - Employment contract template generation
 - [ ] **Phase 2.1: Safety Rules Generator** - Darbo saugos taisyklės generator (INSERTED)
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
@@ -60,6 +61,23 @@ None
 - Update search and LLM prompts for DSS citations
 
 **PRD:** .planning/phases/01.2-darbo-sauga/PRD.md
+
+### Phase 1.3: Fire Safety Law (INSERTED)
+**Goal**: Ingest Priešgaisrinės saugos įstatymas (22 articles) as citable legislation source
+**Depends on**: Phase 1.2
+**Research**: Unlikely (follows DSS ingestion pattern)
+**Plans**: 1 estimated
+
+**Scope:**
+- Ingest Fire Safety Law from e-tar.lt (TAR.9CBB77180BFE)
+- lawCode: PSS
+- Add to search and LLM context labeling
+- Add to source display with e-tar links
+
+**Key Articles:**
+- Art 10-11: Citizen/organization rights and duties
+- Art 12-15: Fire prevention requirements
+- Art 16-18: Fire suppression organization
 
 ### Phase 2: Contract Templates
 **Goal**: Generate employment contract templates with user context
@@ -125,13 +143,14 @@ None
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 1.1 → 1.2 → 2 → 2.1 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 2 → 2.1 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. VDI FAQ Ingestion | 3/3 | ✓ Complete | 2026-01-20 |
 | 1.1. VDI Legal Docs | 2/2 | ✓ Complete | 2026-01-20 |
 | 1.2. Darbo Sauga | 3/3 | ✓ Complete | 2026-01-21 |
+| 1.3. Fire Safety Law | 0/1 | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |

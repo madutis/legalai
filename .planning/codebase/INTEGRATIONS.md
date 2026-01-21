@@ -46,8 +46,13 @@
   - SDK/Client: @pinecone-database/pinecone v6.1.3
   - Auth: API key in `PINECONE_API_KEY` env var
   - Index: `law-agent` (configurable via `PINECONE_INDEX`)
-  - Document types: legislation, lat_ruling, nutarimas
   - Usage: `src/lib/pinecone/index.ts`
+  - Document types:
+    - `legislation` - Law articles (DK, DSS, etc.) with `lawCode` field
+    - `lat_ruling` - Supreme Court rulings
+    - `nutarimas` - Government resolutions
+    - `vdi_faq` - VDI FAQ entries
+    - `vdi_doc` - VDI documents (PDFs, with `category` field for filtering)
 
 **File Storage:**
 - Local filesystem - PDF storage in `data/lat-pdfs/`
