@@ -131,7 +131,7 @@ Phases execute in numeric order: 1 → 1.1 → 1.2 → 2 → 2.1 → 3 → 4 →
 |-------|----------------|--------|-----------|
 | 1. VDI FAQ Ingestion | 3/3 | ✓ Complete | 2026-01-20 |
 | 1.1. VDI Legal Docs | 2/2 | ✓ Complete | 2026-01-20 |
-| 1.2. Darbo Sauga | 0/3 | Not started | - |
+| 1.2. Darbo Sauga | 1/3 | In progress | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
