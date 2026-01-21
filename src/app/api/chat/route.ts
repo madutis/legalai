@@ -114,7 +114,9 @@ export async function POST(request: NextRequest) {
             if (r.metadata.docType === 'legislation') {
               const articleNum = r.metadata.articleNumber;
               const title = r.metadata.articleTitle || '';
-              const lawLabel = (r.metadata as any).lawCode === 'DSS' ? 'DSS ĮSTATYMAS' : 'DARBO KODEKSAS';
+              const lawLabel = (r.metadata as any).lawCode === 'DSS' ? 'DSS ĮSTATYMAS' :
+                             (r.metadata as any).lawCode === 'PSS' ? 'PRIEŠGAISRINĖS SAUGOS ĮSTATYMAS' :
+                             'DARBO KODEKSAS';
               return `[${lawLabel}, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
             } else if (r.metadata.docType === 'lat_ruling') {
               // Fetch full text from SQLite for new LAT rulings
