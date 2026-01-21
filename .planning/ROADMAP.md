@@ -16,7 +16,7 @@ None
 
 - [x] **Phase 1: VDI FAQ Ingestion** - Add VDI FAQ as citable knowledge source
 - [x] **Phase 1.1: VDI Legal Docs** - Selective ingestion of VDI teisės aktai (INSERTED)
-- [ ] **Phase 1.2: Darbo Sauga** - Occupational safety guidance ingestion + topic (INSERTED)
+- [x] **Phase 1.2: Darbo Sauga** - Occupational safety guidance ingestion + topic (INSERTED)
 - [ ] **Phase 2: Contract Templates** - Employment contract template generation
 - [ ] **Phase 2.1: Safety Rules Generator** - Darbo saugos taisyklės generator (INSERTED)
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
@@ -131,7 +131,7 @@ Phases execute in numeric order: 1 → 1.1 → 1.2 → 2 → 2.1 → 3 → 4 →
 |-------|----------------|--------|-----------|
 | 1. VDI FAQ Ingestion | 3/3 | ✓ Complete | 2026-01-20 |
 | 1.1. VDI Legal Docs | 2/2 | ✓ Complete | 2026-01-20 |
-| 1.2. Darbo Sauga | 2/3 | In progress | - |
+| 1.2. Darbo Sauga | 3/3 | ✓ Complete | 2026-01-21 |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
