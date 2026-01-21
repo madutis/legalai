@@ -453,7 +453,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                       if (message.role !== 'assistant' || !message.sources?.length) return null;
 
                       const citedIndices = new Set(
-                        [...message.content.matchAll(/\[(\d+)\]/g)]
+                        [...message.content.matchAll(/\[(\d+)[,\]]/g)]
                           .map(m => parseInt(m[1]) - 1)
                       );
 
