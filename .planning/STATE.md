@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 1.2 — Darbo Sauga
+**Current focus:** Phase 1.2 Complete — Ready for next phase
 
 ## Current Position
 
-Phase: 1.2 of 7 (Darbo Sauga)
-Plan: 2 of 3 in current phase
-Status: In progress
-Last activity: 2026-01-21 — Completed 01.2-02-PLAN.md
+Phase: 1.2 of 7 (Darbo Sauga) - COMPLETE
+Plan: 3 of 3 in current phase - COMPLETE
+Status: Phase complete
+Last activity: 2026-01-21 — Completed 01.2-03-PLAN.md
 
 Progress: ███░░░░░░░ 30%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 18 min
-- Total execution time: 125 min
+- Total plans completed: 8
+- Average duration: 17 min
+- Total execution time: 137 min
 
 **By Phase:**
 
@@ -29,10 +29,10 @@ Progress: ███░░░░░░░ 30%
 |-------|-------|-------|----------|
 | 1 | 3 | 24 min | 8 min |
 | 1.1 | 2 | 52 min | 26 min |
-| 1.2 | 2 | 49 min | 25 min |
+| 1.2 | 3 | 61 min | 20 min |
 
 **Recent Trend:**
-- Last 5 plans: 01-03 (10m), 01.1-01 (7m), 01.1-02 (45m), 01.2-01 (12m), 01.2-02 (37m)
+- Last 5 plans: 01.1-01 (7m), 01.1-02 (45m), 01.2-01 (12m), 01.2-02 (37m), 01.2-03 (12m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -57,6 +57,8 @@ Recent decisions affecting current work:
 | 01.2-01 | lawCode=DSS for DSS Įstatymas | Enables citation formatting: "DSS 12 str." vs "DK 57 str." |
 | 01.2-02 | Include all 95 Tier 1+2 docs | LLM classified more as essential/useful than 10-15 target |
 | 01.2-02 | category=safety in metadata | Enables filtered search for safety-specific queries |
+| 01.2-03 | Shield icon for safety topic | Visual representation of protection/safety theme |
+| 01.2-03 | DSS source label format | "DSS X str." differentiates from "DK X str." |
 
 ### Pending Todos
 
@@ -69,5 +71,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-21
-Stopped at: Completed 01.2-02-PLAN.md (VDI safety documents ingested)
+Stopped at: Completed Phase 01.2 (Darbo Sauga) - all 3 plans done
 Resume file: None
