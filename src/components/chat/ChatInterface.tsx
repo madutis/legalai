@@ -252,6 +252,8 @@ interface Source {
   // VDI FAQ fields
   question?: string;
   category?: string;
+  // Legislation-specific fields
+  lawCode?: string; // e.g., 'DK' for Darbo Kodeksas, 'DSS' for DSS Istatymas
 }
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
@@ -324,7 +326,8 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
 
   const formatSource = (source: Source): string | null => {
     if (source.docType === 'legislation' && source.articleNumber) {
-      return `${source.articleNumber} str.`;
+      const lawLabel = source.lawCode === 'DSS' ? 'DSS' : 'DK';
+      return `${lawLabel} ${source.articleNumber} str.`;
     }
     if (source.docType === 'lat_ruling') {
       if (source.caseNumber) {
@@ -354,7 +357,9 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
 
   const getSourceUrl = (source: Source): string | null => {
     if (source.docType === 'legislation' && source.articleNumber) {
-      return `https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_${source.articleNumber}`;
+      // DSS Istatymas uses different e-TAR document ID
+      const eTarDocId = source.lawCode === 'DSS' ? 'TAR.95C79D036AA4' : 'f6d686707e7011e6b969d7ae07280e89';
+      return `https://www.e-tar.lt/portal/lt/legalAct/${eTarDocId}/asr#part_${source.articleNumber}`;
     }
     if ((source.docType === 'lat_ruling') && source.sourceUrl) {
       const pageAnchor = source.sourcePage ? `#page=${source.sourcePage}` : '';
