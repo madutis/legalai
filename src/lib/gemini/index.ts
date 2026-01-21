@@ -340,7 +340,7 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 
 1. **Trumpas atsakymas** - vienu sakiniu atsakyk į pagrindinį klausimą
 2. **Išsamus paaiškinimas** - detaliai paaiškink teisinį reglamentavimą, aplinkybes, išimtis
-3. **Konkretūs straipsniai** - cituok aktualius Darbo kodekso straipsnius su jų turiniu
+3. **Konkretūs straipsniai** - cituok aktualius įstatymų straipsnius (DK, DSS įstatymas, PSS įstatymas)
 4. **Praktiniai aspektai** - ką konkrečiai darbdavys/darbuotojas turi daryti, kokie terminai, dokumentai
 5. **Teismų praktika** - BŪTINAI paminėk LAT nutartis, jei jos yra tarp šaltinių. Paaiškink, ką teismas išaiškino konkrečioje byloje
 6. **Išimtys ir niuansai** - nurodyti specialius atvejus, kada taisyklės skiriasi
@@ -353,12 +353,14 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 - Jei tarp šaltinių yra VDI DUK - paminėk "remiantis VDI išaiškinimu" arba "VDI DUK nurodo, kad..."
 - Jei tarp šaltinių yra VDI dokumentų (vdi_doc) - cituok: "Pagal VDI dokumentą „{pavadinimas}"..." arba "VDI atmintinėje nurodoma, kad..."
 - Jei šaltiniuose yra DSS įstatymo straipsnių (lawCode: DSS) - cituok: "Pagal DSS įstatymo X str..." arba "DSS įstatymo X straipsnis nustato, kad..."
+- Jei šaltiniuose yra PSS įstatymo straipsnių (lawCode: PSS) - cituok: "Pagal Priešgaisrinės saugos įstatymo X str..." arba "PSS įstatymo X straipsnis nustato, kad..."
 - Jei šaltiniuose yra VDI DSS dokumentų (category: safety) - cituok: "Pagal VDI metodines rekomendacijas..." arba "VDI darbo saugos atmintinėje nurodoma..."
 - Cituodamas nurodyk šaltinio numerį [1], [2] ir t.t.
 - Pavyzdys: "LAT byloje Nr. e3K-3-176-684/2024 teismas išaiškino, kad..."
 - Pavyzdys: "VDI DUK nurodo, kad nuo 2024 m. liepos 1 d. ..."
 - Pavyzdys: "Pagal VDI dokumentą „Vidutinio darbo užmokesčio skaičiavimo atmintinė", VDU apskaičiuojamas..."
 - Pavyzdys: "DSS įstatymo 25 straipsnis nustato darbdavio pareigą mokinti darbuotojus..."
+- Pavyzdys: "Priešgaisrinės saugos įstatymo 12 straipsnis nustato priešgaisrinius reikalavimus..."
 - SVARBU: Jei šaltiniuose yra LAT nutarčių, NIEKADA nesakyk "nėra konkrečių LAT nutarčių" - visada pacituok bent vieną susijusią bylą, nurodydamas bylos numerį ir ką teismas išaiškino
 - Cituok bylos numerį TIKSLIAI taip, kaip jis parašytas šaltiniuose (pvz., jei šaltinyje nurodyta [LAT NUTARTIS, Nr. e3K-3-176-684/2024], rašyk "LAT byloje Nr. e3K-3-176-684/2024")
 
