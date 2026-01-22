@@ -18,6 +18,7 @@ None
 - [x] **Phase 1.1: VDI Legal Docs** - Selective ingestion of VDI teisės aktai (INSERTED)
 - [x] **Phase 1.2: Darbo Sauga** - Occupational safety guidance ingestion + topic (INSERTED)
 - [x] **Phase 1.3: Fire Safety Law** - Priešgaisrinės saugos įstatymas ingestion (INSERTED)
+- [x] **Phase 1.4: Labor Disputes Statistics** - VDI DGK outcome statistics for evidence-based guidance (INSERTED)
 - [ ] **Phase 2: Contract Templates** - Employment contract template generation
 - [ ] **Phase 2.1: Safety Rules Generator** - Darbo saugos taisyklės generator (INSERTED)
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
@@ -78,6 +79,34 @@ None
 - Art 10-11: Citizen/organization rights and duties
 - Art 12-15: Fire prevention requirements
 - Art 16-18: Fire suppression organization
+
+### Phase 1.4: Labor Disputes Statistics (INSERTED)
+**Goal**: Add VDI labor dispute outcome statistics to LLM context for evidence-based guidance
+**Depends on**: Phase 1.3
+**Research**: Unlikely (data already downloaded)
+**Plans**: 1 estimated
+
+**Data source:** data.gov.lt VDI "Darbo ginčų duomenys" (2013-2025, 86k cases)
+**Location:** /data/open-data/16_dg_*.csv
+
+**Scope:**
+- Aggregate all 13 CSVs into processed statistics JSON
+- Compute outcome rates by claim type (REIKG → DGSP_PAV)
+- Compute stats by industry (top 15 EVRK codes)
+- Compute avg/median amounts by claim type
+- Add `<darbo_ginčų_statistika>` block to system prompt
+- Teach LLM to cite "VDI DGK duomenys (2013-2025)"
+
+**Key statistics to include:**
+- Outcome distribution: tenkinama pilnai/dalies, atmesta, taikos sutartis
+- Top claim types: darbo užmokestis (70%), atleidimas, žala
+- Industry patterns: transportas, statyba, restoranai
+- Financial: avg/median amounts awarded
+
+**Not in scope:**
+- Individual case search/RAG
+- Real-time data updates
+- Case-level citations
 
 ### Phase 2: Contract Templates
 **Goal**: Generate employment contract templates with user context
@@ -143,7 +172,7 @@ None
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 2 → 2.1 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 1.4 → 2 → 2.1 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -151,6 +180,7 @@ Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 2 → 2.1 → 3 �
 | 1.1. VDI Legal Docs | 2/2 | ✓ Complete | 2026-01-20 |
 | 1.2. Darbo Sauga | 3/3 | ✓ Complete | 2026-01-21 |
 | 1.3. Fire Safety Law | 1/1 | ✓ Complete | 2026-01-21 |
+| 1.4. Labor Disputes Statistics | 1/1 | Complete | 2026-01-22 |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |

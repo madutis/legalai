@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 1.3 Complete — Ready for next phase
+**Current focus:** Phase 1.4 — Labor Disputes Statistics
 
 ## Current Position
 
-Phase: 1.3 of 7 (Fire Safety Law) - COMPLETE
-Plan: 1 of 1 in current phase - COMPLETE
+Phase: 1.4 of 8 (Labor Disputes Statistics) - COMPLETE
+Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-21 — Completed 01.3-01-PLAN.md
+Last activity: 2026-01-22 — Completed 01.4-01-PLAN.md
 
-Progress: ████░░░░░░ 36%
+Progress: █████░░░░░ 42%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
-- Average duration: 16 min
-- Total execution time: 141 min
+- Total plans completed: 10
+- Average duration: 15 min
+- Total execution time: 145 min
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: ████░░░░░░ 36%
 | 1.1 | 2 | 52 min | 26 min |
 | 1.2 | 3 | 61 min | 20 min |
 | 1.3 | 1 | 4 min | 4 min |
+| 1.4 | 1 | 4 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 01.1-02 (45m), 01.2-01 (12m), 01.2-02 (37m), 01.2-03 (12m), 01.3-01 (4m)
+- Last 5 plans: 01.2-01 (12m), 01.2-02 (37m), 01.2-03 (12m), 01.3-01 (4m), 01.4-01 (4m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -62,6 +63,8 @@ Recent decisions affecting current work:
 | 01.2-03 | DSS source label format | "DSS X str." differentiates from "DK X str." |
 | 01.3-01 | Follow DSS pattern for PSS | Consistent ingestion approach for legislation |
 | 01.3-01 | lawCode=PSS for fire safety | Enables citation formatting: "PSS X str." |
+| 01.4-01 | Inline stats in prompt | Simpler than runtime loading, ~500 chars |
+| 01.4-01 | 35k valid cases from 86k | Only include cases with recorded outcomes |
 
 ### Pending Todos
 
@@ -73,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-21
-Stopped at: Completed Phase 01.3 (Fire Safety Law) - 1 plan done
+Last session: 2026-01-22
+Stopped at: Completed 01.4-01-PLAN.md (Phase 1.4 complete)
 Resume file: None
