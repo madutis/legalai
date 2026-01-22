@@ -1,0 +1,8 @@
+# Large data files only needed for local scripts, not runtime
+data/open-data/
+data/lat-pdfs/
+data/rulings/
+data/*.pdf
+
+# Scripts
+scripts/
