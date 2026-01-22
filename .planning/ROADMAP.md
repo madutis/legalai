@@ -180,7 +180,7 @@ Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 1.4 → 2 → 2.1
 | 1.1. VDI Legal Docs | 2/2 | ✓ Complete | 2026-01-20 |
 | 1.2. Darbo Sauga | 3/3 | ✓ Complete | 2026-01-21 |
 | 1.3. Fire Safety Law | 1/1 | ✓ Complete | 2026-01-21 |
-| 1.4. Labor Disputes Statistics | 1/1 | Complete | 2026-01-22 |
+| 1.4. Labor Disputes Statistics | 1/1 | ✓ Complete | 2026-01-22 |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
