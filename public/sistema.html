@@ -96,6 +96,7 @@
     <div class="stat"><div class="stat-number">13</div><div class="stat-label">Nutarimai</div></div>
     <div class="stat"><div class="stat-number">~180</div><div class="stat-label">VDI FAQ</div></div>
     <div class="stat"><div class="stat-number">~95</div><div class="stat-label">VDI rekomendacijos</div></div>
+    <div class="stat"><div class="stat-number">35k</div><div class="stat-label">DGK bylų statistika</div></div>
   </div>
 
   <h3>2.1 Darbo kodeksas (legislation)</h3>
@@ -257,6 +258,51 @@
     <tr><td>166/2004</td><td>Dėl DGK posėdžio protokolo formos</td><td>Darbo ginčai</td></tr>
   </table>
   <p><strong>Šaltinis:</strong> <a href="https://www.e-tar.lt" target="_blank">e-tar.lt</a> - Teisės aktų registras</p>
+
+  <h3>2.8 VDI DGK statistika</h3>
+  <p>Valstybinės darbo inspekcijos darbo ginčų komisijų (DGK) sprendimų statistika - 35 564 bylos (2013-2025):</p>
+
+  <div class="highlight">
+    <strong>Naudojimas:</strong> LLM naudoja šią statistiką TIK kai vartotojas klausia apie ginčų baigčių tikimybes, DGK proceso sėkmės galimybes, ar verta kreiptis į DGK. Statistika NENAUDOJAMA atsakant į klausimus apie DK straipsnius, procedūras ar kitus teisinius klausimus.
+  </div>
+
+  <table>
+    <tr><th>Rodiklis</th><th>Reikšmė</th></tr>
+    <tr><td>Darbuotojo naudai pilnai</td><td>24,6%</td></tr>
+    <tr><td>Darbuotojo naudai iš dalies</td><td>14,0%</td></tr>
+    <tr><td>Darbdavio naudai (atmesta)</td><td>13,3%</td></tr>
+    <tr><td>Taikos sutartis</td><td>21,2%</td></tr>
+    <tr><td>Atsisakyta nagrinėti</td><td>25,0%</td></tr>
+  </table>
+
+  <h4>Pagal ginčo tipą:</h4>
+  <table>
+    <tr><th>Ginčo tipas</th><th>% visų</th><th>Laimėjimo tikimybė</th></tr>
+    <tr><td>Dėl darbo užmokesčio</td><td>79%</td><td>41%</td></tr>
+    <tr><td>Dėl atleidimo iš darbo</td><td>6%</td><td>24%</td></tr>
+    <tr><td>Dėl turtinės žalos</td><td>4%</td><td>22%</td></tr>
+    <tr><td>Dėl baudos darbdaviui</td><td>3%</td><td>73%</td></tr>
+  </table>
+
+  <h4>Pagal sektorių:</h4>
+  <table>
+    <tr><th>Sektorius</th><th>Bylų sk.</th><th>Laimėjimo tikimybė</th></tr>
+    <tr><td>Krovininis transportas</td><td>5 312</td><td>26% (žemiausia)</td></tr>
+    <tr><td>Statyba</td><td>2 054</td><td>48%</td></tr>
+    <tr><td>Restoranai</td><td>1 044</td><td>48%</td></tr>
+    <tr><td>Ligoninės</td><td>914</td><td>62%</td></tr>
+    <tr><td>Baldų gamyba</td><td>311</td><td>46%</td></tr>
+  </table>
+
+  <h4>Priteistos sumos (darbo užmokesčio ginčai):</h4>
+  <ul>
+    <li>Vidurkis: 6 510 EUR</li>
+    <li>Mediana: 3 803 EUR</li>
+    <li>25% priteisiama mažiau nei 1 623 EUR</li>
+    <li>75% priteisiama mažiau nei 8 074 EUR</li>
+  </ul>
+
+  <p><strong>Šaltinis:</strong> <a href="https://data.gov.lt/datasets/2064/" target="_blank">data.gov.lt</a> - VDI "Darbo ginčų duomenys"</p>
 </div>
 
 <div class="section">
@@ -502,8 +548,8 @@ CREATE TABLE lat_vectors (
 </div>
 
 <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">
-  <p>Dokumentacija atnaujinta: 2026-01-21</p>
-  <p>LegalAI v1.3 | <a href="https://legalai.lt">legalai.lt</a></p>
+  <p>Dokumentacija atnaujinta: 2026-01-22</p>
+  <p>LegalAI v1.4 | <a href="https://legalai.lt">legalai.lt</a></p>
 </footer>
 
 </body>
