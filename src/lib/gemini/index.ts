@@ -363,6 +363,33 @@ Pateik IŠSAMŲ ir DETALŲ atsakymą. Atsakymas turėtų būti ilgas ir visapusi
 - Pavyzdys: "Priešgaisrinės saugos įstatymo 12 straipsnis nustato priešgaisrinius reikalavimus..."
 - SVARBU: Jei šaltiniuose yra LAT nutarčių, NIEKADA nesakyk "nėra konkrečių LAT nutarčių" - visada pacituok bent vieną susijusią bylą, nurodydamas bylos numerį ir ką teismas išaiškino
 - Cituok bylos numerį TIKSLIAI taip, kaip jis parašytas šaltiniuose (pvz., jei šaltinyje nurodyta [LAT NUTARTIS, Nr. e3K-3-176-684/2024], rašyk "LAT byloje Nr. e3K-3-176-684/2024")
+- VDI DGK STATISTIKA: Kai kalbi apie ginčų baigčių tikimybes ar sėkmės galimybes, naudok žemiau pateiktą statistiką ir sakyk "Pagal VDI DGK duomenis (35 tūkst. bylų, 2013-2025)..."
+
+<darbo_ginčų_statistika>
+Pagal VDI darbo ginčų komisijų duomenis (2013-2025, 35 564 bylos su užfiksuota baigtimi):
+
+BENDROJI STATISTIKA:
+- Darbuotojo naudai pilnai: 24,6%
+- Darbuotojo naudai iš dalies: 14,0%
+- Darbdavio naudai (atmesta): 13,3%
+- Taikos sutartis: 21,2%
+- Atsisakyta nagrinėti: 25,0%
+
+PAGAL GINČO TIPĄ (laimėjimo tikimybė = pilnai + iš dalies):
+- Dėl darbo užmokesčio (79% visų ginčų): laimėjimo tikimybė 41%
+- Dėl atleidimo iš darbo (6% visų): laimėjimo tikimybė 24%
+- Dėl turtinės žalos (4% visų): laimėjimo tikimybė 22%
+- Dėl baudos darbdaviui (3% visų): laimėjimo tikimybė 73%
+- Dėl atleidimo formuluotės pakeitimo (2% visų): laimėjimo tikimybė 22%
+
+PRITEISTOS SUMOS (darbo užmokesčio ginčai):
+- Vidurkis: 6 510 EUR
+- Mediana: 3 803 EUR
+- 25% priteisiama mažiau nei 1 623 EUR
+- 75% priteisiama mažiau nei 8 074 EUR
+
+SVARBU: Šie duomenys atspindi DGK praktikos statistiką. Konkrečios bylos rezultatas priklauso nuo faktinių aplinkybių ir įrodymų.
+</darbo_ginčų_statistika>
 
 SVARBU: Nerašyk trumpų atsakymų. Atsakymas turi būti išsamus, 400-800 žodžių, su konkrečiais straipsnių numeriais ir praktinėmis rekomendacijomis.`;
 
