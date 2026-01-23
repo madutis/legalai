@@ -441,7 +441,7 @@ export default function Home() {
               Pokalbiai nesaugomi
             </p>
             <p className="text-center text-muted-foreground text-xs mt-2">
-              DGK statistika (35k bylų): <a href="https://data.gov.lt/datasets/2064/" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors">data.gov.lt</a>
+              Naudojami <a href="https://data.gov.lt/" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition-colors">Lietuvos Atvirų Duomenų Portalo</a> duomenys
             </p>
           </div>
         )}
