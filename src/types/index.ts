@@ -67,6 +67,40 @@ export interface TopicConfig {
   }[];
 }
 
+// Chat source (returned by API, used by frontend)
+export interface ChatSource {
+  id: string;
+  docId: string;
+  docType: 'legislation' | 'lat_ruling' | 'nutarimas' | 'vdi_faq' | 'vdi_doc';
+  sourceFile: string;
+  score: number;
+  // Legislation fields
+  articleNumber?: number;
+  articleTitle?: string;
+  lawCode?: string;
+  // LAT ruling fields
+  caseNumber?: string;
+  caseTitle?: string;
+  caseSummary?: string;
+  sourceUrl?: string;
+  sourcePage?: number;
+  // VDI FAQ fields
+  question?: string;
+  category?: string;
+  // VDI Doc / Nutarimas fields
+  title?: string;
+  tier?: number;
+  topics?: string;
+}
+
+// Chat message (used by frontend)
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: ChatSource[];
+}
+
 // API types
 export interface ChatRequest {
   consultationId: string;

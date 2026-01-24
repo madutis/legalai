@@ -124,8 +124,8 @@ export async function POST(request: NextRequest) {
             if (r.metadata.docType === 'legislation') {
               const articleNum = r.metadata.articleNumber;
               const title = r.metadata.articleTitle || '';
-              const lawLabel = (r.metadata as any).lawCode === 'DSS' ? 'DSS ĮSTATYMAS' :
-                             (r.metadata as any).lawCode === 'PSS' ? 'PRIEŠGAISRINĖS SAUGOS ĮSTATYMAS' :
+              const lawLabel = r.metadata.lawCode === 'DSS' ? 'DSS ĮSTATYMAS' :
+                             r.metadata.lawCode === 'PSS' ? 'PRIEŠGAISRINĖS SAUGOS ĮSTATYMAS' :
                              'DARBO KODEKSAS';
               return `[${lawLabel}, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
             } else if (r.metadata.docType === 'lat_ruling') {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
               return `[VDI DUK${category}]\nKlausimas: ${question}\nAtsakymas: ${r.text}`;
             } else if (r.metadata.docType === 'vdi_doc') {
               const title = r.metadata.title || 'VDI dokumentas';
-              const topics = (r.metadata as any).topics ? ` (${(r.metadata as any).topics})` : '';
+              const topics = r.metadata.topics ? ` (${r.metadata.topics})` : '';
               return `[VDI DOKUMENTAS: ${title}${topics}]\n${r.text}`;
             }
             return r.text;
@@ -164,8 +164,8 @@ export async function POST(request: NextRequest) {
           const metadata = {
             type: 'metadata',
             sources: searchResults.map((r) => {
-              let sourceUrl = (r.metadata as any).sourceUrl;
-              let sourcePage = (r.metadata as any).sourcePage;
+              let sourceUrl = r.metadata.sourceUrl;
+              let sourcePage = r.metadata.sourcePage;
               let caseNumber = r.metadata.caseNumber;
 
               // For new LAT rulings, use pre-fetched data
@@ -187,7 +187,7 @@ export async function POST(request: NextRequest) {
                 score: r.score,
                 articleNumber: r.metadata.articleNumber,
                 articleTitle: r.metadata.articleTitle,
-                lawCode: (r.metadata as any).lawCode,
+                lawCode: r.metadata.lawCode,
                 caseNumber,
                 caseTitle: r.metadata.caseTitle,
                 caseSummary: r.metadata.caseSummary,
@@ -198,8 +198,8 @@ export async function POST(request: NextRequest) {
                 category: r.metadata.category,
                 // VDI Doc fields
                 title: r.metadata.title,
-                tier: (r.metadata as any).tier,
-                topics: (r.metadata as any).topics,
+                tier: r.metadata.tier,
+                topics: r.metadata.topics,
               };
             }),
           };

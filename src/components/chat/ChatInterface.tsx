@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { useChat } from '@/hooks/useChat';
+import { useChat, type ChatSource } from '@/hooks/useChat';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { RulingModal } from './RulingModal';
@@ -63,7 +63,7 @@ function AssistantMessage({
   onOptionClick: (option: string) => void;
   onArticleClick: (articleNum: number) => void;
   onCaseClick: (docId: string) => void;
-  sources?: Source[];
+  sources?: ChatSource[];
 }) {
   const caseNumberMap = useMemo(() => {
     const map: CaseNumberMap = {};
@@ -235,26 +235,7 @@ interface ChatInterfaceProps {
   companySize?: string;
 }
 
-interface Source {
-  id: string;
-  docId: string;
-  docType: string;
-  sourceFile: string;
-  score: number;
-  articleNumber?: number;
-  articleTitle?: string;
-  title?: string;
-  sourceUrl?: string;
-  sourcePage?: number;
-  caseNumber?: string;
-  caseTitle?: string;
-  caseSummary?: string;
-  // VDI FAQ fields
-  question?: string;
-  category?: string;
-  // Legislation-specific fields
-  lawCode?: string; // e.g., 'DK' for Darbo Kodeksas, 'DSS' for DSS Istatymas
-}
+// Using ChatSource from @/types via useChat
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
   const [input, setInput] = useState('');
@@ -324,7 +305,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     }
   };
 
-  const formatSource = (source: Source): string | null => {
+  const formatSource = (source: ChatSource): string | null => {
     if (source.docType === 'legislation' && source.articleNumber) {
       const lawLabel = source.lawCode === 'DSS' ? 'DSS' :
                       source.lawCode === 'PSS' ? 'PSS' : 'DK';
@@ -356,7 +337,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     return null;
   };
 
-  const getSourceUrl = (source: Source): string | null => {
+  const getSourceUrl = (source: ChatSource): string | null => {
     if (source.docType === 'legislation' && source.articleNumber) {
       // Each law uses different e-TAR document ID
       let eTarDocId = 'f6d686707e7011e6b969d7ae07280e89'; // DK default
@@ -444,9 +425,9 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                           if (isFinalAnswer) {
                             return messages
                               .filter(m => m.role === 'assistant')
-                              .flatMap(m => m.sources || []) as Source[];
+                              .flatMap(m => m.sources || []) as ChatSource[];
                           }
-                          return (message.sources || []) as Source[];
+                          return (message.sources || []) as ChatSource[];
                         })()}
                       />
                     )}
@@ -461,12 +442,12 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                       );
 
                       const citedSources = citedIndices.size > 0
-                        ? message.sources.filter((_, i) => citedIndices.has(i))
+                        ? (message.sources || []).filter((_: ChatSource, i: number) => citedIndices.has(i))
                         : [];
 
                       const seen = new Set<string>();
-                      const uniqueSources = citedSources.filter(s => {
-                        const key = (s as Source).id || `${s.docId}-${(s as Source).articleNumber || ''}`;
+                      const uniqueSources = citedSources.filter((s: ChatSource) => {
+                        const key = s.id || `${s.docId}-${s.articleNumber || ''}`;
                         if (seen.has(key)) return false;
                         seen.add(key);
                         return true;
@@ -484,14 +465,14 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                           </p>
                           <div className="flex flex-wrap gap-1.5">
                             {uniqueSources
-                              .map((source) => ({
-                                source: source as Source,
-                                label: formatSource(source as Source),
-                                url: getSourceUrl(source as Source),
+                              .map((source: ChatSource) => ({
+                                source,
+                                label: formatSource(source),
+                                url: getSourceUrl(source),
                               }))
-                              .filter((s) => s.label !== null)
+                              .filter((s: { source: ChatSource; label: string | null; url: string | null }) => s.label !== null)
                               .slice(0, 10)
-                              .map((s, i) => {
+                              .map((s: { source: ChatSource; label: string | null; url: string | null }, i: number) => {
                                 const isExternalLink = ((s.source.docType === 'lat_ruling') && s.source.sourceUrl) || s.source.docType === 'vdi_faq' || (s.source.docType === 'vdi_doc' && s.source.sourceUrl);
 
                                 return (

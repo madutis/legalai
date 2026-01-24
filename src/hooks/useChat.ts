@@ -1,21 +1,11 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import type { ChatMessage, ChatSource } from '@/types';
 
-export interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  sources?: {
-    id: string; // Full chunk ID
-    docId: string;
-    docType: string;
-    sourceFile: string;
-    score: number;
-    articleNumber?: number;
-    articleTitle?: string;
-  }[];
-}
+// Re-export for backwards compatibility
+export type Message = ChatMessage;
+export type { ChatSource };
 
 interface ChatContext {
   userRole?: string;

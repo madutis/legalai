@@ -1,4 +1,4 @@
-import { Pinecone } from '@pinecone-database/pinecone';
+import { Pinecone, type ScoredPineconeRecord, type RecordMetadata } from '@pinecone-database/pinecone';
 
 let pineconeClient: Pinecone | null = null;
 
@@ -53,7 +53,7 @@ export interface SearchResult {
 export async function searchSimilar(
   embedding: number[],
   topK: number = 10,
-  filter?: Record<string, any>
+  filter?: Record<string, RecordMetadata>
 ): Promise<SearchResult[]> {
   const index = getIndex();
 
@@ -125,7 +125,7 @@ export async function searchHybrid(
     }),
   ]);
 
-  const mapResult = (match: any): SearchResult => ({
+  const mapResult = (match: ScoredPineconeRecord<RecordMetadata>): SearchResult => ({
     id: match.id,
     score: match.score || 0,
     text: (match.metadata?.text as string) || '',
