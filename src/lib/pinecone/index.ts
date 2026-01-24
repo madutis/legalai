@@ -50,36 +50,6 @@ export interface SearchResult {
   };
 }
 
-export async function searchSimilar(
-  embedding: number[],
-  topK: number = 10,
-  filter?: Record<string, RecordMetadata>
-): Promise<SearchResult[]> {
-  const index = getIndex();
-
-  const queryResponse = await index.query({
-    vector: embedding,
-    topK,
-    includeMetadata: true,
-    filter,
-  });
-
-  return (queryResponse.matches || []).map((match) => ({
-    id: match.id,
-    score: match.score || 0,
-    text: (match.metadata?.text as string) || '',
-    metadata: {
-      docId: match.metadata?.docId as string,
-      docType: match.metadata?.docType as 'legislation' | 'nutarimas' | 'lat_ruling' | 'vdi_faq',
-      sourceFile: match.metadata?.sourceFile as string,
-      chunkIndex: match.metadata?.chunkIndex as number,
-      totalChunks: match.metadata?.totalChunks as number,
-      articleNumber: match.metadata?.articleNumber as number | undefined,
-      articleTitle: match.metadata?.articleTitle as string | undefined,
-    },
-  }));
-}
-
 // Hybrid search: retrieve from legislation, LAT rulings, nutarimai, VDI FAQ, and VDI docs separately, then merge
 export async function searchHybrid(
   embedding: number[],
