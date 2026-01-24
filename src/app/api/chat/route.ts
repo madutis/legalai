@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extractRelevantArticles, MODELS } from '@/lib/gemini';
 import { searchHybrid, fetchArticles, SearchResult } from '@/lib/pinecone';
 import { getCaseById, getPdfById } from '@/lib/db';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -43,6 +44,23 @@ interface ChatRequestBody {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 requests per minute per IP
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 'anonymous';
+  const { success, remaining, resetIn } = checkRateLimit(ip, 10, 60 * 1000);
+
+  if (!success) {
+    return NextResponse.json(
+      { error: 'Per daug užklausų. Bandykite po ' + resetIn + ' sek.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': resetIn.toString(),
+          'X-RateLimit-Remaining': '0',
+        },
+      }
+    );
+  }
+
   try {
     const body: ChatRequestBody = await request.json();
     const { message, history = [], context, useFallbackModel = false } = body;
@@ -243,6 +261,7 @@ export async function POST(request: NextRequest) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         Connection: 'keep-alive',
+        'X-RateLimit-Remaining': remaining.toString(),
       },
     });
   } catch (error) {
