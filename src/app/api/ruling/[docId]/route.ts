@@ -41,6 +41,10 @@ export async function GET(
         sourceUrl,
         sourcePage: latCase.page_start,
         text: latCase.full_text,
+      }, {
+        headers: {
+          'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+        },
       });
     }
 
@@ -114,6 +118,10 @@ export async function GET(
       sourceUrl,
       sourcePage,
       text,
+    }, {
+      headers: {
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+      },
     });
   } catch (error) {
     console.error('Error fetching ruling:', error);

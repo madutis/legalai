@@ -32,6 +32,10 @@ export async function GET(
       title: articleTitle || `${num} straipsnis`,
       text,
       eTarUrl: `https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_${num}`,
+    }, {
+      headers: {
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+      },
     });
   } catch (error) {
     console.error('Error fetching article:', error);

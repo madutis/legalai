@@ -1,6 +1,7 @@
 'use client';
 
 import type { Message } from '@/hooks/useChat';
+import type { ChatSource } from '@/types';
 import { getTopicById } from '@/lib/topics';
 
 interface ExportContext {
@@ -82,7 +83,7 @@ function escapeHtml(text: string): string {
 }
 
 // Build source URL
-function getSourceUrl(source: any): string | null {
+function getSourceUrl(source: ChatSource): string | null {
   if (source.docType === 'legislation' && source.articleNumber) {
     return `https://www.e-tar.lt/portal/lt/legalAct/f6d686707e7011e6b969d7ae07280e89/asr#part_${source.articleNumber}`;
   }
@@ -98,7 +99,7 @@ function getSourceUrl(source: any): string | null {
 }
 
 // Format source label
-function formatSourceLabel(source: any): string {
+function formatSourceLabel(source: ChatSource): string {
   if (source.docType === 'legislation' && source.articleNumber) {
     return `DK ${source.articleNumber} str.${source.articleTitle ? ` - ${source.articleTitle}` : ''}`;
   }
@@ -121,7 +122,7 @@ export function exportToPDF(data: ExportData): void {
   });
 
   // Collect all sources from messages
-  const allSources: any[] = [];
+  const allSources: ChatSource[] = [];
   const seenIds = new Set<string>();
   for (const message of data.messages) {
     if (message.sources) {
