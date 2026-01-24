@@ -48,27 +48,15 @@ export async function POST(request: NextRequest) {
     const { message, history = [], context, useFallbackModel = false } = body;
     const modelToUse = useFallbackModel ? MODELS.fallback : MODELS.primary;
 
-    if (!message || typeof message !== 'string') {
+    if (!message || typeof message !== 'string' || message.length > 5000) {
       return NextResponse.json(
-        { error: 'Message is required' },
+        { error: message?.length > 5000 ? 'Message too long (max 5000 characters)' : 'Message is required' },
         { status: 400 }
       );
     }
 
-    // 1. Extract explicitly mentioned article numbers from query (regex fallback)
+    // 1. Extract explicitly mentioned article numbers from query (regex - sync, fast)
     const explicitArticles = extractExplicitArticleNumbers(message);
-    console.log('Explicit articles from regex:', explicitArticles);
-
-    // 2. Use Gemini to identify potentially relevant articles
-    const aiArticleNumbers = await extractRelevantArticles(message);
-    console.log('AI extracted articles:', aiArticleNumbers);
-
-    // 3. Merge: explicit mentions first, then AI suggestions (deduplicated)
-    const relevantArticleNumbers = [
-      ...explicitArticles,
-      ...aiArticleNumbers.filter(n => !explicitArticles.includes(n))
-    ].slice(0, 10);
-    console.log('Final article numbers:', relevantArticleNumbers);
 
     // Stream the response with status updates
     const encoder = new TextEncoder();
@@ -79,9 +67,18 @@ export async function POST(request: NextRequest) {
         };
 
         try {
-          // Step 1: Generate embedding
+          // Step 1: Generate embedding + AI article extraction in parallel
           sendStatus('Analizuoju klausimą...');
-          const queryEmbedding = await generateEmbedding(message);
+          const [queryEmbedding, aiArticleNumbers] = await Promise.all([
+            generateEmbedding(message),
+            extractRelevantArticles(message),
+          ]);
+
+          // Merge: explicit mentions first, then AI suggestions (deduplicated)
+          const relevantArticleNumbers = [
+            ...explicitArticles,
+            ...aiArticleNumbers.filter((n: number) => !explicitArticles.includes(n))
+          ].slice(0, 10);
 
           // Step 2: Hybrid search + direct article fetch
           sendStatus('Ieškau aktualių šaltinių...');
@@ -109,6 +106,19 @@ export async function POST(request: NextRequest) {
 
           sendStatus(`Rasta ${searchResults.length} dokumentų. Ruošiu atsakymą...`);
 
+          // Pre-fetch all LAT cases to avoid N+1 queries
+          const latRulingIds = searchResults
+            .filter(r => r.metadata.docType === 'lat_ruling')
+            .map(r => r.metadata.docId);
+          const latCasesMap = new Map(
+            latRulingIds.map(id => [id, getCaseById(id)])
+          );
+          const latPdfsMap = new Map(
+            [...latCasesMap.values()]
+              .filter(c => c?.pdf_id)
+              .map(c => [c!.pdf_id, getPdfById(c!.pdf_id)])
+          );
+
           // Label each source with its type for the LLM
           const contextTexts = searchResults.map((r) => {
             if (r.metadata.docType === 'legislation') {
@@ -119,8 +129,8 @@ export async function POST(request: NextRequest) {
                              'DARBO KODEKSAS';
               return `[${lawLabel}, ${articleNum} straipsnis${title ? `: ${title}` : ''}]\n${r.text}`;
             } else if (r.metadata.docType === 'lat_ruling') {
-              // Fetch full text from SQLite for new LAT rulings
-              const latCase = getCaseById(r.metadata.docId);
+              // Use pre-fetched LAT case
+              const latCase = latCasesMap.get(r.metadata.docId);
               const caseNum = latCase?.case_number || r.metadata.caseNumber;
               const year = r.metadata.pdfId?.split('-')[0] || '';
 
@@ -158,11 +168,11 @@ export async function POST(request: NextRequest) {
               let sourcePage = (r.metadata as any).sourcePage;
               let caseNumber = r.metadata.caseNumber;
 
-              // For new LAT rulings, get URL from SQLite
+              // For new LAT rulings, use pre-fetched data
               if (r.metadata.docType === 'lat_ruling') {
-                const latCase = getCaseById(r.metadata.docId);
+                const latCase = latCasesMap.get(r.metadata.docId);
                 if (latCase) {
-                  const pdf = getPdfById(latCase.pdf_id);
+                  const pdf = latPdfsMap.get(latCase.pdf_id);
                   sourceUrl = pdf?.url || sourceUrl;
                   sourcePage = latCase.page_start || sourcePage;
                   caseNumber = latCase.case_number || caseNumber;
