@@ -30,7 +30,7 @@ export function useChat(context?: ChatContext) {
   const lastMessageRef = useRef<string | null>(null);
   const triedFallbackRef = useRef(false);
 
-  const MAX_FOLLOW_UPS = 2;
+  const MAX_FOLLOW_UPS = 5;
   const isConsultationComplete = consultationFinishedAt !== null && followUpCount >= MAX_FOLLOW_UPS;
 
   const sendMessageInternal = useCallback(async (
