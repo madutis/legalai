@@ -168,6 +168,19 @@ export default function Home() {
     loadSavedProfile();
   }, [user, authLoading]);
 
+  // Helper to get label for completed steps
+  const getStepLabel = (stepNum: number): string | null => {
+    if (stepNum === 1 && data.userRole) {
+      const role = ROLES.find(r => r.id === data.userRole);
+      return role?.label || null;
+    }
+    if (stepNum === 2 && data.companySize) {
+      const size = COMPANY_SIZES.find(s => s.id === data.companySize);
+      return size?.label || null;
+    }
+    return null;
+  };
+
   const handleSelect = async (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
     if (field === 'userRole' || field === 'companySize') {
@@ -294,28 +307,47 @@ export default function Home() {
 
         {/* Step indicator */}
         <div className="flex justify-center items-center gap-2 mb-5">
-          {[1, 2, 3].map((s) => (
-            <div key={s} className="flex items-center gap-2">
-              <button
-                onClick={() => s < step && setStep(s)}
-                disabled={s > step}
-                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${
-                  s === step
-                    ? 'bg-primary text-primary-foreground scale-110 shadow-md'
-                    : s < step
-                    ? 'bg-gold/20 text-gold cursor-pointer hover:bg-gold/30'
-                    : 'bg-muted text-muted-foreground'
-                }`}
-              >
-                {s < step ? '✓' : s}
-              </button>
-              {s < 3 && (
-                <div className={`w-8 sm:w-12 h-0.5 rounded-full transition-colors duration-500 ${
-                  s < step ? 'bg-gold' : 'bg-border'
-                }`} />
-              )}
-            </div>
-          ))}
+          {[1, 2, 3].map((s) => {
+            const stepLabel = getStepLabel(s);
+            const isCompleted = s < step;
+            const isCurrent = s === step;
+
+            return (
+              <div key={s} className="flex items-center gap-2">
+                <button
+                  onClick={() => isCompleted && setStep(s)}
+                  disabled={s > step}
+                  className={`flex items-center gap-1.5 transition-all duration-300 ${
+                    isCurrent
+                      ? ''
+                      : isCompleted
+                      ? 'cursor-pointer group'
+                      : ''
+                  }`}
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-300 ${
+                    isCurrent
+                      ? 'bg-primary text-primary-foreground scale-110 shadow-md'
+                      : isCompleted
+                      ? 'bg-gold/20 text-gold group-hover:bg-gold/30'
+                      : 'bg-muted text-muted-foreground'
+                  }`}>
+                    {isCompleted ? '✓' : s}
+                  </div>
+                  {isCompleted && stepLabel && (
+                    <span className="text-xs text-gold font-medium group-hover:underline">
+                      {stepLabel}
+                    </span>
+                  )}
+                </button>
+                {s < 3 && (
+                  <div className={`w-8 sm:w-12 h-0.5 rounded-full transition-colors duration-500 ${
+                    isCompleted ? 'bg-gold' : 'bg-border'
+                  }`} />
+                )}
+              </div>
+            );
+          })}
         </div>
 
         {/* Step 1: Role */}
