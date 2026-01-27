@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useAuth } from '@/contexts/AuthContext';
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   employer: (
@@ -125,12 +126,51 @@ const TOPICS = [
 
 export default function Home() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     userRole: '',
     companySize: '',
     topic: '',
   });
+
+  // Auth check - redirect to sign-in if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/sign-in');
+    }
+  }, [authLoading, user, router]);
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
+            <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v20" />
+              <path d="M2 6h20" />
+              <path d="M4 6l2 8h-4l2-8" />
+              <path d="M20 6l2 8h-4l2-8" />
+              <path d="M2 14a2 2 0 1 0 4 0" />
+              <path d="M18 14a2 2 0 1 0 4 0" />
+              <circle cx="12" cy="5" r="1.5" />
+            </svg>
+          </div>
+          <p className="text-muted-foreground text-sm">Kraunama...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
 
   const handleSelect = (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
