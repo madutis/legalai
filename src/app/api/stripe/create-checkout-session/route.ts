@@ -78,6 +78,7 @@ export async function POST(request: NextRequest) {
       customer: stripeCustomerId,
       customer_update: {
         address: 'auto',
+        name: 'auto',
       },
       line_items: [
         {
