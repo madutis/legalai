@@ -192,7 +192,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
 async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription) {
   // Cast to include current_period_end which exists at runtime but not in SDK types
-  const subscription = subscriptionEvent as Stripe.Subscription & { current_period_end: number };
+  const subscription = subscriptionEvent as Stripe.Subscription & { current_period_end?: number };
   const customerId = subscription.customer as string;
 
   const user = await findUserByCustomerId(customerId);
@@ -206,16 +206,29 @@ async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription)
   // Check if subscription is scheduled to cancel (either via cancel_at_period_end OR cancel_at)
   const willCancel = subscription.cancel_at_period_end || subscription.cancel_at !== null;
 
-  // Update subscription fields
-  await user.ref.update({
-    'subscription.status': mapSubscriptionStatus(subscription.status),
-    'subscription.currentPeriodEnd': new Date(subscription.current_period_end * 1000),
-    'subscription.cancelAtPeriodEnd': willCancel,
-    'subscription.cancelAt': subscription.cancel_at ? new Date(subscription.cancel_at * 1000) : null,
-    'subscription.priceId': firstItem.price.id,
-  });
+  // Get current_period_end from subscription or item level
+  const periodEnd = subscription.current_period_end || firstItem.current_period_end;
 
-  console.log(`Subscription updated for user: ${user.uid}, status: ${subscription.status}, willCancel: ${willCancel}, cancel_at: ${subscription.cancel_at}`);
+  // Build update object, only include fields that have valid values
+  const updateData: Record<string, unknown> = {
+    'subscription.status': mapSubscriptionStatus(subscription.status),
+    'subscription.cancelAtPeriodEnd': willCancel,
+    'subscription.priceId': firstItem.price.id,
+  };
+
+  if (periodEnd) {
+    updateData['subscription.currentPeriodEnd'] = new Date(periodEnd * 1000);
+  }
+
+  if (subscription.cancel_at) {
+    updateData['subscription.cancelAt'] = new Date(subscription.cancel_at * 1000);
+  } else {
+    updateData['subscription.cancelAt'] = null;
+  }
+
+  await user.ref.update(updateData);
+
+  console.log(`Subscription updated for user: ${user.uid}, status: ${subscription.status}, willCancel: ${willCancel}, cancel_at: ${subscription.cancel_at}, periodEnd: ${periodEnd}`);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
