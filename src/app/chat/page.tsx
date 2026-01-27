@@ -231,6 +231,19 @@ export default function ChatPage() {
               <span className="hidden sm:inline">Nauja konsultacija</span>
               <span className="sm:hidden">Nauja</span>
             </Button>
+
+            {/* User Avatar */}
+            <Link
+              href="/account"
+              className="relative w-8 h-8 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-sm font-semibold text-primary border-2 border-transparent hover:border-gold/50 transition-all duration-200 hover:scale-105 hover:shadow-sm group"
+              title={user?.email || 'Paskyra'}
+            >
+              <span className="font-serif">
+                {user?.email?.charAt(0).toUpperCase() || 'U'}
+              </span>
+              {/* Subtle gold glow on hover */}
+              <span className="absolute inset-0 rounded-full bg-gold/0 group-hover:bg-gold/5 transition-colors duration-200" />
+            </Link>
           </div>
         </div>
       </header>
