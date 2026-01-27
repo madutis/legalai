@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 4 — User Onboarding (auth required before chat)
+**Current focus:** Phase 5 — Auth & Billing (subscription gates)
 
 ## Current Position
 
-Phase: 4 of 8 (User Onboarding)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-27 — Completed 04-01-PLAN.md
+Phase: 5 of 8 (Auth & Billing)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-01-27 — Completed 04-02-PLAN.md (Phase 4 complete)
 
-Progress: █████░░░░░ 46%
+Progress: ██████░░░░ 54%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: 15 min
-- Total execution time: 145 min
+- Total plans completed: 12
+- Average duration: 14 min
+- Total execution time: 165 min
 
 **By Phase:**
 
@@ -32,9 +32,10 @@ Progress: █████░░░░░ 46%
 | 1.2 | 3 | 61 min | 20 min |
 | 1.3 | 1 | 4 min | 4 min |
 | 1.4 | 1 | 4 min | 4 min |
+| 4 | 2 | 20 min | 10 min |
 
 **Recent Trend:**
-- Last 5 plans: 01.2-01 (12m), 01.2-02 (37m), 01.2-03 (12m), 01.3-01 (4m), 01.4-01 (4m)
+- Last 5 plans: 01.2-03 (12m), 01.3-01 (4m), 01.4-01 (4m), 04-01 (10m), 04-02 (10m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -65,6 +66,7 @@ Recent decisions affecting current work:
 | 01.3-01 | lawCode=PSS for fire safety | Enables citation formatting: "PSS X str." |
 | 01.4-01 | Inline stats in prompt | Simpler than runtime loading, ~500 chars |
 | 01.4-01 | 35k valid cases from 86k | Only include cases with recorded outcomes |
+| 04-02 | Auth after profiling | User sees app value before committing to sign-up |
 
 ### Pending Todos
 
@@ -77,5 +79,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 04-01-PLAN.md
+Stopped at: Completed 04-02-PLAN.md (Phase 4 complete)
 Resume file: None
