@@ -10,6 +10,8 @@ import { AssistantMessage } from './AssistantMessage';
 import { SourcesList } from './SourcesList';
 import { ChatInput } from './ChatInput';
 import { exportToPDF } from '@/lib/pdf-export';
+import { UsageWarning } from '@/components/subscription/UsageWarning';
+import { UsageLimitModal } from '@/components/subscription/UsageLimitModal';
 
 interface ChatInterfaceProps {
   topic?: string;
@@ -39,6 +41,10 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     isConsultationFinished,
     isConsultationComplete,
     remainingFollowUps,
+    usageInfo,
+    limitReached,
+    dismissLimitReached,
+    dismissUsageWarning,
   } = useChat({ context: { topic, userRole, companySize }, userId: user?.uid });
 
   const handleExportPDF = () => {
@@ -208,6 +214,20 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
           onClose={() => setSelectedArticleNumber(null)}
         />
       )}
+
+      {/* Usage warning toast */}
+      {usageInfo?.showWarning && usageInfo.remaining <= 5 && (
+        <UsageWarning
+          remaining={usageInfo.remaining}
+          onDismiss={dismissUsageWarning}
+        />
+      )}
+
+      {/* Usage limit reached modal */}
+      <UsageLimitModal
+        isOpen={limitReached}
+        onClose={dismissLimitReached}
+      />
     </div>
   );
 }

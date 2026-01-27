@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef } from 'react';
 import type { ChatMessage, ChatSource } from '@/types';
 import { startTrial } from '@/lib/firebase/firestore';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Re-export for backwards compatibility
 export type Message = ChatMessage;
@@ -12,6 +13,11 @@ interface ChatContext {
   userRole?: string;
   companySize?: string;
   topic?: string;
+}
+
+interface UsageInfo {
+  remaining: number;
+  showWarning: boolean;
 }
 
 interface UseChatOptions {
@@ -26,6 +32,7 @@ function isFinalAnswer(content: string): boolean {
 
 export function useChat(options?: UseChatOptions) {
   const { context, userId } = options || {};
+  const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -33,6 +40,8 @@ export function useChat(options?: UseChatOptions) {
   const [canRetry, setCanRetry] = useState(false);
   const [consultationFinishedAt, setConsultationFinishedAt] = useState<number | null>(null);
   const [followUpCount, setFollowUpCount] = useState(0);
+  const [usageInfo, setUsageInfo] = useState<UsageInfo | null>(null);
+  const [limitReached, setLimitReached] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastMessageRef = useRef<string | null>(null);
   const triedFallbackRef = useRef(false);
@@ -92,9 +101,16 @@ export function useChat(options?: UseChatOptions) {
     abortControllerRef.current = new AbortController();
 
     try {
+      // Get auth token for usage tracking
+      const idToken = user ? await user.getIdToken() : null;
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (idToken) {
+        headers['Authorization'] = `Bearer ${idToken}`;
+      }
+
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({
           message: content,
           history: messages.slice(-10).map((m) => ({
@@ -106,6 +122,19 @@ export function useChat(options?: UseChatOptions) {
         }),
         signal: abortControllerRef.current.signal,
       });
+
+      // Handle usage limit reached
+      if (response.status === 429) {
+        const data = await response.json();
+        if (data.error === 'limit_reached') {
+          setLimitReached(true);
+          setError(null);
+          // Remove the placeholder message
+          setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+          setIsLoading(false);
+          return;
+        }
+      }
 
       if (!response.ok) {
         throw new Error('Failed to send message');
@@ -137,6 +166,11 @@ export function useChat(options?: UseChatOptions) {
 
             if (parsed.type === 'status') {
               setStatus(parsed.status);
+            } else if (parsed.type === 'usage') {
+              setUsageInfo({
+                remaining: parsed.remaining,
+                showWarning: parsed.showWarning,
+              });
             } else if (parsed.type === 'metadata') {
               setMessages((prev) =>
                 prev.map((m) =>
@@ -225,6 +259,16 @@ export function useChat(options?: UseChatOptions) {
   const remainingFollowUps = Math.max(0, MAX_FOLLOW_UPS - followUpCount);
   const isConsultationFinished = consultationFinishedAt !== null;
 
+  // Function to dismiss limit reached state
+  const dismissLimitReached = useCallback(() => {
+    setLimitReached(false);
+  }, []);
+
+  // Function to dismiss usage warning
+  const dismissUsageWarning = useCallback(() => {
+    setUsageInfo((prev) => prev ? { ...prev, showWarning: false } : null);
+  }, []);
+
   return {
     messages,
     isLoading,
@@ -240,5 +284,10 @@ export function useChat(options?: UseChatOptions) {
     isConsultationComplete,
     remainingFollowUps,
     context,
+    // Usage state
+    usageInfo,
+    limitReached,
+    dismissLimitReached,
+    dismissUsageWarning,
   };
 }
