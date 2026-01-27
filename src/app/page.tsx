@@ -137,28 +137,23 @@ export default function Home() {
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
-  // Check for saved profile on mount for returning users
+  // Pre-fill saved profile for returning users (stay on step 1)
   useEffect(() => {
     const loadSavedProfile = async () => {
-      // Wait for auth to settle
       if (authLoading) return;
 
-      // If user is authenticated, check Firestore for saved profile
       if (user) {
         try {
           const profile = await getUserProfile(user.uid);
           if (profile && profile.userRole && profile.companySize) {
-            // Returning user with complete profile - skip to step 3
             setData({
               userRole: profile.userRole,
               companySize: profile.companySize,
-              topic: '', // Always let them pick a new topic
+              topic: '',
             });
-            setStep(3);
           }
         } catch (err) {
-          console.error('Failed to load profile from Firestore:', err);
-          // Continue as new user
+          console.error('Failed to load profile:', err);
         }
       }
 
