@@ -1,12 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getUserProfile, saveUserProfile } from '@/lib/firebase/firestore';
+import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
 
 interface UserContext {
   userRole: string;
@@ -96,11 +98,15 @@ const TOPIC_ICONS: Record<string, React.ReactNode> = {
   ),
 };
 
-export default function ChatPage() {
+function ChatPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
+  const { status: subscriptionStatus } = useSubscription();
   const [context, setContext] = useState<UserContext | null>(null);
   const [contextLoading, setContextLoading] = useState(true);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+  const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false);
 
   // Auth check - redirect to sign-in if not authenticated
   useEffect(() => {
@@ -175,6 +181,25 @@ export default function ChatPage() {
     router.push('/');
   };
 
+  // Handle checkout success query param
+  useEffect(() => {
+    if (searchParams.get('checkout') === 'success') {
+      setShowCheckoutSuccess(true);
+      // Remove query param from URL
+      router.replace('/chat');
+      // Auto-hide after 3 seconds
+      const timer = setTimeout(() => setShowCheckoutSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams, router]);
+
+  // Show subscription modal for expired users
+  useEffect(() => {
+    if (subscriptionStatus === 'trial_expired' || subscriptionStatus === 'subscription_expired') {
+      setShowSubscriptionModal(true);
+    }
+  }, [subscriptionStatus]);
+
   // Show loading while checking auth or context
   if (authLoading || contextLoading || !context) {
     return (
@@ -199,6 +224,24 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100svh] flex flex-col bg-background">
+      {/* Subscription Modal */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
+      />
+
+      {/* Checkout Success Toast */}
+      {showCheckoutSuccess && (
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top fade-in duration-300">
+          <div className="bg-emerald-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+            <span className="font-medium">Apmokejimas sekmingas!</span>
+          </div>
+        </div>
+      )}
+
       <Header showAuth>
         <Button
           variant="outline"
@@ -260,5 +303,30 @@ export default function ChatPage() {
         />
       </main>
     </div>
+  );
+}
+
+export default function ChatPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-[100svh] flex items-center justify-center bg-background">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
+            <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v20" />
+              <path d="M2 6h20" />
+              <path d="M4 6l2 8h-4l2-8" />
+              <path d="M20 6l2 8h-4l2-8" />
+              <path d="M2 14a2 2 0 1 0 4 0" />
+              <path d="M18 14a2 2 0 1 0 4 0" />
+              <circle cx="12" cy="5" r="1.5" />
+            </svg>
+          </div>
+          <p className="text-muted-foreground text-sm">Kraunama...</p>
+        </div>
+      </div>
+    }>
+      <ChatPageContent />
+    </Suspense>
   );
 }
