@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
-import { useAuth } from '@/contexts/AuthContext';
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   employer: (
@@ -126,33 +125,59 @@ const TOPICS = [
 
 export default function Home() {
   const router = useRouter();
-  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     userRole: '',
     companySize: '',
     topic: '',
   });
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Auth check - redirect to sign-in if not authenticated
+  // Context check - redirect to sign-in if already has context (completed onboarding before)
   useEffect(() => {
-    if (!authLoading && !user) {
+    const context = localStorage.getItem('legalai-context');
+    if (context) {
+      // User has context, send them to sign-in (which will handle auth check and redirect to chat)
       router.push('/sign-in');
     }
-  }, [authLoading, user, router]);
+  }, [router]);
 
-  // Context check - redirect to chat if already has context
-  useEffect(() => {
-    if (!authLoading && user) {
-      const context = localStorage.getItem('legalai-context');
-      if (context) {
-        router.push('/chat');
-      }
+  const handleSelect = (field: string, value: string) => {
+    setData((prev) => ({ ...prev, [field]: value }));
+    if (field === 'userRole' || field === 'companySize') {
+      setTimeout(() => setStep((s) => s + 1), 200);
+    } else if (field === 'topic') {
+      setIsRedirecting(true);
+      setTimeout(() => {
+        localStorage.setItem('legalai-context', JSON.stringify({ ...data, [field]: value }));
+        router.push('/sign-in');
+      }, 200);
     }
-  }, [authLoading, user, router]);
+  };
 
-  // Show loading while checking auth
-  if (authLoading) {
+  const handleNext = () => {
+    if (step < 3) {
+      setStep(step + 1);
+    } else {
+      setIsRedirecting(true);
+      localStorage.setItem('legalai-context', JSON.stringify(data));
+      router.push('/sign-in');
+    }
+  };
+
+  const handleBack = () => {
+    if (step > 1) setStep(step - 1);
+  };
+
+  const canProceed = () => {
+    if (step === 1) return !!data.userRole;
+    if (step === 2) return !!data.companySize;
+    if (step === 3) return !!data.topic;
+    return false;
+  };
+
+  // Show spinner when redirecting after completion
+  if (isRedirecting) {
     return (
       <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -167,52 +192,11 @@ export default function Home() {
               <circle cx="12" cy="5" r="1.5" />
             </svg>
           </div>
-          <p className="text-muted-foreground text-sm">Kraunama...</p>
+          <p className="text-muted-foreground text-sm">Nukreipiama...</p>
         </div>
       </div>
     );
   }
-
-  // Don't render if not authenticated (will redirect)
-  if (!user) {
-    return (
-      <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  const handleSelect = (field: string, value: string) => {
-    setData((prev) => ({ ...prev, [field]: value }));
-    if (field === 'userRole' || field === 'companySize') {
-      setTimeout(() => setStep((s) => s + 1), 200);
-    } else if (field === 'topic') {
-      setTimeout(() => {
-        localStorage.setItem('legalai-context', JSON.stringify({ ...data, [field]: value }));
-        router.push('/chat');
-      }, 200);
-    }
-  };
-
-  const handleNext = () => {
-    if (step < 3) {
-      setStep(step + 1);
-    } else {
-      localStorage.setItem('legalai-context', JSON.stringify(data));
-      router.push('/chat');
-    }
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const canProceed = () => {
-    if (step === 1) return !!data.userRole;
-    if (step === 2) return !!data.companySize;
-    if (step === 3) return !!data.topic;
-    return false;
-  };
 
   return (
     <div className="min-h-screen bg-background texture-paper">
