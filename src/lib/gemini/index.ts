@@ -11,7 +11,7 @@ function getGenAI(): GoogleGenerativeAI {
 
 // Generate embedding for a query
 export async function generateEmbedding(text: string): Promise<number[]> {
-  const model = getGenAI().getGenerativeModel({ model: 'text-embedding-004' });
+  const model = getGenAI().getGenerativeModel({ model: 'embedding-001' });
   const result = await model.embedContent(text);
   return result.embedding.values;
 }
