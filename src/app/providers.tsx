@@ -3,11 +3,14 @@
 import { ReactNode } from 'react';
 import { ThemeProvider } from 'next-themes';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <SubscriptionProvider>{children}</SubscriptionProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
