@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
+import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus';
 import Link from 'next/link';
 
 export default function AccountPage() {
@@ -74,7 +75,10 @@ export default function AccountPage() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 flex flex-col items-center">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 flex flex-col items-center space-y-4">
+          {/* Subscription Status Card */}
+          <SubscriptionStatus />
+
           {/* User Info Card */}
           <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden animate-fade-up" style={{ opacity: 0 }}>
               {/* User Header */}
