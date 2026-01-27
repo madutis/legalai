@@ -98,14 +98,14 @@ export function SubscriptionStatus() {
     return (
       <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden">
         <div className="px-5 py-4 border-b border-border bg-muted/30">
-          <h2 className="font-medium text-foreground">Pradekite naudotis</h2>
+          <h2 className="font-medium text-foreground">Išbandykite nemokamai</h2>
         </div>
         <div className="px-5 py-4 space-y-3">
           <p className="text-sm text-muted-foreground">
-            Uzduokite pirma klausima ir gausite 7 dienu bandomaji laikotarpi
+            Pirmas klausimas aktyvuoja 7 dienų nemokamą prieigą.
           </p>
           <p className="text-xs text-muted-foreground/80">
-            Po bandomojo laikotarpio: 29/men. + PVM arba 299/m. + PVM
+            Vėliau — nuo €29/mėn.
           </p>
         </div>
       </div>
@@ -141,7 +141,7 @@ export function SubscriptionStatus() {
                   Kraunama...
                 </span>
               ) : (
-                'Atnaujinti prenumerata'
+                'Atnaujinti prenumeratą'
               )}
             </Button>
           </div>
@@ -178,7 +178,7 @@ export function SubscriptionStatus() {
                 Kraunama...
               </span>
             ) : (
-              'Tvarkyti prenumerata'
+              'Tvarkyti prenumeratą'
             )}
           </Button>
         </div>
@@ -194,15 +194,15 @@ export function SubscriptionStatus() {
           <h2 className="font-medium text-foreground">
             {status === 'trial_expired'
               ? 'Bandomasis laikotarpis baigesi'
-              : 'Prenumerata pasibaige'}
+              : 'Prenumerata pasibaigė'}
           </h2>
         </div>
         <div className="px-5 py-4 space-y-3">
           <p className="text-sm text-muted-foreground">
-            Teskite naudojimasi:
+            Prenumeruokite ir tęskite darbą.
           </p>
           <p className="text-xs text-muted-foreground/80">
-            29/men. + PVM arba 299/m. + PVM
+            Nuo €29/mėn.
           </p>
           <Button
             onClick={handleSubscribe}
@@ -237,7 +237,7 @@ export function SubscriptionStatus() {
       </div>
       <div className="px-5 py-4 space-y-3">
         <p className="text-xs text-muted-foreground/80">
-          Po bandomojo laikotarpio: 29/men. + PVM arba 299/m. + PVM
+          Vėliau — nuo €29/mėn.
         </p>
         <Button
           onClick={handleSubscribe}
