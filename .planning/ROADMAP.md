@@ -254,7 +254,7 @@ Auth/billing prioritized over templates/landing page.
 | 5.2. Legal Pages | 0/1 | Not started | - |
 | 5.3. Account Closure | 0/1 | Not started | - |
 | 5.4. Returning User Flow | 1/1 | ✓ Complete | 2026-01-27 |
-| 6. Subscription & Billing | 2/5 | In progress | - |
+| 6. Subscription & Billing | 3/5 | In progress | - |
 | 7. Usage Controls | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
