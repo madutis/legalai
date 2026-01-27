@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import type { ChatMessage, ChatSource } from '@/types';
+import { startTrial } from '@/lib/firebase/firestore';
 
 // Re-export for backwards compatibility
 export type Message = ChatMessage;
@@ -13,12 +14,18 @@ interface ChatContext {
   topic?: string;
 }
 
+interface UseChatOptions {
+  context?: ChatContext;
+  userId?: string;
+}
+
 // Check if a message is a final answer (no questions)
 function isFinalAnswer(content: string): boolean {
   return !content.includes('[KLAUSIMAS]') && !content.includes('[ATVIRAS_KLAUSIMAS]') && content.length > 100;
 }
 
-export function useChat(context?: ChatContext) {
+export function useChat(options?: UseChatOptions) {
+  const { context, userId } = options || {};
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -74,6 +81,13 @@ export function useChat(context?: ChatContext) {
     setError(null);
     setCanRetry(false);
     lastMessageRef.current = content;
+
+    // Start trial on first message (idempotent - only sets if not already set)
+    if (userId) {
+      startTrial(userId).catch((err) => {
+        console.error('Failed to start trial:', err);
+      });
+    }
 
     abortControllerRef.current = new AbortController();
 
@@ -183,7 +197,7 @@ export function useChat(context?: ChatContext) {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, context, consultationFinishedAt]);
+  }, [messages, context, consultationFinishedAt, userId]);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading || isConsultationComplete) return;

@@ -39,7 +39,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     isConsultationFinished,
     isConsultationComplete,
     remainingFollowUps,
-  } = useChat({ topic, userRole, companySize });
+  } = useChat({ context: { topic, userRole, companySize }, userId: user?.uid });
 
   const handleExportPDF = () => {
     exportToPDF({
