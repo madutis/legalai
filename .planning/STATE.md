@@ -12,16 +12,16 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 Phase: 6 of 8 (Subscription & Billing)
 Plan: 2 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-27 — Completed 06-02-PLAN.md
+Last activity: 2026-01-27 — Completed 06-01-PLAN.md, 06-02-PLAN.md
 
-Progress: ███████░░░ 64%
+Progress: ███████░░░ 68%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
+- Total plans completed: 16
 - Average duration: 12 min
-- Total execution time: 180 min
+- Total execution time: 184 min
 
 **By Phase:**
 
@@ -35,10 +35,10 @@ Progress: ███████░░░ 64%
 | 4 | 2 | 20 min | 10 min |
 | 5 | 1 | 8 min | 8 min |
 | 5.4 | 1 | 2 min | 2 min |
-| 6 | 1 | 5 min | 5 min |
+| 6 | 2 | 9 min | 4.5 min |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (10m), 04-02 (10m), 05-01 (8m), 05.4-01 (2m), 06-02 (5m)
+- Last 5 plans: 04-02 (10m), 05-01 (8m), 05.4-01 (2m), 06-01 (4m), 06-02 (5m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -76,6 +76,8 @@ Recent decisions affecting current work:
 | 05.4-01 | Clear topic for returning users | Let them pick fresh topic each session |
 | 06-02 | Fire-and-forget startTrial | Non-blocking UX - trial start shouldn't delay message send |
 | 06-02 | onSnapshot for SubscriptionContext | Real-time updates when subscription changes (e.g., after webhook) |
+| 06-01 | Firebase Admin SDK for server-side auth | Enables secure ID token verification on API routes |
+| 06-01 | Stripe customer linked via metadata | Store firebaseUid in Stripe customer metadata for fallback lookup |
 
 ### Pending Todos
 
@@ -88,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 06-02-PLAN.md (2/5 plans in Phase 6)
+Stopped at: Completed 06-01-PLAN.md and 06-02-PLAN.md (2/5 plans in Phase 6)
 Resume file: None
