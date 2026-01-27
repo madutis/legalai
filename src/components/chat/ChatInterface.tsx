@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useChat, type ChatSource } from '@/hooks/useChat';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { RulingModal } from './RulingModal';
 import { ArticleModal } from './ArticleModal';
@@ -17,12 +18,14 @@ interface ChatInterfaceProps {
 }
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
+  const { user } = useAuth();
   const [input, setInput] = useState('');
   const [selectedRulingDocId, setSelectedRulingDocId] = useState<string | null>(null);
   const [selectedArticleNumber, setSelectedArticleNumber] = useState<number | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
+  const isReturningUser = !!user;
 
   const {
     messages,
@@ -84,7 +87,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
             </div>
-            <h2 className="font-serif text-xl font-semibold text-foreground mb-2">Sveiki atvykę</h2>
+            <h2 className="font-serif text-xl font-semibold text-foreground mb-2">{isReturningUser ? 'Sveiki sugrįžę!' : 'Sveiki atvykę'}</h2>
             <p className="text-muted-foreground max-w-md mx-auto leading-relaxed">
               Užduokite klausimą apie Lietuvos darbo teisę ir aš pasistengsiu padėti,
               remdamasis Darbo kodeksu ir teismų praktika.
