@@ -28,7 +28,7 @@ None
 - [ ] **Phase 5.2: Legal Pages** - T&Cs, Privacy Policy with links (INSERTED)
 - [ ] **Phase 5.3: Account Closure** - Account deletion request flow (INSERTED)
 - [x] **Phase 5.4: Returning User Flow** - Skip profiling steps for users with saved context (INSERTED)
-- [ ] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
+- [x] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
 - [ ] **Phase 7: Usage Controls** - Limits, restrictions, metering
 
 ## Phase Details
@@ -254,7 +254,7 @@ Auth/billing prioritized over templates/landing page.
 | 5.2. Legal Pages | 0/1 | Not started | - |
 | 5.3. Account Closure | 0/1 | Not started | - |
 | 5.4. Returning User Flow | 1/1 | ✓ Complete | 2026-01-27 |
-| 6. Subscription & Billing | 4/5 | In progress | - |
+| 6. Subscription & Billing | 5/5 | ✓ Complete | 2026-01-27 |
 | 7. Usage Controls | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |

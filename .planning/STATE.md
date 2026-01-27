@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 6 of 8 (Subscription & Billing)
-Plan: 4 of 5 in current phase
-Status: In progress
-Last activity: 2026-01-27 — Completed 06-04-PLAN.md
+Plan: 5 of 5 in current phase
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 06-05-PLAN.md
 
-Progress: ████████░░ 75%
+Progress: █████████░ 85%
 
 ## Performance Metrics
 
@@ -82,6 +82,8 @@ Recent decisions affecting current work:
 | 06-03 | Lithuanian locale for dates | Match app language (lt-LT) |
 | 06-04 | Yearly plan default in modal | Better value for user (14% savings), increases ARPU |
 | 06-04 | Suspense wrapper for chat page | Next.js 16 requires useSearchParams in Suspense boundary |
+| 06-05 | UTC date key for usage tracking | Consistent across timezones, aligns with midnight UTC reset |
+| 06-05 | Fire-and-forget usage increment | Non-blocking UX - usage tracking shouldn't delay response |
 
 ### Pending Todos
 
@@ -94,5 +96,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 06-04-PLAN.md (4/5 plans in Phase 6)
+Stopped at: Completed 06-05-PLAN.md (Phase 6 complete)
 Resume file: None
