@@ -89,7 +89,7 @@ export function SubscriptionStatus() {
 
     // Active subscription
     if (isSubscribed && userDoc?.subscription) {
-      const { status: subStatus, currentPeriodEnd, cancelAtPeriodEnd, cancelAt, priceId } = userDoc.subscription;
+      const { status: subStatus, currentPeriodEnd, cancelAtPeriodEnd, cancelAt, billingInterval } = userDoc.subscription;
 
       // Canceled subscription (access until period end or cancel_at date)
       if (cancelAtPeriodEnd || subStatus === 'canceled') {
@@ -115,8 +115,8 @@ export function SubscriptionStatus() {
       }
 
       // Active subscription
-      const isYearly = priceId?.includes('yearly') || priceId?.includes('year');
-      const priceDisplay = isYearly ? '299/m. + PVM' : '29/men. + PVM';
+      const isYearly = billingInterval === 'year';
+      const priceDisplay = isYearly ? '€299/m. + PVM' : '€29/mėn. + PVM';
 
       return (
         <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden">

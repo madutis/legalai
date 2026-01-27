@@ -48,6 +48,7 @@ function parseUserDocument(data: Record<string, unknown>): UserDocument {
       status: (data.subscription as Record<string, unknown>).status as 'active' | 'canceled' | 'past_due' | 'expired',
       stripeSubscriptionId: (data.subscription as Record<string, unknown>).stripeSubscriptionId as string,
       priceId: (data.subscription as Record<string, unknown>).priceId as string,
+      billingInterval: (data.subscription as Record<string, unknown>).billingInterval as 'month' | 'year' | undefined,
       currentPeriodEnd: ((data.subscription as Record<string, unknown>).currentPeriodEnd as { toDate: () => Date } | undefined)?.toDate() as Date,
       cancelAtPeriodEnd: (data.subscription as Record<string, unknown>).cancelAtPeriodEnd as boolean,
       cancelAt: ((data.subscription as Record<string, unknown>).cancelAt as { toDate: () => Date } | null | undefined)?.toDate() ?? null,

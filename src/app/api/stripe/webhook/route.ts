@@ -157,11 +157,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     // Get period end from subscription or item level
     const periodEnd = subscriptionData.current_period_end || firstItem.current_period_end;
 
+    // Get billing interval from price
+    const billingInterval = firstItem.price.recurring?.interval || 'month';
+
     // Build update data
     const subscriptionUpdate: Record<string, unknown> = {
       status: 'active',
       stripeSubscriptionId: subscriptionData.id,
       priceId: firstItem.price.id,
+      billingInterval,
       cancelAtPeriodEnd: willCancel,
       cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
     };
@@ -171,7 +175,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
 
     await userRef.update({ subscription: subscriptionUpdate });
-    console.log(`Subscription activated for user (via metadata): ${firebaseUid}, periodEnd: ${periodEnd}`);
+    console.log(`Subscription activated for user (via metadata): ${firebaseUid}, periodEnd: ${periodEnd}, interval: ${billingInterval}`);
     return;
   }
 
@@ -185,11 +189,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // Get period end from subscription or item level
   const periodEnd = subscriptionData.current_period_end || firstItem.current_period_end;
 
+  // Get billing interval from price
+  const billingInterval = firstItem.price.recurring?.interval || 'month';
+
   // Build update data
   const subscriptionUpdate: Record<string, unknown> = {
     status: 'active',
     stripeSubscriptionId: subscriptionData.id,
     priceId: firstItem.price.id,
+    billingInterval,
     cancelAtPeriodEnd: willCancel,
     cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
   };
@@ -199,7 +207,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   await user.ref.update({ subscription: subscriptionUpdate });
-  console.log(`Subscription activated for user: ${user.uid}, periodEnd: ${periodEnd}`);
+  console.log(`Subscription activated for user: ${user.uid}, periodEnd: ${periodEnd}, interval: ${billingInterval}`);
 }
 
 async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription) {
@@ -221,11 +229,15 @@ async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription)
   // Get current_period_end from subscription or item level
   const periodEnd = subscription.current_period_end || firstItem.current_period_end;
 
+  // Get billing interval from price
+  const billingInterval = firstItem.price.recurring?.interval || 'month';
+
   // Build update object, only include fields that have valid values
   const updateData: Record<string, unknown> = {
     'subscription.status': mapSubscriptionStatus(subscription.status),
     'subscription.cancelAtPeriodEnd': willCancel,
     'subscription.priceId': firstItem.price.id,
+    'subscription.billingInterval': billingInterval,
   };
 
   if (periodEnd) {

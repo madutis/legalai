@@ -12,6 +12,7 @@ export interface UserSubscription {
   status: 'active' | 'canceled' | 'past_due' | 'expired';
   stripeSubscriptionId: string;
   priceId: string;
+  billingInterval?: 'month' | 'year';
   currentPeriodEnd: Date;
   cancelAtPeriodEnd: boolean;
   cancelAt?: Date | null;
