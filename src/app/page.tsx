@@ -184,6 +184,15 @@ export default function Home() {
   const handleSelect = async (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
     if (field === 'userRole' || field === 'companySize') {
+      // Persist role/companySize changes to Firestore immediately for authenticated users
+      if (user) {
+        try {
+          await saveUserProfile(user.uid, { [field]: value } as any);
+        } catch (err) {
+          console.error('Failed to save profile update to Firestore:', err);
+          // Continue anyway - localStorage will be updated on topic selection
+        }
+      }
       setTimeout(() => setStep((s) => s + 1), 200);
     } else if (field === 'topic') {
       setIsRedirecting(true);
