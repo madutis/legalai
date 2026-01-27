@@ -146,9 +146,11 @@ None
 
 ### Phase 4: User Onboarding
 **Goal**: Registration flow, initial user setup, welcome experience
-**Depends on**: Phase 3 (landing page drives signup)
+**Depends on**: Phase 1.4 (content complete)
 **Research**: Unlikely (Firebase auth exists)
 **Plans**: TBD
+
+**Key requirement:** User must sign up / log in before accessing chat. No anonymous access.
 
 ### Phase 5: Account Management
 **Goal**: User profile, settings, preferences
@@ -172,7 +174,9 @@ None
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 1.4 → 2 → 2.1 → 3 → 4 → 5 → 6 → 7
+1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 6 → 7** → 2 → 2.1 → 3
+
+Auth/billing prioritized over templates/landing page.
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -181,10 +185,10 @@ Phases execute in numeric order: 1 → 1.1 → 1.2 → 1.3 → 1.4 → 2 → 2.1
 | 1.2. Darbo Sauga | 3/3 | ✓ Complete | 2026-01-21 |
 | 1.3. Fire Safety Law | 1/1 | ✓ Complete | 2026-01-21 |
 | 1.4. Labor Disputes Statistics | 1/1 | ✓ Complete | 2026-01-22 |
-| 2. Contract Templates | 0/TBD | Not started | - |
-| 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
-| 3. Landing Page | 0/TBD | Not started | - |
 | 4. User Onboarding | 0/TBD | Not started | - |
 | 5. Account Management | 0/TBD | Not started | - |
 | 6. Subscription & Billing | 0/TBD | Not started | - |
 | 7. Usage Controls | 0/TBD | Not started | - |
+| 2. Contract Templates | 0/TBD | Not started | - |
+| 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
+| 3. Landing Page | 0/TBD | Not started | - |

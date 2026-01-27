@@ -5,7 +5,7 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 1.4 — Labor Disputes Statistics
+**Current focus:** Phase 4 — User Onboarding (auth required before chat)
 
 ## Current Position
 
