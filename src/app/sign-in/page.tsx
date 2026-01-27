@@ -42,16 +42,10 @@ export default function SignInPage() {
     handleMagicLinkCallback();
   }, []);
 
-  // Redirect if already authenticated
+  // Redirect if already authenticated - always go to / (onboarding handles routing)
   useEffect(() => {
     if (!authLoading && user) {
-      // Check if context exists (user went through onboarding before)
-      const context = localStorage.getItem('legalai-context');
-      if (context) {
-        router.push('/chat');
-      } else {
-        router.push('/');
-      }
+      router.push('/');
     }
   }, [user, authLoading, router]);
 

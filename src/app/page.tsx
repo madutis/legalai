@@ -141,6 +141,16 @@ export default function Home() {
     }
   }, [authLoading, user, router]);
 
+  // Context check - redirect to chat if already has context
+  useEffect(() => {
+    if (!authLoading && user) {
+      const context = localStorage.getItem('legalai-context');
+      if (context) {
+        router.push('/chat');
+      }
+    }
+  }, [authLoading, user, router]);
+
   // Show loading while checking auth
   if (authLoading) {
     return (
