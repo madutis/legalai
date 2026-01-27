@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 
 ## Current Position
 
-Phase: 5 of 8 (Auth & Billing)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-01-27 — Completed 04-02-PLAN.md (Phase 4 complete)
+Phase: 5 of 8 (Account Management)
+Plan: 1 of 1 in current phase
+Status: Phase complete
+Last activity: 2026-01-27 — Completed 05-01-PLAN.md
 
-Progress: ██████░░░░ 54%
+Progress: ███████░░░ 59%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 14 min
-- Total execution time: 165 min
+- Total plans completed: 13
+- Average duration: 13 min
+- Total execution time: 173 min
 
 **By Phase:**
 
@@ -33,9 +33,10 @@ Progress: ██████░░░░ 54%
 | 1.3 | 1 | 4 min | 4 min |
 | 1.4 | 1 | 4 min | 4 min |
 | 4 | 2 | 20 min | 10 min |
+| 5 | 1 | 8 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 01.2-03 (12m), 01.3-01 (4m), 01.4-01 (4m), 04-01 (10m), 04-02 (10m)
+- Last 5 plans: 01.3-01 (4m), 01.4-01 (4m), 04-01 (10m), 04-02 (10m), 05-01 (8m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -67,6 +68,8 @@ Recent decisions affecting current work:
 | 01.4-01 | Inline stats in prompt | Simpler than runtime loading, ~500 chars |
 | 01.4-01 | 35k valid cases from 86k | Only include cases with recorded outcomes |
 | 04-02 | Auth after profiling | User sees app value before committing to sign-up |
+| 05-01 | Firestore + localStorage dual write | Reliability: Firestore persists, localStorage immediate |
+| 05-01 | Migrate localStorage on auth | Seamless upgrade for users who profiled before signing in |
 
 ### Pending Todos
 
@@ -79,5 +82,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 04-02-PLAN.md (Phase 4 complete)
+Stopped at: Completed 05-01-PLAN.md (Phase 5 complete)
 Resume file: None

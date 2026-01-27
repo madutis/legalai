@@ -23,7 +23,7 @@ None
 - [ ] **Phase 2.1: Safety Rules Generator** - Darbo saugos taisyklės generator (INSERTED)
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
 - [x] **Phase 4: User Onboarding** - Registration and onboarding flow
-- [ ] **Phase 5: Account Management** - User profile and settings
+- [x] **Phase 5: Account Management** - User profile and settings
 - [ ] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
 - [ ] **Phase 7: Usage Controls** - Limits, restrictions, metering
 
@@ -186,7 +186,7 @@ Auth/billing prioritized over templates/landing page.
 | 1.3. Fire Safety Law | 1/1 | ✓ Complete | 2026-01-21 |
 | 1.4. Labor Disputes Statistics | 1/1 | ✓ Complete | 2026-01-22 |
 | 4. User Onboarding | 2/2 | ✓ Complete | 2026-01-27 |
-| 5. Account Management | 0/TBD | Not started | - |
+| 5. Account Management | 1/1 | ✓ Complete | 2026-01-27 |
 | 6. Subscription & Billing | 0/TBD | Not started | - |
 | 7. Usage Controls | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
