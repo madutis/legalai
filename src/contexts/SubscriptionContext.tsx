@@ -50,6 +50,7 @@ function parseUserDocument(data: Record<string, unknown>): UserDocument {
       priceId: (data.subscription as Record<string, unknown>).priceId as string,
       currentPeriodEnd: ((data.subscription as Record<string, unknown>).currentPeriodEnd as { toDate: () => Date } | undefined)?.toDate() as Date,
       cancelAtPeriodEnd: (data.subscription as Record<string, unknown>).cancelAtPeriodEnd as boolean,
+      cancelAt: ((data.subscription as Record<string, unknown>).cancelAt as { toDate: () => Date } | null | undefined)?.toDate() ?? null,
     } : undefined,
   };
 }

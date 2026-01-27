@@ -148,9 +148,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
 
     // Retrieve subscription details
-    const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId);
-    const subscriptionData = subscriptionResponse as Stripe.Subscription;
+    const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end: number };
     const firstItem = subscriptionData.items.data[0];
+
+    // Check if subscription is scheduled to cancel
+    const willCancel = subscriptionData.cancel_at_period_end || subscriptionData.cancel_at !== null;
 
     // Update Firestore with subscription data
     await userRef.update({
@@ -159,16 +161,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         stripeSubscriptionId: subscriptionData.id,
         priceId: firstItem.price.id,
         currentPeriodEnd: new Date(subscriptionData.current_period_end * 1000),
-        cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
+        cancelAtPeriodEnd: willCancel,
+        cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
       },
     });
     return;
   }
 
   // Retrieve subscription details
-  const subscriptionResponse = await stripe.subscriptions.retrieve(subscriptionId);
-  const subscriptionData = subscriptionResponse as Stripe.Subscription;
+  const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end: number };
   const firstItem = subscriptionData.items.data[0];
+
+  // Check if subscription is scheduled to cancel
+  const willCancel = subscriptionData.cancel_at_period_end || subscriptionData.cancel_at !== null;
 
   // Update Firestore with subscription data
   await user.ref.update({
@@ -177,14 +182,17 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       stripeSubscriptionId: subscriptionData.id,
       priceId: firstItem.price.id,
       currentPeriodEnd: new Date(subscriptionData.current_period_end * 1000),
-      cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
+      cancelAtPeriodEnd: willCancel,
+      cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
     },
   });
 
   console.log(`Subscription activated for user: ${user.uid}`);
 }
 
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
+async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription) {
+  // Cast to include current_period_end which exists at runtime but not in SDK types
+  const subscription = subscriptionEvent as Stripe.Subscription & { current_period_end: number };
   const customerId = subscription.customer as string;
 
   const user = await findUserByCustomerId(customerId);
@@ -195,15 +203,19 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   const firstItem = subscription.items.data[0];
 
+  // Check if subscription is scheduled to cancel (either via cancel_at_period_end OR cancel_at)
+  const willCancel = subscription.cancel_at_period_end || subscription.cancel_at !== null;
+
   // Update subscription fields
   await user.ref.update({
     'subscription.status': mapSubscriptionStatus(subscription.status),
     'subscription.currentPeriodEnd': new Date(subscription.current_period_end * 1000),
-    'subscription.cancelAtPeriodEnd': subscription.cancel_at_period_end,
+    'subscription.cancelAtPeriodEnd': willCancel,
+    'subscription.cancelAt': subscription.cancel_at ? new Date(subscription.cancel_at * 1000) : null,
     'subscription.priceId': firstItem.price.id,
   });
 
-  console.log(`Subscription updated for user: ${user.uid}, status: ${subscription.status}, cancelAtPeriodEnd: ${subscription.cancel_at_period_end}`);
+  console.log(`Subscription updated for user: ${user.uid}, status: ${subscription.status}, willCancel: ${willCancel}, cancel_at: ${subscription.cancel_at}`);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {

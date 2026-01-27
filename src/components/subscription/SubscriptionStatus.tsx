@@ -114,10 +114,11 @@ export function SubscriptionStatus() {
 
   // Active subscription
   if (isSubscribed && userDoc?.subscription) {
-    const { status: subStatus, currentPeriodEnd, cancelAtPeriodEnd, priceId } = userDoc.subscription;
+    const { status: subStatus, currentPeriodEnd, cancelAtPeriodEnd, cancelAt, priceId } = userDoc.subscription;
 
-    // Canceled subscription (access until period end)
+    // Canceled subscription (access until period end or cancel_at date)
     if (cancelAtPeriodEnd || subStatus === 'canceled') {
+      const accessUntil = cancelAt || currentPeriodEnd;
       return (
         <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-border bg-muted/30">
@@ -125,7 +126,7 @@ export function SubscriptionStatus() {
           </div>
           <div className="px-5 py-4 space-y-3">
             <p className="text-sm text-muted-foreground">
-              Prieiga iki: {currentPeriodEnd.toLocaleDateString('lt-LT')}
+              Prieiga iki: {accessUntil.toLocaleDateString('lt-LT')}
             </p>
             <Button
               onClick={handleSubscribe}

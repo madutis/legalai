@@ -14,6 +14,7 @@ export interface UserSubscription {
   priceId: string;
   currentPeriodEnd: Date;
   cancelAtPeriodEnd: boolean;
+  cancelAt?: Date | null;
 }
 
 export interface UserDocument {
