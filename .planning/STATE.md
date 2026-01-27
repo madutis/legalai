@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 5 — Auth & Billing (subscription gates)
+**Current focus:** Phase 6 — Subscription & Billing
 
 ## Current Position
 
-Phase: 5.4 of 8 (Returning User Flow)
-Plan: 1 of 1 in current phase
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 05.4-01-PLAN.md
+Phase: 6 of 8 (Subscription & Billing)
+Plan: 2 of 5 in current phase
+Status: In progress
+Last activity: 2026-01-27 — Completed 06-02-PLAN.md
 
-Progress: ███████░░░ 62%
+Progress: ███████░░░ 64%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 14
+- Total plans completed: 15
 - Average duration: 12 min
-- Total execution time: 175 min
+- Total execution time: 180 min
 
 **By Phase:**
 
@@ -35,9 +35,10 @@ Progress: ███████░░░ 62%
 | 4 | 2 | 20 min | 10 min |
 | 5 | 1 | 8 min | 8 min |
 | 5.4 | 1 | 2 min | 2 min |
+| 6 | 1 | 5 min | 5 min |
 
 **Recent Trend:**
-- Last 5 plans: 01.4-01 (4m), 04-01 (10m), 04-02 (10m), 05-01 (8m), 05.4-01 (2m)
+- Last 5 plans: 04-01 (10m), 04-02 (10m), 05-01 (8m), 05.4-01 (2m), 06-02 (5m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -73,6 +74,8 @@ Recent decisions affecting current work:
 | 05-01 | Migrate localStorage on auth | Seamless upgrade for users who profiled before signing in |
 | 05.4-01 | Check Firestore only for returning user | localStorage is for immediate redirect, not profile detection |
 | 05.4-01 | Clear topic for returning users | Let them pick fresh topic each session |
+| 06-02 | Fire-and-forget startTrial | Non-blocking UX - trial start shouldn't delay message send |
+| 06-02 | onSnapshot for SubscriptionContext | Real-time updates when subscription changes (e.g., after webhook) |
 
 ### Pending Todos
 
@@ -85,5 +88,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 05.4-01-PLAN.md (Phase 5.4 complete)
+Stopped at: Completed 06-02-PLAN.md (2/5 plans in Phase 6)
 Resume file: None
