@@ -232,7 +232,8 @@ None
 **Goal**: Usage limits, metering, enforcement
 **Depends on**: Phase 6
 **Research**: Unlikely (internal patterns)
-**Plans**: TBD
+**Plans**: 0 (covered by 06-05)
+**Status**: Complete — 50/day limit with warning at 45 and block at 50 implemented in Phase 6
 
 ## Progress
 
@@ -255,7 +256,7 @@ Auth/billing prioritized over templates/landing page.
 | 5.3. Account Closure | 0/1 | Not started | - |
 | 5.4. Returning User Flow | 1/1 | ✓ Complete | 2026-01-27 |
 | 6. Subscription & Billing | 5/5 | ✓ Complete | 2026-01-27 |
-| 7. Usage Controls | 0/TBD | Not started | - |
+| 7. Usage Controls | 0/0 | ✓ Complete (via 06-05) | 2026-01-27 |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
