@@ -7,9 +7,16 @@ import { useAuth } from '@/contexts/AuthContext';
 interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  title?: string;
+  description?: string;
 }
 
-export function SubscriptionModal({ isOpen, onClose }: SubscriptionModalProps) {
+export function SubscriptionModal({
+  isOpen,
+  onClose,
+  title = 'Prenumeruoti LegalAI',
+  description = 'Pasirinkite planą',
+}: SubscriptionModalProps) {
   const { user } = useAuth();
   const [priceType, setPriceType] = useState<'monthly' | 'yearly'>('yearly');
   const [isLoading, setIsLoading] = useState(false);
@@ -72,10 +79,10 @@ export function SubscriptionModal({ isOpen, onClose }: SubscriptionModalProps) {
         {/* Content */}
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Bandomasis laikotarpis baigėsi
+            {title}
           </h2>
           <p className="text-muted-foreground mb-6">
-            Tęskite naudojimąsi LegalAI
+            {description}
           </p>
 
           {/* Plan selection */}
