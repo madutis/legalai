@@ -148,46 +148,58 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
 
     // Retrieve subscription details
-    const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end: number };
+    const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end?: number };
     const firstItem = subscriptionData.items.data[0];
 
     // Check if subscription is scheduled to cancel
     const willCancel = subscriptionData.cancel_at_period_end || subscriptionData.cancel_at !== null;
 
-    // Update Firestore with subscription data
-    await userRef.update({
-      subscription: {
-        status: 'active',
-        stripeSubscriptionId: subscriptionData.id,
-        priceId: firstItem.price.id,
-        currentPeriodEnd: new Date(subscriptionData.current_period_end * 1000),
-        cancelAtPeriodEnd: willCancel,
-        cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
-      },
-    });
+    // Get period end from subscription or item level
+    const periodEnd = subscriptionData.current_period_end || firstItem.current_period_end;
+
+    // Build update data
+    const subscriptionUpdate: Record<string, unknown> = {
+      status: 'active',
+      stripeSubscriptionId: subscriptionData.id,
+      priceId: firstItem.price.id,
+      cancelAtPeriodEnd: willCancel,
+      cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
+    };
+
+    if (periodEnd) {
+      subscriptionUpdate.currentPeriodEnd = new Date(periodEnd * 1000);
+    }
+
+    await userRef.update({ subscription: subscriptionUpdate });
+    console.log(`Subscription activated for user (via metadata): ${firebaseUid}, periodEnd: ${periodEnd}`);
     return;
   }
 
   // Retrieve subscription details
-  const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end: number };
+  const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end?: number };
   const firstItem = subscriptionData.items.data[0];
 
   // Check if subscription is scheduled to cancel
   const willCancel = subscriptionData.cancel_at_period_end || subscriptionData.cancel_at !== null;
 
-  // Update Firestore with subscription data
-  await user.ref.update({
-    subscription: {
-      status: 'active',
-      stripeSubscriptionId: subscriptionData.id,
-      priceId: firstItem.price.id,
-      currentPeriodEnd: new Date(subscriptionData.current_period_end * 1000),
-      cancelAtPeriodEnd: willCancel,
-      cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
-    },
-  });
+  // Get period end from subscription or item level
+  const periodEnd = subscriptionData.current_period_end || firstItem.current_period_end;
 
-  console.log(`Subscription activated for user: ${user.uid}`);
+  // Build update data
+  const subscriptionUpdate: Record<string, unknown> = {
+    status: 'active',
+    stripeSubscriptionId: subscriptionData.id,
+    priceId: firstItem.price.id,
+    cancelAtPeriodEnd: willCancel,
+    cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
+  };
+
+  if (periodEnd) {
+    subscriptionUpdate.currentPeriodEnd = new Date(periodEnd * 1000);
+  }
+
+  await user.ref.update({ subscription: subscriptionUpdate });
+  console.log(`Subscription activated for user: ${user.uid}, periodEnd: ${periodEnd}`);
 }
 
 async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription) {
