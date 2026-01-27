@@ -158,7 +158,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         status: 'active',
         stripeSubscriptionId: subscriptionData.id,
         priceId: firstItem.price.id,
-        currentPeriodEnd: new Date(firstItem.current_period_end * 1000),
+        currentPeriodEnd: new Date(subscriptionData.current_period_end * 1000),
         cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
       },
     });
@@ -176,7 +176,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       status: 'active',
       stripeSubscriptionId: subscriptionData.id,
       priceId: firstItem.price.id,
-      currentPeriodEnd: new Date(firstItem.current_period_end * 1000),
+      currentPeriodEnd: new Date(subscriptionData.current_period_end * 1000),
       cancelAtPeriodEnd: subscriptionData.cancel_at_period_end,
     },
   });
@@ -198,12 +198,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   // Update subscription fields
   await user.ref.update({
     'subscription.status': mapSubscriptionStatus(subscription.status),
-    'subscription.currentPeriodEnd': new Date(firstItem.current_period_end * 1000),
+    'subscription.currentPeriodEnd': new Date(subscription.current_period_end * 1000),
     'subscription.cancelAtPeriodEnd': subscription.cancel_at_period_end,
     'subscription.priceId': firstItem.price.id,
   });
 
-  console.log(`Subscription updated for user: ${user.uid}, status: ${subscription.status}`);
+  console.log(`Subscription updated for user: ${user.uid}, status: ${subscription.status}, cancelAtPeriodEnd: ${subscription.cancel_at_period_end}`);
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
