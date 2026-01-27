@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 6 of 8 (Subscription & Billing)
-Plan: 3 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-27 — Completed 06-03-PLAN.md
+Last activity: 2026-01-27 — Completed 06-04-PLAN.md
 
-Progress: ███████░░░ 71%
+Progress: ████████░░ 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 11 min
-- Total execution time: 186 min
+- Total plans completed: 18
+- Average duration: 10 min
+- Total execution time: 190 min
 
 **By Phase:**
 
@@ -35,10 +35,10 @@ Progress: ███████░░░ 71%
 | 4 | 2 | 20 min | 10 min |
 | 5 | 1 | 8 min | 8 min |
 | 5.4 | 1 | 2 min | 2 min |
-| 6 | 3 | 11 min | 4 min |
+| 6 | 4 | 15 min | 4 min |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (8m), 05.4-01 (2m), 06-01 (4m), 06-02 (5m), 06-03 (2m)
+- Last 5 plans: 05.4-01 (2m), 06-01 (4m), 06-02 (5m), 06-03 (2m), 06-04 (4m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -80,6 +80,8 @@ Recent decisions affecting current work:
 | 06-01 | Stripe customer linked via metadata | Store firebaseUid in Stripe customer metadata for fallback lookup |
 | 06-03 | Monthly price as default subscribe button | Yearly available in modal; keep account page simple |
 | 06-03 | Lithuanian locale for dates | Match app language (lt-LT) |
+| 06-04 | Yearly plan default in modal | Better value for user (14% savings), increases ARPU |
+| 06-04 | Suspense wrapper for chat page | Next.js 16 requires useSearchParams in Suspense boundary |
 
 ### Pending Todos
 
@@ -92,5 +94,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 06-03-PLAN.md (3/5 plans in Phase 6)
+Stopped at: Completed 06-04-PLAN.md (4/5 plans in Phase 6)
 Resume file: None
