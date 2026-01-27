@@ -105,7 +105,7 @@ export function SubscriptionStatus() {
             Pirmas klausimas aktyvuoja 7 dienų nemokamą prieigą.
           </p>
           <p className="text-xs text-muted-foreground/80">
-            Vėliau — nuo €29/mėn.
+            Vėliau — €29/mėn.
           </p>
         </div>
       </div>
@@ -202,7 +202,7 @@ export function SubscriptionStatus() {
             Prenumeruokite ir tęskite darbą.
           </p>
           <p className="text-xs text-muted-foreground/80">
-            Nuo €29/mėn.
+            €29/mėn.
           </p>
           <Button
             onClick={handleSubscribe}
@@ -237,7 +237,7 @@ export function SubscriptionStatus() {
       </div>
       <div className="px-5 py-4 space-y-3">
         <p className="text-xs text-muted-foreground/80">
-          Vėliau — nuo €29/mėn.
+          Vėliau — €29/mėn.
         </p>
         <Button
           onClick={handleSubscribe}
