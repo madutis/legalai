@@ -74,10 +74,9 @@ export default function AccountPage() {
 
       {/* Main Content */}
       <main className="flex-1 overflow-auto">
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8">
-          <div className="max-w-md">
-            {/* User Info Card */}
-            <div className="bg-card rounded-xl border border-border shadow-sm overflow-hidden animate-fade-up" style={{ opacity: 0 }}>
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-6 sm:py-8 flex flex-col items-center">
+          {/* User Info Card */}
+          <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden animate-fade-up" style={{ opacity: 0 }}>
               {/* User Header */}
               <div className="px-5 py-4 border-b border-border bg-muted/30 flex items-center gap-4">
                 <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-lg font-semibold text-primary border-2 border-gold/20">
@@ -117,14 +116,13 @@ export default function AccountPage() {
                   </svg>
                   Atsijungti
                 </Button>
-              </div>
             </div>
-
-            {/* Info Text */}
-            <p className="text-center text-xs text-muted-foreground/60 mt-6 leading-relaxed">
-              Jūsų profilio nustatymai ir konsultacijų istorija saugoma saugiai.
-            </p>
           </div>
+
+          {/* Info Text */}
+          <p className="text-center text-xs text-muted-foreground/60 mt-6 leading-relaxed max-w-md">
+            Jūsų profilio nustatymai ir konsultacijų istorija saugoma saugiai.
+          </p>
         </div>
       </main>
     </div>
