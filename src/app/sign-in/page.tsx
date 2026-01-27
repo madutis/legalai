@@ -11,6 +11,7 @@ import {
   completeMagicLinkSignIn,
   isMagicLinkCallback,
 } from '@/lib/firebase/auth';
+import { getUserProfile, saveUserProfile } from '@/lib/firebase/firestore';
 
 export default function SignInPage() {
   const router = useRouter();
@@ -43,16 +44,53 @@ export default function SignInPage() {
   }, []);
 
   // Redirect if already authenticated
-  // - If has localStorage context: go to /chat (already completed onboarding)
-  // - If no context: go to / (onboarding)
+  // - If has localStorage context: migrate to Firestore if needed, go to /chat
+  // - If no context: check Firestore, then go to / (onboarding) or /chat
   useEffect(() => {
     if (!authLoading && user) {
-      const context = localStorage.getItem('legalai-context');
-      if (context) {
-        router.push('/chat');
-      } else {
-        router.push('/');
+      async function handleAuthRedirect() {
+        const localContext = localStorage.getItem('legalai-context');
+
+        if (localContext) {
+          // Has localStorage context, try to sync to Firestore
+          try {
+            const parsed = JSON.parse(localContext);
+            const firestoreProfile = await getUserProfile(user!.uid);
+
+            // Migrate to Firestore if not already there
+            if (!firestoreProfile) {
+              await saveUserProfile(user!.uid, parsed);
+            }
+          } catch (err) {
+            console.error('Failed to sync profile to Firestore:', err);
+            // Continue anyway - localStorage has the data
+          }
+          router.push('/chat');
+        } else {
+          // No localStorage context, check Firestore
+          try {
+            const firestoreProfile = await getUserProfile(user!.uid);
+            if (firestoreProfile) {
+              // Sync Firestore to localStorage and go to chat
+              localStorage.setItem('legalai-context', JSON.stringify({
+                userRole: firestoreProfile.userRole,
+                companySize: firestoreProfile.companySize,
+                topic: firestoreProfile.topic,
+              }));
+              router.push('/chat');
+            } else {
+              // No profile anywhere, go to onboarding
+              router.push('/');
+            }
+          } catch (err) {
+            console.error('Failed to check Firestore profile:', err);
+            // On error, go to onboarding
+            router.push('/');
+          }
+        }
       }
+
+      handleAuthRedirect();
     }
   }, [user, authLoading, router]);
 

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useAuth } from '@/contexts/AuthContext';
+import { saveUserProfile } from '@/lib/firebase/firestore';
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   employer: (
@@ -125,6 +127,7 @@ const TOPICS = [
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     userRole: '',
@@ -142,25 +145,50 @@ export default function Home() {
     }
   }, [router]);
 
-  const handleSelect = (field: string, value: string) => {
+  const handleSelect = async (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
     if (field === 'userRole' || field === 'companySize') {
       setTimeout(() => setStep((s) => s + 1), 200);
     } else if (field === 'topic') {
       setIsRedirecting(true);
-      setTimeout(() => {
-        localStorage.setItem('legalai-context', JSON.stringify({ ...data, [field]: value }));
-        router.push('/sign-in');
-      }, 200);
+      const finalData = { ...data, [field]: value };
+
+      // Save to localStorage for immediate redirect
+      localStorage.setItem('legalai-context', JSON.stringify(finalData));
+
+      // If authenticated, also save to Firestore
+      if (user) {
+        try {
+          await saveUserProfile(user.uid, finalData);
+        } catch (err) {
+          console.error('Failed to save profile to Firestore:', err);
+          // Continue anyway - localStorage has the data
+        }
+      }
+
+      router.push('/sign-in');
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (step < 3) {
       setStep(step + 1);
     } else {
       setIsRedirecting(true);
+
+      // Save to localStorage for immediate redirect
       localStorage.setItem('legalai-context', JSON.stringify(data));
+
+      // If authenticated, also save to Firestore
+      if (user) {
+        try {
+          await saveUserProfile(user.uid, data);
+        } catch (err) {
+          console.error('Failed to save profile to Firestore:', err);
+          // Continue anyway - localStorage has the data
+        }
+      }
+
       router.push('/sign-in');
     }
   };

@@ -6,6 +6,7 @@ import { ChatInterface } from '@/components/chat/ChatInterface';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useAuth } from '@/contexts/AuthContext';
+import { getUserProfile, saveUserProfile } from '@/lib/firebase/firestore';
 import Link from 'next/link';
 
 interface UserContext {
@@ -109,21 +110,65 @@ export default function ChatPage() {
     }
   }, [authLoading, user, router]);
 
-  // Context check - redirect to onboarding if no context
+  // Context check - load from Firestore first, fallback to localStorage
   useEffect(() => {
     if (authLoading || !user) return;
 
-    const saved = localStorage.getItem('legalai-context');
-    if (saved) {
+    async function loadContext() {
       try {
-        setContext(JSON.parse(saved));
-      } catch {
+        // Try Firestore first
+        const firestoreProfile = await getUserProfile(user!.uid);
+
+        if (firestoreProfile) {
+          // Firestore has profile, use it and sync to localStorage
+          const contextData = {
+            userRole: firestoreProfile.userRole,
+            companySize: firestoreProfile.companySize,
+            topic: firestoreProfile.topic,
+          };
+          setContext(contextData);
+          localStorage.setItem('legalai-context', JSON.stringify(contextData));
+          setContextLoading(false);
+          return;
+        }
+
+        // Firestore empty, check localStorage
+        const saved = localStorage.getItem('legalai-context');
+        if (saved) {
+          try {
+            const localContext = JSON.parse(saved);
+            setContext(localContext);
+
+            // Migrate localStorage to Firestore
+            await saveUserProfile(user!.uid, localContext);
+
+            setContextLoading(false);
+            return;
+          } catch {
+            // Invalid localStorage data
+          }
+        }
+
+        // Neither has context, redirect to onboarding
+        router.push('/');
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+        // Fallback to localStorage on Firestore error
+        const saved = localStorage.getItem('legalai-context');
+        if (saved) {
+          try {
+            setContext(JSON.parse(saved));
+            setContextLoading(false);
+            return;
+          } catch {
+            // Invalid localStorage data
+          }
+        }
         router.push('/');
       }
-    } else {
-      router.push('/');
     }
-    setContextLoading(false);
+
+    loadContext();
   }, [authLoading, user, router]);
 
   const handleNewConsultation = () => {
