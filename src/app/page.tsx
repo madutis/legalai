@@ -136,14 +136,6 @@ export default function Home() {
   });
   const [isRedirecting, setIsRedirecting] = useState(false);
 
-  // Context check - redirect to sign-in if already has context (completed onboarding before)
-  useEffect(() => {
-    const context = localStorage.getItem('legalai-context');
-    if (context) {
-      // User has context, send them to sign-in (which will handle auth check and redirect to chat)
-      router.push('/sign-in');
-    }
-  }, [router]);
 
   const handleSelect = async (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
