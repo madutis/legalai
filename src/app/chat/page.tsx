@@ -187,9 +187,6 @@ function ChatPageContent() {
       setShowCheckoutSuccess(true);
       // Remove query param from URL
       router.replace('/chat');
-      // Auto-hide after 3 seconds
-      const timer = setTimeout(() => setShowCheckoutSuccess(false), 3000);
-      return () => clearTimeout(timer);
     }
   }, [searchParams, router]);
 
@@ -230,14 +227,36 @@ function ChatPageContent() {
         onClose={() => setShowSubscriptionModal(false)}
       />
 
-      {/* Checkout Success Toast */}
+      {/* Checkout Success Modal */}
       {showCheckoutSuccess && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top fade-in duration-300">
-          <div className="bg-emerald-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-            </svg>
-            <span className="font-medium">Apmokejimas sekmingas!</span>
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-200"
+          onClick={() => setShowCheckoutSuccess(false)}
+        >
+          <div
+            className="relative bg-card border border-border rounded-xl shadow-lg max-w-sm w-full mx-4 p-6 animate-in zoom-in-95 fade-in duration-200 text-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Success icon */}
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
+              <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              Sveikiname!
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Jūsų prenumerata aktyvuota. Galite naudotis visomis LegalAI funkcijomis.
+            </p>
+
+            <Button
+              onClick={() => setShowCheckoutSuccess(false)}
+              className="w-full"
+            >
+              Pradėti
+            </Button>
           </div>
         </div>
       )}
