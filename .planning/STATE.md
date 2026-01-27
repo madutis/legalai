@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 
 ## Current Position
 
-Phase: 5 of 8 (Account Management)
+Phase: 5.4 of 8 (Returning User Flow)
 Plan: 1 of 1 in current phase
 Status: Phase complete
-Last activity: 2026-01-27 — Completed 05-01-PLAN.md
+Last activity: 2026-01-27 — Completed 05.4-01-PLAN.md
 
-Progress: ███████░░░ 59%
+Progress: ███████░░░ 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 13
-- Average duration: 13 min
-- Total execution time: 173 min
+- Total plans completed: 14
+- Average duration: 12 min
+- Total execution time: 175 min
 
 **By Phase:**
 
@@ -34,9 +34,10 @@ Progress: ███████░░░ 59%
 | 1.4 | 1 | 4 min | 4 min |
 | 4 | 2 | 20 min | 10 min |
 | 5 | 1 | 8 min | 8 min |
+| 5.4 | 1 | 2 min | 2 min |
 
 **Recent Trend:**
-- Last 5 plans: 01.3-01 (4m), 01.4-01 (4m), 04-01 (10m), 04-02 (10m), 05-01 (8m)
+- Last 5 plans: 01.4-01 (4m), 04-01 (10m), 04-02 (10m), 05-01 (8m), 05.4-01 (2m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 | 04-02 | Auth after profiling | User sees app value before committing to sign-up |
 | 05-01 | Firestore + localStorage dual write | Reliability: Firestore persists, localStorage immediate |
 | 05-01 | Migrate localStorage on auth | Seamless upgrade for users who profiled before signing in |
+| 05.4-01 | Check Firestore only for returning user | localStorage is for immediate redirect, not profile detection |
+| 05.4-01 | Clear topic for returning users | Let them pick fresh topic each session |
 
 ### Pending Todos
 
@@ -82,5 +85,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 05-01-PLAN.md (Phase 5 complete)
+Stopped at: Completed 05.4-01-PLAN.md (Phase 5.4 complete)
 Resume file: None

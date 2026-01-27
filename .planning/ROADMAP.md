@@ -24,6 +24,10 @@ None
 - [ ] **Phase 3: Landing Page** - Value proposition page for conversion
 - [x] **Phase 4: User Onboarding** - Registration and onboarding flow
 - [x] **Phase 5: Account Management** - User profile and settings
+- [ ] **Phase 5.1: Welcome Email** - Send welcome email on signup (INSERTED)
+- [ ] **Phase 5.2: Legal Pages** - T&Cs, Privacy Policy with links (INSERTED)
+- [ ] **Phase 5.3: Account Closure** - Account deletion request flow (INSERTED)
+- [x] **Phase 5.4: Returning User Flow** - Skip profiling steps for users with saved context (INSERTED)
 - [ ] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
 - [ ] **Phase 7: Usage Controls** - Limits, restrictions, metering
 
@@ -158,9 +162,68 @@ None
 **Research**: Unlikely (internal patterns)
 **Plans**: TBD
 
+### Phase 5.1: Welcome Email (INSERTED)
+**Goal**: Send welcome email when new user signs up via Google OAuth
+**Depends on**: Phase 5
+**Research**: Likely (email service options)
+**Research topics**: Firebase Extensions (Trigger Email) vs Resend vs SendGrid, email templates
+**Plans**: 1 estimated
+
+**Scope:**
+- Trigger email on first sign-up (new user creation)
+- Welcome message with brief intro to LegalAI
+- Link to start consultation
+- Lithuanian language content
+
+### Phase 5.2: Legal Pages (INSERTED)
+**Goal**: T&Cs and Privacy Policy pages with links in sign-up and footer
+**Depends on**: Phase 5.1
+**Research**: Unlikely (content/legal task)
+**Plans**: 1 estimated
+
+**Scope:**
+- Create /terms and /privacy pages
+- Add checkbox/disclosure in sign-up flow
+- Add footer links across all pages
+- Content: data handling, AI disclaimer (not legal advice), GDPR compliance for Lithuanian users
+
+### Phase 5.3: Account Closure (INSERTED)
+**Goal**: Account deletion request flow on /account page
+**Depends on**: Phase 5.2
+**Research**: Unlikely (internal patterns)
+**Plans**: 1 estimated
+
+**Scope:**
+- Delete account button with confirmation dialog
+- Clear explanation of what data will be deleted
+- Delete user profile from Firestore
+- Delete Firebase Auth account
+- Redirect to homepage after deletion
+- GDPR right to erasure compliance
+
+### Phase 5.4: Returning User Flow (INSERTED)
+**Goal**: Optimize new consultation flow for users with saved profile
+**Depends on**: Phase 5.3
+**Research**: Unlikely (internal patterns)
+**Plans**: 1 estimated
+
+**Scope:**
+- Detect if user has saved role + company size in Firestore
+- Skip steps 1-2, go directly to topic selection (step 3)
+- Show saved values in breadcrumbs as completed steps
+- Allow clicking breadcrumb to go back and re-select
+- Update Firestore profile when user changes role/company size
+- First-time users (no profile) still see all 3 steps
+
+**UX details:**
+- Breadcrumbs show filled/completed state for saved values
+- Small edit icon on hover to indicate clickable
+- When editing: "This will update your profile" messaging
+- Future: consider session-only override option
+
 ### Phase 6: Subscription & Billing
 **Goal**: Pricing tiers, free trial, payment integration
-**Depends on**: Phase 5
+**Depends on**: Phase 5.4
 **Research**: Likely (external API)
 **Research topics**: Payment provider (Stripe vs alternatives), Lithuanian market requirements, subscription management patterns
 **Plans**: TBD
@@ -174,7 +237,7 @@ None
 ## Progress
 
 **Execution Order:**
-1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 6 → 7** → 2 → 2.1 → 3
+1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 5.1 → 5.2 → 5.3 → 5.4 → 6 → 7** → 2 → 2.1 → 3
 
 Auth/billing prioritized over templates/landing page.
 
@@ -187,6 +250,10 @@ Auth/billing prioritized over templates/landing page.
 | 1.4. Labor Disputes Statistics | 1/1 | ✓ Complete | 2026-01-22 |
 | 4. User Onboarding | 2/2 | ✓ Complete | 2026-01-27 |
 | 5. Account Management | 1/1 | ✓ Complete | 2026-01-27 |
+| 5.1. Welcome Email | 0/1 | Not started | - |
+| 5.2. Legal Pages | 0/1 | Not started | - |
+| 5.3. Account Closure | 0/1 | Not started | - |
+| 5.4. Returning User Flow | 1/1 | ✓ Complete | 2026-01-27 |
 | 6. Subscription & Billing | 0/TBD | Not started | - |
 | 7. Usage Controls | 0/TBD | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
