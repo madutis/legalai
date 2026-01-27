@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
 interface UserContext {
@@ -97,10 +98,21 @@ const TOPIC_ICONS: Record<string, React.ReactNode> = {
 
 export default function ChatPage() {
   const router = useRouter();
+  const { user, loading: authLoading } = useAuth();
   const [context, setContext] = useState<UserContext | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [contextLoading, setContextLoading] = useState(true);
 
+  // Auth check - redirect to sign-in if not authenticated
   useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/sign-in');
+    }
+  }, [authLoading, user, router]);
+
+  // Context check - redirect to onboarding if no context
+  useEffect(() => {
+    if (authLoading || !user) return;
+
     const saved = localStorage.getItem('legalai-context');
     if (saved) {
       try {
@@ -111,15 +123,16 @@ export default function ChatPage() {
     } else {
       router.push('/');
     }
-    setLoading(false);
-  }, [router]);
+    setContextLoading(false);
+  }, [authLoading, user, router]);
 
   const handleNewConsultation = () => {
     localStorage.removeItem('legalai-context');
     router.push('/');
   };
 
-  if (loading || !context) {
+  // Show loading while checking auth or context
+  if (authLoading || contextLoading || !context) {
     return (
       <div className="h-[100svh] flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
