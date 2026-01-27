@@ -4,10 +4,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import { getUserProfile, saveUserProfile } from '@/lib/firebase/firestore';
-import Link from 'next/link';
 
 interface UserContext {
   userRole: string;
@@ -200,53 +199,20 @@ export default function ChatPage() {
 
   return (
     <div className="h-[100svh] flex flex-col bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-background/80 backdrop-blur-md flex-shrink-0 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-          <Link href="/" className="flex items-center gap-2.5 min-w-0 group">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg className="w-5 h-5 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20" />
-                <path d="M2 6h20" />
-                <path d="M4 6l2 8h-4l2-8" />
-                <path d="M20 6l2 8h-4l2-8" />
-                <path d="M2 14a2 2 0 1 0 4 0" />
-                <path d="M18 14a2 2 0 1 0 4 0" />
-                <circle cx="12" cy="5" r="1.5" />
-              </svg>
-            </div>
-            <span className="font-serif font-semibold text-sm sm:text-base tracking-tight">LegalAI</span>
-          </Link>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <ThemeToggle />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNewConsultation}
-              className="flex-shrink-0 text-xs sm:text-sm rounded-lg border-border hover:bg-muted transition-colors"
-            >
-              <svg className="w-4 h-4 mr-1.5 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-              </svg>
-              <span className="hidden sm:inline">Nauja konsultacija</span>
-              <span className="sm:hidden">Nauja</span>
-            </Button>
-
-            {/* User Avatar */}
-            <Link
-              href="/account"
-              className="relative w-8 h-8 rounded-full bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center text-sm font-semibold text-primary border-2 border-transparent hover:border-gold/50 transition-all duration-200 hover:scale-105 hover:shadow-sm group"
-              title={user?.email || 'Paskyra'}
-            >
-              <span className="font-serif">
-                {user?.email?.charAt(0).toUpperCase() || 'U'}
-              </span>
-              {/* Subtle gold glow on hover */}
-              <span className="absolute inset-0 rounded-full bg-gold/0 group-hover:bg-gold/5 transition-colors duration-200" />
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header showAuth>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleNewConsultation}
+          className="flex-shrink-0 text-xs sm:text-sm rounded-lg border-border hover:bg-muted transition-colors"
+        >
+          <svg className="w-4 h-4 mr-1.5 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span className="hidden sm:inline">Nauja konsultacija</span>
+          <span className="sm:hidden">Nauja</span>
+        </Button>
+      </Header>
 
       {/* Context Summary */}
       <div className="bg-muted/50 border-b border-border/50 px-3 sm:px-4 py-2 flex-shrink-0">

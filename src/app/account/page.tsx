@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
@@ -48,37 +48,17 @@ export default function AccountPage() {
 
   return (
     <div className="h-[100svh] flex flex-col bg-background">
-      {/* Header - matches chat page exactly */}
-      <header className="border-b border-border/50 bg-background/80 backdrop-blur-md flex-shrink-0 sticky top-0 z-50">
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between gap-2">
-          <Link href="/" className="flex items-center gap-2.5 min-w-0 group">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-105 transition-transform">
-              <svg className="w-5 h-5 text-primary-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2v20" />
-                <path d="M2 6h20" />
-                <path d="M4 6l2 8h-4l2-8" />
-                <path d="M20 6l2 8h-4l2-8" />
-                <path d="M2 14a2 2 0 1 0 4 0" />
-                <path d="M18 14a2 2 0 1 0 4 0" />
-                <circle cx="12" cy="5" r="1.5" />
-              </svg>
-            </div>
-            <span className="font-serif font-semibold text-sm sm:text-base tracking-tight">LegalAI</span>
-          </Link>
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <ThemeToggle />
-            <Link
-              href="/chat"
-              className="flex-shrink-0 text-xs sm:text-sm rounded-lg border border-border hover:bg-muted transition-colors px-3 py-1.5 sm:py-2 flex items-center gap-1.5"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              <span className="hidden sm:inline">Grįžti</span>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header>
+        <Link
+          href="/chat"
+          className="flex-shrink-0 text-xs sm:text-sm rounded-lg border border-border hover:bg-muted transition-colors px-3 py-1.5 sm:py-2 flex items-center gap-1.5"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          <span className="hidden sm:inline">Grįžti</span>
+        </Link>
+      </Header>
 
       {/* Page Title Bar - matches chat context bar */}
       <div className="bg-muted/50 border-b border-border/50 px-3 sm:px-4 py-2 flex-shrink-0">
