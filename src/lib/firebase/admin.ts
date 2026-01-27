@@ -1,6 +1,6 @@
 import { initializeApp, getApps, cert, type App } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { getFirestore, type Firestore, FieldValue } from 'firebase-admin/firestore';
 
 let adminApp: App | undefined;
 let adminAuth: Auth | undefined;
@@ -69,4 +69,54 @@ export async function verifyIdToken(authHeader: string | null): Promise<{
   } catch {
     return null;
   }
+}
+
+// Usage tracking constants
+const DAILY_LIMIT = 50;
+const WARNING_THRESHOLD = 45;
+
+// Helper to format today's date as YYYY-MM-DD in UTC
+function getTodayKey(): string {
+  return new Date().toISOString().split('T')[0];
+}
+
+/**
+ * Check if user can send message (server-side)
+ * Returns usage status and remaining count
+ */
+export async function checkUsageLimitAdmin(uid: string): Promise<{
+  allowed: boolean;
+  remaining: number;
+  showWarning: boolean;
+}> {
+  const db = getAdminFirestore();
+  const todayKey = getTodayKey();
+  const usageRef = db.collection('users').doc(uid).collection('usage').doc(todayKey);
+
+  const snapshot = await usageRef.get();
+  const count = snapshot.exists ? (snapshot.data()?.questionCount || 0) : 0;
+
+  if (count >= DAILY_LIMIT) {
+    return { allowed: false, remaining: 0, showWarning: false };
+  }
+
+  return {
+    allowed: true,
+    remaining: DAILY_LIMIT - count,
+    showWarning: count >= WARNING_THRESHOLD,
+  };
+}
+
+/**
+ * Increment usage count (server-side, fire and forget)
+ */
+export async function incrementUsageAdmin(uid: string): Promise<void> {
+  const db = getAdminFirestore();
+  const todayKey = getTodayKey();
+  const usageRef = db.collection('users').doc(uid).collection('usage').doc(todayKey);
+
+  await usageRef.set({
+    questionCount: FieldValue.increment(1),
+    lastQuestionAt: FieldValue.serverTimestamp(),
+  }, { merge: true });
 }

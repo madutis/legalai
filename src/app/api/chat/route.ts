@@ -3,6 +3,7 @@ import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extract
 import { searchHybrid, fetchArticles, SearchResult } from '@/lib/pinecone';
 import { getCaseById, getPdfById } from '@/lib/db';
 import { checkRateLimit } from '@/lib/rate-limit';
+import { verifyIdToken, checkUsageLimitAdmin, incrementUsageAdmin } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -61,6 +62,22 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Check authentication and usage limits for authenticated users
+  const authHeader = request.headers.get('authorization');
+  const user = await verifyIdToken(authHeader);
+  let usageInfo: { remaining: number; showWarning: boolean } | null = null;
+
+  if (user) {
+    const usageCheck = await checkUsageLimitAdmin(user.uid);
+    if (!usageCheck.allowed) {
+      return NextResponse.json(
+        { error: 'limit_reached', remaining: 0 },
+        { status: 429 }
+      );
+    }
+    usageInfo = { remaining: usageCheck.remaining, showWarning: usageCheck.showWarning };
+  }
+
   try {
     const body: ChatRequestBody = await request.json();
     const { message, history = [], context, useFallbackModel = false } = body;
@@ -85,6 +102,22 @@ export async function POST(request: NextRequest) {
         };
 
         try {
+          // Increment usage count at start of processing (fire and forget)
+          if (user) {
+            incrementUsageAdmin(user.uid).catch(err => {
+              console.error('Failed to increment usage:', err);
+            });
+          }
+
+          // Send usage info early in the stream
+          if (usageInfo) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({
+              type: 'usage',
+              remaining: usageInfo.remaining - 1, // Account for this message
+              showWarning: usageInfo.showWarning || usageInfo.remaining <= 5,
+            })}\n\n`));
+          }
+
           // Step 1: Generate embedding + AI article extraction in parallel
           sendStatus('Analizuoju klausimą...');
           const [queryEmbedding, aiArticleNumbers] = await Promise.all([
