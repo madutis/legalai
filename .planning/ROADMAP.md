@@ -185,7 +185,7 @@ Auth/billing prioritized over templates/landing page.
 | 1.2. Darbo Sauga | 3/3 | ✓ Complete | 2026-01-21 |
 | 1.3. Fire Safety Law | 1/1 | ✓ Complete | 2026-01-21 |
 | 1.4. Labor Disputes Statistics | 1/1 | ✓ Complete | 2026-01-22 |
-| 4. User Onboarding | 0/TBD | Not started | - |
+| 4. User Onboarding | 1/2 | In progress | - |
 | 5. Account Management | 0/TBD | Not started | - |
 | 6. Subscription & Billing | 0/TBD | Not started | - |
 | 7. Usage Controls | 0/TBD | Not started | - |
