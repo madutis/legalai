@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
 import { useAuth } from '@/contexts/AuthContext';
-import { saveUserProfile } from '@/lib/firebase/firestore';
+import { saveUserProfile, getUserProfile } from '@/lib/firebase/firestore';
 
 const ROLE_ICONS: Record<string, React.ReactNode> = {
   employer: (
@@ -127,7 +127,7 @@ const TOPICS = [
 
 export default function Home() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [step, setStep] = useState(1);
   const [data, setData] = useState({
     userRole: '',
@@ -135,7 +135,38 @@ export default function Home() {
     topic: '',
   });
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
 
+  // Check for saved profile on mount for returning users
+  useEffect(() => {
+    const loadSavedProfile = async () => {
+      // Wait for auth to settle
+      if (authLoading) return;
+
+      // If user is authenticated, check Firestore for saved profile
+      if (user) {
+        try {
+          const profile = await getUserProfile(user.uid);
+          if (profile && profile.userRole && profile.companySize) {
+            // Returning user with complete profile - skip to step 3
+            setData({
+              userRole: profile.userRole,
+              companySize: profile.companySize,
+              topic: '', // Always let them pick a new topic
+            });
+            setStep(3);
+          }
+        } catch (err) {
+          console.error('Failed to load profile from Firestore:', err);
+          // Continue as new user
+        }
+      }
+
+      setIsLoadingProfile(false);
+    };
+
+    loadSavedProfile();
+  }, [user, authLoading]);
 
   const handleSelect = async (field: string, value: string) => {
     setData((prev) => ({ ...prev, [field]: value }));
@@ -195,6 +226,27 @@ export default function Home() {
     if (step === 3) return !!data.topic;
     return false;
   };
+
+  // Show loading state while checking profile
+  if (authLoading || isLoadingProfile) {
+    return (
+      <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
+            <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2v20" />
+              <path d="M2 6h20" />
+              <path d="M4 6l2 8h-4l2-8" />
+              <path d="M20 6l2 8h-4l2-8" />
+              <path d="M2 14a2 2 0 1 0 4 0" />
+              <path d="M18 14a2 2 0 1 0 4 0" />
+              <circle cx="12" cy="5" r="1.5" />
+            </svg>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Show spinner when redirecting after completion
   if (isRedirecting) {
