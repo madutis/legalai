@@ -181,7 +181,7 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-xl font-semibold mb-4">4. Duomenų tvarkytojai (trečiosios šalys)</h2>
 
             <TldrBox>
-              Naudojame Google (autentifikacija, AI, analitika), Stripe (mokėjimai). Visi partneriai atitinka BDAR reikalavimus.
+              Naudojame Google (autentifikacija, AI, analitika), Stripe (mokėjimai), MailerSend (el. paštas). Visi partneriai atitinka BDAR reikalavimus.
             </TldrBox>
 
             <p className="text-sm text-foreground/80 ml-4 mb-4">
@@ -214,9 +214,14 @@ export default function PrivacyPage() {
                     <td className="px-4 py-2 border-b border-border">ES/JAV*</td>
                   </tr>
                   <tr>
-                    <td className="px-4 py-2">Stripe</td>
-                    <td className="px-4 py-2">Mokėjimų apdorojimas</td>
-                    <td className="px-4 py-2">ES/JAV*</td>
+                    <td className="px-4 py-2 border-b border-border">Stripe</td>
+                    <td className="px-4 py-2 border-b border-border">Mokėjimų apdorojimas</td>
+                    <td className="px-4 py-2 border-b border-border">ES/JAV*</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2">MailerSend</td>
+                    <td className="px-4 py-2">El. pašto siuntimas</td>
+                    <td className="px-4 py-2">ES*</td>
                   </tr>
                 </tbody>
               </table>

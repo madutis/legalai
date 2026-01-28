@@ -92,9 +92,23 @@ export function useChat(options?: UseChatOptions) {
     lastMessageRef.current = content;
 
     // Start trial on first message (idempotent - only sets if not already set)
-    if (userId) {
+    // Also triggers welcome email
+    if (userId && user?.email) {
       startTrial(userId).catch((err) => {
         console.error('Failed to start trial:', err);
+      });
+
+      // Send welcome email (API handles deduplication)
+      fetch('/api/email/welcome', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          uid: userId,
+          email: user.email,
+          name: user.displayName || undefined,
+        }),
+      }).catch((err) => {
+        console.error('Failed to send welcome email:', err);
       });
     }
 
