@@ -101,7 +101,7 @@ export function RulingModal({ docId, onClose }: RulingModalProps) {
           )}
 
           {error && (
-            <div className="text-destructive py-8 text-center">
+            <div role="alert" className="text-destructive py-8 text-center">
               <p>{error}</p>
             </div>
           )}

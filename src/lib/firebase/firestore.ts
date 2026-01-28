@@ -1,5 +1,6 @@
-import { doc, getDoc, setDoc, increment, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { getFirebaseFirestore } from './config';
+import { TRIAL_DURATION_DAYS } from '@/lib/constants';
 
 export interface UserProfile {
   userRole: string;
@@ -133,65 +134,10 @@ export function getAccessStatus(user: UserDocument | null): AccessStatus {
 
   // In trial period?
   const trialEnd = new Date(user.trialStartedAt);
-  trialEnd.setDate(trialEnd.getDate() + 7);
+  trialEnd.setDate(trialEnd.getDate() + TRIAL_DURATION_DAYS);
   if (now < trialEnd) {
     return 'allowed';
   }
 
   return 'trial_expired';
-}
-
-// Usage tracking constants
-const DAILY_LIMIT = 50;
-const WARNING_THRESHOLD = 45;
-
-// Helper to format today's date as YYYY-MM-DD in UTC
-function getTodayKey(): string {
-  return new Date().toISOString().split('T')[0];
-}
-
-// Get today's usage count for a user
-export async function getTodayUsage(uid: string): Promise<number> {
-  const db = getFirebaseFirestore();
-  const todayKey = getTodayKey();
-  const usageRef = doc(db, 'users', uid, 'usage', todayKey);
-
-  const snapshot = await getDoc(usageRef);
-
-  if (!snapshot.exists()) {
-    return 0;
-  }
-
-  return snapshot.data().questionCount || 0;
-}
-
-// Increment usage count
-export async function incrementUsage(uid: string): Promise<void> {
-  const db = getFirebaseFirestore();
-  const todayKey = getTodayKey();
-  const usageRef = doc(db, 'users', uid, 'usage', todayKey);
-
-  await setDoc(usageRef, {
-    questionCount: increment(1),
-    lastQuestionAt: serverTimestamp(),
-  }, { merge: true });
-}
-
-// Check if user can send message
-export async function checkUsageLimit(uid: string): Promise<{
-  allowed: boolean;
-  remaining: number;
-  showWarning: boolean;
-}> {
-  const count = await getTodayUsage(uid);
-
-  if (count >= DAILY_LIMIT) {
-    return { allowed: false, remaining: 0, showWarning: false };
-  }
-
-  return {
-    allowed: true,
-    remaining: DAILY_LIMIT - count,
-    showWarning: count >= WARNING_THRESHOLD,
-  };
 }

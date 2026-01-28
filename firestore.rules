@@ -1,0 +1,26 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /users/{uid} {
+      // Anyone can read their own document
+      allow read: if request.auth != null && request.auth.uid == uid;
+
+      // Client can only write profile fields, not billing/subscription data
+      // Sensitive fields (subscription, stripeCustomerId, etc.) are set by server via Admin SDK
+      allow create: if request.auth != null
+        && request.auth.uid == uid
+        && !request.resource.data.keys().hasAny(['subscription', 'stripeCustomerId', 'stripeSubscriptionId']);
+
+      allow update: if request.auth != null
+        && request.auth.uid == uid
+        && !request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['subscription', 'stripeCustomerId', 'stripeSubscriptionId', 'trialStartedAt']);
+
+      // Usage subcollection - read only from client, writes via Admin SDK
+      match /usage/{date} {
+        allow read: if request.auth != null && request.auth.uid == uid;
+      }
+    }
+  }
+}

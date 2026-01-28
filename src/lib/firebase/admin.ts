@@ -1,6 +1,7 @@
 import { initializeApp, getApps, cert, type App } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getFirestore, type Firestore, FieldValue } from 'firebase-admin/firestore';
+import { DAILY_LIMIT, WARNING_THRESHOLD, getTodayKey } from '@/lib/constants';
 
 let adminApp: App | undefined;
 let adminAuth: Auth | undefined;
@@ -69,15 +70,6 @@ export async function verifyIdToken(authHeader: string | null): Promise<{
   } catch {
     return null;
   }
-}
-
-// Usage tracking constants
-const DAILY_LIMIT = 50;
-const WARNING_THRESHOLD = 45;
-
-// Helper to format today's date as YYYY-MM-DD in UTC
-function getTodayKey(): string {
-  return new Date().toISOString().split('T')[0];
 }
 
 /**

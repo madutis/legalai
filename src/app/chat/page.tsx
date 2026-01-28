@@ -230,33 +230,65 @@ function ChatPageContent() {
       {/* Checkout Success Modal */}
       {showCheckoutSuccess && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-200"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-300"
           onClick={() => setShowCheckoutSuccess(false)}
         >
           <div
-            className="relative bg-card border border-border rounded-xl shadow-lg max-w-sm w-full mx-4 p-6 animate-in zoom-in-95 fade-in duration-200 text-center"
+            className="relative bg-card border border-border rounded-xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden animate-in zoom-in-95 fade-in slide-in-from-bottom-4 duration-300"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Success icon */}
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-              </svg>
+            {/* Decorative header gradient */}
+            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-br from-gold/20 via-gold/10 to-transparent" />
+
+            <div className="relative px-6 pt-8 pb-6 text-center">
+              {/* Animated success icon with scales of justice */}
+              <div className="relative w-20 h-20 mx-auto mb-5">
+                {/* Outer ring animation */}
+                <div className="absolute inset-0 rounded-full border-2 border-gold/30 animate-ping" style={{ animationDuration: '2s' }} />
+                {/* Inner icon container */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-gold/20 to-gold/5 flex items-center justify-center border border-gold/30 shadow-lg">
+                  <svg className="w-10 h-10 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v20" />
+                    <path d="M2 6h20" />
+                    <path d="M4 6l2 8h-4l2-8" />
+                    <path d="M20 6l2 8h-4l2-8" />
+                    <path d="M2 14a2 2 0 1 0 4 0" />
+                    <path d="M18 14a2 2 0 1 0 4 0" />
+                    <circle cx="12" cy="5" r="1.5" />
+                  </svg>
+                </div>
+                {/* Checkmark overlay */}
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-card shadow-md animate-in zoom-in duration-300 delay-200">
+                  <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+              </div>
+
+              <h2 className="font-serif text-2xl font-semibold text-foreground mb-2">
+                Sveikiname!
+              </h2>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
+                Jūsų prenumerata aktyvuota.<br />
+                <span className="text-foreground/80">Neribotos konsultacijos laukia.</span>
+              </p>
+
+              <Button
+                onClick={() => setShowCheckoutSuccess(false)}
+                size="xl"
+                className="w-full font-medium shadow-md hover:shadow-lg transition-shadow"
+              >
+                Pradėti konsultaciją
+                <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Button>
+
+              {/* Subtle confetti-like decorative elements */}
+              <div className="absolute top-6 left-6 w-2 h-2 rounded-full bg-gold/40 animate-pulse" />
+              <div className="absolute top-10 right-8 w-1.5 h-1.5 rounded-full bg-emerald-400/50 animate-pulse delay-100" />
+              <div className="absolute top-8 left-12 w-1 h-1 rounded-full bg-gold/30 animate-pulse delay-200" />
             </div>
-
-            <h2 className="text-xl font-semibold text-foreground mb-2">
-              Sveikiname!
-            </h2>
-            <p className="text-muted-foreground mb-6">
-              Jūsų prenumerata aktyvuota. Galite naudotis visomis LegalAI funkcijomis.
-            </p>
-
-            <Button
-              onClick={() => setShowCheckoutSuccess(false)}
-              className="w-full"
-            >
-              Pradėti
-            </Button>
           </div>
         </div>
       )}

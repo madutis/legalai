@@ -32,8 +32,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create portal session
-    const origin = request.headers.get('origin') || 'http://localhost:3000';
+    // Create portal session with validated origin
+    const allowedOrigins = [
+      process.env.NEXT_PUBLIC_APP_URL,
+      'http://localhost:3000',
+    ].filter(Boolean);
+    const requestOrigin = request.headers.get('origin');
+    const origin = allowedOrigins.includes(requestOrigin || '')
+      ? requestOrigin
+      : allowedOrigins[0] || 'http://localhost:3000';
 
     const session = await stripe.billingPortal.sessions.create({
       customer: stripeCustomerId,

@@ -47,3 +47,8 @@ next-env.d.ts
 data/
 !data/lat.db
 docs/internal/
+
+# Debug & screenshots
+firebase-debug.log
+.playwright-mcp/
+welcome-email-preview.png

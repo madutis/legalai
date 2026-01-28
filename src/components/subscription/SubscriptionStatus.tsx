@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { SubscriptionModal } from './SubscriptionModal';
+import { PRICING, TRIAL_DURATION_DAYS } from '@/lib/constants';
 
 export function SubscriptionStatus() {
   const { user } = useAuth();
@@ -77,10 +79,10 @@ export function SubscriptionStatus() {
           </div>
           <div className="px-5 py-4 space-y-3">
             <p className="text-sm text-muted-foreground">
-              Pirmas klausimas aktyvuoja 7 dienų nemokamą prieigą.
+              Pirmas klausimas aktyvuoja {TRIAL_DURATION_DAYS} dienų nemokamą prieigą.
             </p>
             <p className="text-xs text-muted-foreground/80">
-              Vėliau — €29/mėn.
+              Vėliau — {PRICING.monthly.display}/{PRICING.monthly.interval}
             </p>
           </div>
         </div>
@@ -105,7 +107,7 @@ export function SubscriptionStatus() {
               </p>
               <Button
                 onClick={() => setShowModal(true)}
-                className="w-full h-10"
+                size="lg" className="w-full"
               >
                 Atnaujinti prenumeratą
               </Button>
@@ -116,7 +118,9 @@ export function SubscriptionStatus() {
 
       // Active subscription
       const isYearly = billingInterval === 'year';
-      const priceDisplay = isYearly ? '€299/m. + PVM' : '€29/mėn. + PVM';
+      const priceDisplay = isYearly
+        ? `${PRICING.yearly.display}/${PRICING.yearly.interval} + PVM`
+        : `${PRICING.monthly.display}/${PRICING.monthly.interval} + PVM`;
 
       return (
         <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden">
@@ -132,14 +136,11 @@ export function SubscriptionStatus() {
               onClick={handleManageSubscription}
               disabled={isLoading}
               variant="outline"
-              className="w-full h-10"
+              size="lg" className="w-full"
             >
               {isLoading ? (
                 <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
+                  <Spinner size="sm" />
                   Kraunama...
                 </span>
               ) : (
@@ -168,7 +169,7 @@ export function SubscriptionStatus() {
             </p>
             <Button
               onClick={() => setShowModal(true)}
-              className="w-full h-10"
+              size="lg" className="w-full"
             >
               Prenumeruoti
             </Button>
@@ -188,11 +189,11 @@ export function SubscriptionStatus() {
         </div>
         <div className="px-5 py-4 space-y-3">
           <p className="text-xs text-muted-foreground/80">
-            Vėliau — €29/mėn.
+            Vėliau — {PRICING.monthly.display}/{PRICING.monthly.interval}
           </p>
           <Button
             onClick={() => setShowModal(true)}
-            className="w-full h-10"
+            size="lg" className="w-full"
           >
             Prenumeruoti dabar
           </Button>

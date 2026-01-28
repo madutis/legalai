@@ -6,7 +6,7 @@ AI-powered Lithuanian employment law assistant for accountants and HR profession
 
 ## Tech Stack
 
-- **Frontend**: Next.js 15, React 19, Tailwind CSS, shadcn/ui
+- **Frontend**: Next.js 16, React 19, Tailwind CSS, shadcn/ui
 - **AI**: Google Gemini 2.5 Flash (2.0 Flash fallback)
 - **Vector DB**: Pinecone (hybrid RAG retrieval)
 - **Database**: Firebase Firestore (users, subscriptions)

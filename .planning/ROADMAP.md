@@ -28,6 +28,7 @@ None
 - [ ] **Phase 5.2: Legal Pages** - T&Cs, Privacy Policy with links (INSERTED)
 - [ ] **Phase 5.3: Account Closure** - Account deletion request flow (INSERTED)
 - [x] **Phase 5.4: Returning User Flow** - Skip profiling steps for users with saved context (INSERTED)
+- [ ] **Phase 5.5: Contact & Support** - Contact details and support channel (INSERTED)
 - [x] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
 - [ ] **Phase 7: Usage Controls** - Limits, restrictions, metering
 
@@ -221,9 +222,26 @@ None
 - When editing: "This will update your profile" messaging
 - Future: consider session-only override option
 
+### Phase 5.5: Contact & Support (INSERTED)
+**Goal**: Add contact details and support channel for users to reach out
+**Depends on**: Phase 5.4
+**Research**: Unlikely (internal patterns)
+**Plans**: 1 estimated
+
+**Scope:**
+- Contact email displayed in /account page and footer
+- Simple "Susisiekite" section with email link
+- Optional: feedback/support form that sends email
+- Company info: UAB name, email, optional phone
+
+**Locations:**
+- /account page: dedicated "Pagalba" section
+- Footer: contact email link on all pages
+- Optional: /contact page (if needed later)
+
 ### Phase 6: Subscription & Billing
 **Goal**: Pricing tiers, free trial, payment integration
-**Depends on**: Phase 5.4
+**Depends on**: Phase 5.5
 **Research**: Likely (external API)
 **Research topics**: Payment provider (Stripe vs alternatives), Lithuanian market requirements, subscription management patterns
 **Plans**: TBD
@@ -238,7 +256,7 @@ None
 ## Progress
 
 **Execution Order:**
-1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 5.1 → 5.2 → 5.3 → 5.4 → 6 → 7** → 2 → 2.1 → 3
+1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 5.1 → 5.2 → 5.3 → 5.4 → 5.5 → 6 → 7** → 2 → 2.1 → 3
 
 Auth/billing prioritized over templates/landing page.
 
@@ -251,10 +269,11 @@ Auth/billing prioritized over templates/landing page.
 | 1.4. Labor Disputes Statistics | 1/1 | ✓ Complete | 2026-01-22 |
 | 4. User Onboarding | 2/2 | ✓ Complete | 2026-01-27 |
 | 5. Account Management | 1/1 | ✓ Complete | 2026-01-27 |
-| 5.1. Welcome Email | 0/1 | Not started | - |
-| 5.2. Legal Pages | 0/1 | Not started | - |
+| 5.1. Welcome Email | 1/1 | ✓ Complete | 2026-01-28 |
+| 5.2. Legal Pages | 1/1 | ✓ Complete | 2026-01-28 |
 | 5.3. Account Closure | 0/1 | Not started | - |
 | 5.4. Returning User Flow | 1/1 | ✓ Complete | 2026-01-27 |
+| 5.5. Contact & Support | 0/1 | Not started | - |
 | 6. Subscription & Billing | 5/5 | ✓ Complete | 2026-01-27 |
 | 7. Usage Controls | 0/0 | ✓ Complete (via 06-05) | 2026-01-27 |
 | 2. Contract Templates | 0/TBD | Not started | - |

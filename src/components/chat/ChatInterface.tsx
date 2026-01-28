@@ -172,7 +172,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
 
       {/* Error */}
       {error && (
-        <div className="mx-4 mb-2 px-4 py-3 bg-destructive/10 text-destructive text-sm rounded-xl flex items-center justify-between border border-destructive/20">
+        <div role="alert" className="mx-4 mb-2 px-4 py-3 bg-destructive/10 text-destructive text-sm rounded-xl flex items-center justify-between border border-destructive/20">
           <span>{error}</span>
           {canRetry && (
             <Button

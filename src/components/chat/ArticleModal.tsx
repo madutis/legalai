@@ -92,7 +92,7 @@ export function ArticleModal({ articleNumber, onClose }: ArticleModalProps) {
           )}
 
           {error && (
-            <div className="text-destructive py-8 text-center">
+            <div role="alert" className="text-destructive py-8 text-center">
               <p>{error}</p>
             </div>
           )}

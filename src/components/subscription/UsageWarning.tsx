@@ -27,12 +27,13 @@ export function UsageWarning({ remaining, onDismiss }: UsageWarningProps) {
 
   return (
     <div
-      className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 bg-amber-100 border border-amber-200 rounded-lg shadow-lg transition-all duration-200 ${
+      role="alert"
+      className={`fixed bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-3 bg-gold/10 border border-gold/20 rounded-lg shadow-lg transition-all duration-200 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
       }`}
     >
       <svg
-        className="w-5 h-5 text-amber-600 flex-shrink-0"
+        className="w-5 h-5 text-gold flex-shrink-0"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -44,12 +45,12 @@ export function UsageWarning({ remaining, onDismiss }: UsageWarningProps) {
           d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
         />
       </svg>
-      <span className="text-amber-800 text-sm font-medium">
+      <span className="text-foreground text-sm font-medium">
         Liko {remaining} {remaining === 1 ? 'klausimas' : remaining < 10 ? 'klausimai' : 'klausimų'} šiandien
       </span>
       <button
         onClick={handleDismiss}
-        className="ml-2 text-amber-600 hover:text-amber-800 transition-colors"
+        className="ml-2 text-gold hover:text-gold-foreground transition-colors"
         aria-label="Uždaryti"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">

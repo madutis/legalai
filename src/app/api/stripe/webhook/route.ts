@@ -36,6 +36,29 @@ async function findUserByCustomerId(customerId: string) {
   };
 }
 
+// Build subscription update object from Stripe subscription data
+function buildSubscriptionUpdate(subscription: Stripe.Subscription & { current_period_end?: number }) {
+  const firstItem = subscription.items.data[0];
+  const willCancel = subscription.cancel_at_period_end || subscription.cancel_at !== null;
+  const periodEnd = subscription.current_period_end || firstItem.current_period_end;
+  const billingInterval = firstItem.price.recurring?.interval || 'month';
+
+  const update: Record<string, unknown> = {
+    status: 'active',
+    stripeSubscriptionId: subscription.id,
+    priceId: firstItem.price.id,
+    billingInterval,
+    cancelAtPeriodEnd: willCancel,
+    cancelAt: subscription.cancel_at ? new Date(subscription.cancel_at * 1000) : null,
+  };
+
+  if (periodEnd) {
+    update.currentPeriodEnd = new Date(periodEnd * 1000);
+  }
+
+  return { update, periodEnd, billingInterval };
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Read raw body for signature verification
@@ -124,9 +147,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return;
   }
 
-  // Find user by customer ID
+  // Find user reference - try by stripeCustomerId first, then by metadata
+  let userRef: FirebaseFirestore.DocumentReference;
+  let userId: string;
+
   const user = await findUserByCustomerId(customerId);
-  if (!user) {
+  if (user) {
+    userRef = user.ref;
+    userId = user.uid;
+  } else {
     // Try to find by metadata firebaseUid
     const customer = await stripe.customers.retrieve(customerId);
     if (customer.deleted) {
@@ -138,76 +167,22 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       console.error('Could not find user for customer:', customerId);
       return;
     }
-    // Get user by firebaseUid
     const db = getAdminFirestore();
-    const userRef = db.collection('users').doc(firebaseUid);
+    userRef = db.collection('users').doc(firebaseUid);
     const userDoc = await userRef.get();
     if (!userDoc.exists) {
       console.error('User document not found for uid:', firebaseUid);
       return;
     }
-
-    // Retrieve subscription details
-    const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end?: number };
-    const firstItem = subscriptionData.items.data[0];
-
-    // Check if subscription is scheduled to cancel
-    const willCancel = subscriptionData.cancel_at_period_end || subscriptionData.cancel_at !== null;
-
-    // Get period end from subscription or item level
-    const periodEnd = subscriptionData.current_period_end || firstItem.current_period_end;
-
-    // Get billing interval from price
-    const billingInterval = firstItem.price.recurring?.interval || 'month';
-
-    // Build update data
-    const subscriptionUpdate: Record<string, unknown> = {
-      status: 'active',
-      stripeSubscriptionId: subscriptionData.id,
-      priceId: firstItem.price.id,
-      billingInterval,
-      cancelAtPeriodEnd: willCancel,
-      cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
-    };
-
-    if (periodEnd) {
-      subscriptionUpdate.currentPeriodEnd = new Date(periodEnd * 1000);
-    }
-
-    await userRef.update({ subscription: subscriptionUpdate });
-    console.log(`Subscription activated for user (via metadata): ${firebaseUid}, periodEnd: ${periodEnd}, interval: ${billingInterval}`);
-    return;
+    userId = firebaseUid;
   }
 
-  // Retrieve subscription details
+  // Retrieve and process subscription
   const subscriptionData = await stripe.subscriptions.retrieve(subscriptionId) as unknown as Stripe.Subscription & { current_period_end?: number };
-  const firstItem = subscriptionData.items.data[0];
+  const { update, periodEnd, billingInterval } = buildSubscriptionUpdate(subscriptionData);
 
-  // Check if subscription is scheduled to cancel
-  const willCancel = subscriptionData.cancel_at_period_end || subscriptionData.cancel_at !== null;
-
-  // Get period end from subscription or item level
-  const periodEnd = subscriptionData.current_period_end || firstItem.current_period_end;
-
-  // Get billing interval from price
-  const billingInterval = firstItem.price.recurring?.interval || 'month';
-
-  // Build update data
-  const subscriptionUpdate: Record<string, unknown> = {
-    status: 'active',
-    stripeSubscriptionId: subscriptionData.id,
-    priceId: firstItem.price.id,
-    billingInterval,
-    cancelAtPeriodEnd: willCancel,
-    cancelAt: subscriptionData.cancel_at ? new Date(subscriptionData.cancel_at * 1000) : null,
-  };
-
-  if (periodEnd) {
-    subscriptionUpdate.currentPeriodEnd = new Date(periodEnd * 1000);
-  }
-
-  await user.ref.update({ subscription: subscriptionUpdate });
-  console.log(`Subscription activated for user: ${user.uid}, periodEnd: ${periodEnd}, interval: ${billingInterval}`);
+  await userRef.update({ subscription: update });
+  console.log(`Subscription activated for user: ${userId}, periodEnd: ${periodEnd}, interval: ${billingInterval}`);
 }
 
 async function handleSubscriptionUpdated(subscriptionEvent: Stripe.Subscription) {

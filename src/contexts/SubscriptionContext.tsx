@@ -5,7 +5,6 @@ import {
   useContext,
   useEffect,
   useState,
-  useCallback,
   type ReactNode,
 } from 'react';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -16,13 +15,13 @@ import {
   type AccessStatus,
   getAccessStatus,
 } from '@/lib/firebase/firestore';
+import { TRIAL_DURATION_DAYS } from '@/lib/constants';
 
 interface SubscriptionContextValue {
   status: 'loading' | AccessStatus;
   userDoc: UserDocument | null;
   trialDaysLeft: number | null;
   isSubscribed: boolean;
-  refreshSubscription: () => Promise<void>;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextValue | null>(null);
@@ -101,7 +100,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     if (userDoc.subscription) return null; // No trial if subscribed
 
     const trialEnd = new Date(userDoc.trialStartedAt);
-    trialEnd.setDate(trialEnd.getDate() + 7);
+    trialEnd.setDate(trialEnd.getDate() + TRIAL_DURATION_DAYS);
     const now = new Date();
 
     if (now >= trialEnd) return 0;
@@ -117,13 +116,6 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     return (status === 'active' || status === 'canceled') && currentPeriodEnd > new Date();
   })();
 
-  // Manual refresh function (useful after checkout success)
-  const refreshSubscription = useCallback(async () => {
-    // The onSnapshot listener will automatically pick up changes
-    // This is mainly a placeholder for any future manual refresh logic
-    return Promise.resolve();
-  }, []);
-
   return (
     <SubscriptionContext.Provider
       value={{
@@ -131,7 +123,6 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         userDoc,
         trialDaysLeft,
         isSubscribed,
-        refreshSubscription,
       }}
     >
       {children}
