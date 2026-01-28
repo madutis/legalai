@@ -12,6 +12,7 @@ import { ChatInput } from './ChatInput';
 import { exportToPDF } from '@/lib/pdf-export';
 import { UsageWarning } from '@/components/subscription/UsageWarning';
 import { UsageLimitModal } from '@/components/subscription/UsageLimitModal';
+import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
 
 interface ChatInterfaceProps {
   topic?: string;
@@ -43,9 +44,19 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     remainingFollowUps,
     usageInfo,
     limitReached,
+    subscriptionRequired,
     dismissLimitReached,
     dismissUsageWarning,
   } = useChat({ context: { topic, userRole, companySize }, userId: user?.uid });
+
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+
+  // Show subscription modal when required (deleted account without subscription)
+  useEffect(() => {
+    if (subscriptionRequired) {
+      setShowSubscriptionModal(true);
+    }
+  }, [subscriptionRequired]);
 
   const handleExportPDF = () => {
     exportToPDF({
@@ -227,6 +238,12 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
       <UsageLimitModal
         isOpen={limitReached}
         onClose={dismissLimitReached}
+      />
+
+      {/* Subscription required modal (for deleted accounts) */}
+      <SubscriptionModal
+        isOpen={showSubscriptionModal}
+        onClose={() => setShowSubscriptionModal(false)}
       />
     </div>
   );

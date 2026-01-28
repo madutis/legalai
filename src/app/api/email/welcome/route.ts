@@ -24,6 +24,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true, alreadySent: true });
     }
 
+    // Skip for users who previously deleted account (no trial, misleading email)
+    const deletedRef = db.collection('deletedAccounts').doc(email);
+    const deletedSnap = await deletedRef.get();
+    if (deletedSnap.exists) {
+      return NextResponse.json({ success: true, skipped: 'deleted_account' });
+    }
+
     // Send welcome email
     const success = await sendWelcomeEmail({ email, name });
 

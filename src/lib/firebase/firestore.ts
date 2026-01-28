@@ -100,7 +100,18 @@ export async function getUserDocument(uid: string): Promise<UserDocument | null>
   };
 }
 
-export async function startTrial(uid: string): Promise<void> {
+export async function checkDeletedAccount(email: string): Promise<boolean> {
+  try {
+    const db = getFirebaseFirestore();
+    const deletedRef = doc(db, 'deletedAccounts', email);
+    const snapshot = await getDoc(deletedRef);
+    return snapshot.exists();
+  } catch {
+    return false;
+  }
+}
+
+export async function startTrial(uid: string, email?: string): Promise<boolean> {
   const db = getFirebaseFirestore();
   const userRef = doc(db, 'users', uid);
 
@@ -108,12 +119,21 @@ export async function startTrial(uid: string): Promise<void> {
 
   // Only set trialStartedAt if not already set
   if (snapshot.exists() && snapshot.data().trialStartedAt) {
-    return;
+    return true;
+  }
+
+  // Check if user previously deleted account (no free trial)
+  if (email) {
+    const wasDeleted = await checkDeletedAccount(email);
+    if (wasDeleted) {
+      return false; // Trial not started - user must subscribe
+    }
   }
 
   await setDoc(userRef, {
     trialStartedAt: new Date(),
   }, { merge: true });
+  return true;
 }
 
 export function getAccessStatus(user: UserDocument | null): AccessStatus {

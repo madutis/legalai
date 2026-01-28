@@ -55,10 +55,14 @@
     <tr><th>Komponentas</th><th>Technologija</th><th>Paskirtis</th></tr>
     <tr><td>Frontend</td><td>Next.js 16, React, TailwindCSS</td><td>Vartotojo sąsaja</td></tr>
     <tr><td>Backend API</td><td>Next.js API Routes (Node.js)</td><td>Serverio logika</td></tr>
+    <tr><td>Autentifikacija</td><td>Firebase Auth (Google OAuth)</td><td>Vartotojų prisijungimas</td></tr>
+    <tr><td>Duomenų bazė</td><td>Firebase Firestore</td><td>Vartotojų duomenys, prenumeratos</td></tr>
     <tr><td>Vektorinė DB</td><td>Pinecone</td><td>Semantinė paieška</td></tr>
     <tr><td>SQL DB</td><td>SQLite (better-sqlite3)</td><td>LAT bylų saugojimas</td></tr>
     <tr><td>LLM</td><td>Google Gemini 2.5 Flash</td><td>Atsakymų generavimas</td></tr>
     <tr><td>Embeddings</td><td>Google text-embedding-004</td><td>Teksto vektorizacija</td></tr>
+    <tr><td>Mokėjimai</td><td>Stripe</td><td>Prenumeratų apmokėjimas</td></tr>
+    <tr><td>El. paštas</td><td>MailerSend</td><td>Pasveikinimo laiškai</td></tr>
     <tr><td>Hostingas</td><td>Vercel</td><td>Serverless deployment</td></tr>
   </table>
 
@@ -562,7 +566,120 @@ CREATE TABLE lat_vectors (
 </div>
 
 <div class="section">
-  <h2>6. Limitacijos ir ateities planai</h2>
+  <h2>6. Vartotojų valdymas</h2>
+
+  <h3>6.1 Autentifikacija</h3>
+  <p>Sistema naudoja Firebase Authentication su Google OAuth prisijungimui:</p>
+  <ul>
+    <li><strong>Prisijungimas:</strong> Tik per Google paskyrą (vienas mygtukas)</li>
+    <li><strong>Sesijos:</strong> Firebase Auth tokens, automatinis atnaujinimas</li>
+    <li><strong>Atsijungimas:</strong> Išvalo sesiją ir localStorage</li>
+  </ul>
+
+  <h3>6.2 Vartotojo profiliavimas (Onboarding)</h3>
+  <p>Nauji vartotojai praeina 3 žingsnių profiliavimą:</p>
+  <table>
+    <tr><th>Žingsnis</th><th>Klausimas</th><th>Pasirinkimai</th></tr>
+    <tr><td>1. Vaidmuo</td><td>Kas jūs esate?</td><td>Darbdavys, Darbuotojas, HR specialistas, Buhalteris, Teisininkas</td></tr>
+    <tr><td>2. Įmonės dydis</td><td>Įmonės dydis</td><td>1-9, 10-49, 50-249, 250+ darbuotojų</td></tr>
+    <tr><td>3. Tema</td><td>Konsultacijos tema</td><td>Darbo sutartys, Atleidimas, Darbo laikas, Atostogos, Darbo užmokestis, Darbo sauga, Kita</td></tr>
+  </table>
+  <p>Grįžtantys vartotojai (su išsaugotu profiliu) praleidžia 1-2 žingsnius ir iškart mato temų pasirinkimą.</p>
+
+  <h3>6.3 Firestore duomenų struktūra</h3>
+  <pre>
+// Kolekcija: users/{uid}
+{
+  userRole: "employer" | "employee" | "hr" | "accountant" | "lawyer",
+  companySize: "1-9" | "10-49" | "50-249" | "250+",
+  topic: "contracts" | "termination" | "working-time" | ...,
+  createdAt: Timestamp,
+  updatedAt: Timestamp,
+  trialStartedAt: Timestamp,        // Bandomojo laikotarpio pradžia
+  welcomeEmailSent: boolean,        // Ar išsiųstas pasveikinimo laiškas
+  stripeCustomerId: "cus_xxx",      // Stripe kliento ID
+  subscription: {
+    status: "active" | "canceled" | "past_due" | "expired",
+    stripeSubscriptionId: "sub_xxx",
+    priceId: "price_xxx",
+    billingInterval: "month" | "year",
+    currentPeriodEnd: Timestamp,
+    cancelAtPeriodEnd: boolean,
+    cancelAt: Timestamp | null
+  }
+}
+
+// Subkolekcija: users/{uid}/usage/{date}
+{
+  questionCount: number,            // Klausimų skaičius tą dieną
+  lastQuestionAt: Timestamp
+}
+
+// Kolekcija: deletedAccounts/{email}
+{
+  deletedAt: Timestamp,             // Kada paskyra ištrinta
+  uid: string                       // Buvęs vartotojo ID
+}
+  </pre>
+
+  <h3>6.4 Prenumeratos ir atsiskaitymas</h3>
+  <div class="highlight">
+    <strong>Stripe integracija:</strong> Mokėjimai, prenumeratų valdymas ir sąskaitų faktūrų generavimas vyksta per Stripe.
+  </div>
+
+  <table>
+    <tr><th>Planas</th><th>Kaina</th><th>Aprašymas</th></tr>
+    <tr><td>Bandomasis laikotarpis</td><td>Nemokamas (7 d.)</td><td>Pilna prieiga, pradedama nuo pirmo klausimo</td></tr>
+    <tr><td>Mėnesinis</td><td>€29/mėn. + PVM</td><td>Automatinis pratęsimas</td></tr>
+    <tr><td>Metinis</td><td>€299/m. + PVM</td><td>14% nuolaida</td></tr>
+  </table>
+
+  <h4>Prenumeratos srautas:</h4>
+  <pre>
+1. Vartotojas pasirenka planą → Stripe Checkout Session
+        ↓
+2. Stripe apdoroja mokėjimą
+        ↓
+3. Webhook (customer.subscription.created/updated)
+        ↓
+4. Firestore atnaujinamas (subscription objektas)
+        ↓
+5. Vartotojas gauna prieigą
+  </pre>
+
+  <h4>Naudojimo limitai:</h4>
+  <ul>
+    <li><strong>Dienos limitas:</strong> 50 klausimų per dieną (UTC laiku)</li>
+    <li><strong>Įspėjimas:</strong> Rodomas pasiekus 45 klausimus</li>
+    <li><strong>Blokavimas:</strong> Pasiekus 50, rodomas modalinis langas</li>
+  </ul>
+
+  <h3>6.5 Paskyros ištrynimas</h3>
+  <p>Vartotojai gali ištrinti savo paskyrą iš /account puslapio:</p>
+  <ol>
+    <li>Jei aktyvi prenumerata → prašoma pirmiausia atšaukti per Stripe portalą</li>
+    <li>El. paštas įrašomas į <code>deletedAccounts</code> kolekciją (apsauga nuo trial piktnaudžiavimo)</li>
+    <li>Vartotojo dokumentas ištrinamas iš Firestore</li>
+    <li>Firebase Auth paskyra ištrinama (reikalauja pakartotinio Google prisijungimo)</li>
+  </ol>
+  <p>Vartotojai, kurie ištrynė paskyrą ir bando prisiregistruoti iš naujo, negauna nemokamo bandomojo laikotarpio.</p>
+
+  <h3>6.6 El. pašto pranešimai</h3>
+  <p>Sistema naudoja <strong>MailerSend</strong> el. laiškų siuntimui:</p>
+  <ul>
+    <li><strong>Pasveikinimo laiškas:</strong> Siunčiamas po pirmo prisijungimo (ne ištrintiems vartotojams)</li>
+    <li><strong>Turinys:</strong> 7 d. bandomojo laikotarpio info, nuoroda į konsultaciją, duomenų šaltinių sąrašas</li>
+  </ul>
+
+  <h3>6.7 Teisiniai puslapiai</h3>
+  <ul>
+    <li><strong>/terms</strong> - Naudojimosi sąlygos</li>
+    <li><strong>/privacy</strong> - Privatumo politika (BDAR)</li>
+  </ul>
+</div>
+
+<div class="section">
+  <h2>7. Limitacijos ir ateities planai</h2>
 
   <h3>Dabartinės limitacijos:</h3>
   <ul>
@@ -576,14 +693,17 @@ CREATE TABLE lat_vectors (
   <ul>
     <li>LITEKO integracija (tiesioginis LAT nutarčių gavimas)</li>
     <li>Daugiau teisės sričių (civilinė, administracinė)</li>
-    <li>Vartotojų istorijos saugojimas</li>
+    <li>Darbo sutarčių šablonų generavimas</li>
+    <li>Darbo saugos taisyklių generatorius</li>
+    <li>Landing page su vertės pasiūlymu</li>
+    <li>Konsultacijų istorijos saugojimas</li>
     <li>Fine-tuned modelis lietuvių teisinei kalbai</li>
   </ul>
 </div>
 
 <footer style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: 13px;">
-  <p>Dokumentacija atnaujinta: 2026-01-22</p>
-  <p>LegalAI v1.4 | <a href="https://legalai.lt">legalai.lt</a></p>
+  <p>Dokumentacija atnaujinta: 2026-01-28</p>
+  <p>LegalAI v2.0 | <a href="https://legalai.lt">legalai.lt</a></p>
 </footer>
 
 </body>

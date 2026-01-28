@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -8,10 +8,12 @@ import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus';
+import { DeleteAccountModal } from '@/components/account/DeleteAccountModal';
 
 export default function AccountPage() {
   const router = useRouter();
   const { user, loading, signOut } = useAuth();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Redirect to sign-in if not authenticated
   useEffect(() => {
@@ -105,7 +107,7 @@ export default function AccountPage() {
                   onClick={handleSignOut}
                   variant="outline"
                   size="lg"
-                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/5 border-border"
+                  className="w-full"
                 >
                   <svg
                     className="w-4 h-4 mr-2"
@@ -122,6 +124,27 @@ export default function AccountPage() {
                   </svg>
                   Atsijungti
                 </Button>
+                <Button
+                  onClick={() => setShowDeleteModal(true)}
+                  variant="ghost"
+                  size="lg"
+                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/5"
+                >
+                  <svg
+                    className="w-4 h-4 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                  Ištrinti paskyrą
+                </Button>
             </div>
           </div>
 
@@ -133,6 +156,12 @@ export default function AccountPage() {
       </main>
 
       <Footer />
+
+      <DeleteAccountModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onDeleted={() => router.push('/')}
+      />
     </div>
   );
 }

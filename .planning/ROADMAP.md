@@ -26,7 +26,7 @@ None
 - [x] **Phase 5: Account Management** - User profile and settings
 - [ ] **Phase 5.1: Welcome Email** - Send welcome email on signup (INSERTED)
 - [ ] **Phase 5.2: Legal Pages** - T&Cs, Privacy Policy with links (INSERTED)
-- [ ] **Phase 5.3: Account Closure** - Account deletion request flow (INSERTED)
+- [x] **Phase 5.3: Account Closure** - Account deletion request flow (INSERTED)
 - [x] **Phase 5.4: Returning User Flow** - Skip profiling steps for users with saved context (INSERTED)
 - [ ] **Phase 5.5: Contact & Support** - Contact details and support channel (INSERTED)
 - [x] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
@@ -271,7 +271,7 @@ Auth/billing prioritized over templates/landing page.
 | 5. Account Management | 1/1 | ✓ Complete | 2026-01-27 |
 | 5.1. Welcome Email | 1/1 | ✓ Complete | 2026-01-28 |
 | 5.2. Legal Pages | 1/1 | ✓ Complete | 2026-01-28 |
-| 5.3. Account Closure | 0/1 | Not started | - |
+| 5.3. Account Closure | 1/1 | ✓ Complete | 2026-01-28 |
 | 5.4. Returning User Flow | 1/1 | ✓ Complete | 2026-01-27 |
 | 5.5. Contact & Support | 0/1 | Not started | - |
 | 6. Subscription & Billing | 5/5 | ✓ Complete | 2026-01-27 |

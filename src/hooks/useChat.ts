@@ -42,6 +42,7 @@ export function useChat(options?: UseChatOptions) {
   const [followUpCount, setFollowUpCount] = useState(0);
   const [usageInfo, setUsageInfo] = useState<UsageInfo | null>(null);
   const [limitReached, setLimitReached] = useState(false);
+  const [subscriptionRequired, setSubscriptionRequired] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastMessageRef = useRef<string | null>(null);
   const triedFallbackRef = useRef(false);
@@ -93,8 +94,9 @@ export function useChat(options?: UseChatOptions) {
 
     // Start trial on first message (idempotent - only sets if not already set)
     // Also triggers welcome email
+    // Note: startTrial checks deletedAccounts - users who deleted their account don't get trial
     if (userId && user?.email) {
-      startTrial(userId).catch((err) => {
+      startTrial(userId, user.email).catch((err) => {
         console.error('Failed to start trial:', err);
       });
 
@@ -137,13 +139,19 @@ export function useChat(options?: UseChatOptions) {
         signal: abortControllerRef.current.signal,
       });
 
-      // Handle usage limit reached
+      // Handle usage limit reached or deleted account
       if (response.status === 429) {
         const data = await response.json();
         if (data.error === 'limit_reached') {
           setLimitReached(true);
           setError(null);
-          // Remove the placeholder message
+          setMessages((prev) => prev.filter((m) => m.id !== assistantId));
+          setIsLoading(false);
+          return;
+        }
+        if (data.error === 'deleted_account') {
+          setSubscriptionRequired(true);
+          setError(null);
           setMessages((prev) => prev.filter((m) => m.id !== assistantId));
           setIsLoading(false);
           return;
@@ -301,6 +309,7 @@ export function useChat(options?: UseChatOptions) {
     // Usage state
     usageInfo,
     limitReached,
+    subscriptionRequired,
     dismissLimitReached,
     dismissUsageWarning,
   };

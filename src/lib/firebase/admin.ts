@@ -76,12 +76,41 @@ export async function verifyIdToken(authHeader: string | null): Promise<{
  * Check if user can send message (server-side)
  * Returns usage status and remaining count
  */
-export async function checkUsageLimitAdmin(uid: string): Promise<{
+export async function checkUsageLimitAdmin(uid: string, email?: string): Promise<{
   allowed: boolean;
   remaining: number;
   showWarning: boolean;
+  reason?: 'limit_reached' | 'deleted_account';
 }> {
   const db = getAdminFirestore();
+
+  // Check if user previously deleted account and has no active subscription
+  if (email) {
+    const deletedRef = db.collection('deletedAccounts').doc(email);
+    const deletedSnap = await deletedRef.get();
+
+    if (deletedSnap.exists) {
+      // Check if user has active subscription
+      const userRef = db.collection('users').doc(uid);
+      const userSnap = await userRef.get();
+      const userData = userSnap.data();
+
+      const hasActiveSubscription =
+        userData?.subscription?.status === 'active' ||
+        (userData?.subscription?.status === 'canceled' &&
+          userData?.subscription?.currentPeriodEnd?.toDate() > new Date());
+
+      if (!hasActiveSubscription) {
+        return {
+          allowed: false,
+          remaining: 0,
+          showWarning: false,
+          reason: 'deleted_account',
+        };
+      }
+    }
+  }
+
   const todayKey = getTodayKey();
   const usageRef = db.collection('users').doc(uid).collection('usage').doc(todayKey);
 
@@ -89,7 +118,7 @@ export async function checkUsageLimitAdmin(uid: string): Promise<{
   const count = snapshot.exists ? (snapshot.data()?.questionCount || 0) : 0;
 
   if (count >= DAILY_LIMIT) {
-    return { allowed: false, remaining: 0, showWarning: false };
+    return { allowed: false, remaining: 0, showWarning: false, reason: 'limit_reached' };
   }
 
   return {

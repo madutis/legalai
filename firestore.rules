@@ -17,10 +17,18 @@ service cloud.firestore {
         && !request.resource.data.diff(resource.data).affectedKeys()
             .hasAny(['subscription', 'stripeCustomerId', 'stripeSubscriptionId', 'trialStartedAt']);
 
+      // Allow users to delete their own document
+      allow delete: if request.auth != null && request.auth.uid == uid;
+
       // Usage subcollection - read only from client, writes via Admin SDK
       match /usage/{date} {
         allow read: if request.auth != null && request.auth.uid == uid;
       }
+    }
+
+    // Deleted accounts - read own email to check trial eligibility
+    match /deletedAccounts/{email} {
+      allow read: if request.auth != null && request.auth.token.email == email;
     }
   }
 }

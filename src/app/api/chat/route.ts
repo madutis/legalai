@@ -68,10 +68,10 @@ export async function POST(request: NextRequest) {
   let usageInfo: { remaining: number; showWarning: boolean } | null = null;
 
   if (user) {
-    const usageCheck = await checkUsageLimitAdmin(user.uid);
+    const usageCheck = await checkUsageLimitAdmin(user.uid, user.email || undefined);
     if (!usageCheck.allowed) {
       return NextResponse.json(
-        { error: 'limit_reached', remaining: 0 },
+        { error: usageCheck.reason || 'limit_reached', remaining: 0 },
         { status: 429 }
       );
     }

@@ -25,7 +25,13 @@ export default function SignInPage() {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [processingCallback, setProcessingCallback] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(() => {
+    // Check if user previously accepted terms
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('legalai-terms-accepted') === 'true';
+    }
+    return false;
+  });
 
   // Check for magic link callback on mount
   useEffect(() => {
@@ -329,7 +335,12 @@ export default function SignInPage() {
               type="checkbox"
               id="terms-checkbox"
               checked={termsAccepted}
-              onChange={(e) => setTermsAccepted(e.target.checked)}
+              onChange={(e) => {
+                setTermsAccepted(e.target.checked);
+                if (e.target.checked) {
+                  localStorage.setItem('legalai-terms-accepted', 'true');
+                }
+              }}
               className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer"
             />
             <label htmlFor="terms-checkbox" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
