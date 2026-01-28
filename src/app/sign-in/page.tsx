@@ -2,8 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   signInWithGoogle,
@@ -22,6 +25,7 @@ export default function SignInPage() {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [processingCallback, setProcessingCallback] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Check for magic link callback on mount
   useEffect(() => {
@@ -95,6 +99,10 @@ export default function SignInPage() {
   }, [user, authLoading, router]);
 
   const handleGoogleSignIn = async () => {
+    if (!termsAccepted) {
+      setError('Turite sutikti su paslaugų teikimo sąlygomis ir privatumo politika.');
+      return;
+    }
     setError(null);
     setLoadingGoogle(true);
     try {
@@ -111,6 +119,11 @@ export default function SignInPage() {
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim()) return;
+
+    if (!termsAccepted) {
+      setError('Turite sutikti su paslaugų teikimo sąlygomis ir privatumo politika.');
+      return;
+    }
 
     setError(null);
     setLoadingMagicLink(true);
@@ -133,7 +146,7 @@ export default function SignInPage() {
   if (authLoading || processingCallback) {
     return (
       <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+        <Spinner size="lg" className="text-primary" />
       </div>
     );
   }
@@ -142,7 +155,7 @@ export default function SignInPage() {
   if (user) {
     return (
       <div className="min-h-screen bg-background texture-paper flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent"></div>
+        <Spinner size="lg" className="text-primary" />
       </div>
     );
   }
@@ -198,7 +211,7 @@ export default function SignInPage() {
 
             <div className="px-6 pb-6 space-y-4">
               {error && (
-                <div className="bg-destructive/10 text-destructive text-sm px-3 py-2 rounded-lg">
+                <div role="alert" className="bg-destructive/10 text-destructive text-sm px-3 py-2 rounded-lg">
                   {error}
                 </div>
               )}
@@ -207,11 +220,12 @@ export default function SignInPage() {
               <Button
                 onClick={handleGoogleSignIn}
                 disabled={loadingGoogle}
-                className="w-full h-11 gap-2"
+                className="w-full gap-2"
                 variant="default"
+                size="xl"
               >
                 {loadingGoogle ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-primary-foreground border-t-transparent"></div>
+                  <Spinner size="sm" />
                 ) : (
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -278,22 +292,28 @@ export default function SignInPage() {
                 </div>
               ) : (
                 <form onSubmit={handleMagicLink} className="space-y-3">
+                  <label htmlFor="email-input" className="sr-only">
+                    El. pašto adresas
+                  </label>
                   <input
+                    id="email-input"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="jusu@email.lt"
-                    className="w-full h-11 px-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+                    aria-label="El. pašto adresas"
+                    className="w-full h-12 px-3 rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     required
                   />
                   <Button
                     type="submit"
                     disabled={loadingMagicLink || !email.trim()}
                     variant="outline"
-                    className="w-full h-11"
+                    size="xl"
+                    className="w-full"
                   >
                     {loadingMagicLink ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-foreground border-t-transparent"></div>
+                      <Spinner size="sm" />
                     ) : (
                       'Siųsti prisijungimo nuorodą'
                     )}
@@ -303,11 +323,30 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <p className="text-center text-xs text-muted-foreground/60 mt-6">
-            Prisijungdami sutinkate su naudojimosi sąlygomis
-          </p>
+          {/* Terms checkbox */}
+          <div className="mt-6 flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="terms-checkbox"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer"
+            />
+            <label htmlFor="terms-checkbox" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+              Sutinku su{' '}
+              <Link href="/terms" className="text-primary hover:underline" target="_blank">
+                paslaugų teikimo sąlygomis
+              </Link>
+              {' '}ir{' '}
+              <Link href="/privacy" className="text-primary hover:underline" target="_blank">
+                privatumo politika
+              </Link>
+            </label>
+          </div>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

@@ -2,11 +2,12 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { SubscriptionStatus } from '@/components/subscription/SubscriptionStatus';
-import Link from 'next/link';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -103,7 +104,8 @@ export default function AccountPage() {
                 <Button
                   onClick={handleSignOut}
                   variant="outline"
-                  className="w-full h-10 text-destructive hover:text-destructive hover:bg-destructive/5 border-border"
+                  size="lg"
+                  className="w-full text-destructive hover:text-destructive hover:bg-destructive/5 border-border"
                 >
                   <svg
                     className="w-4 h-4 mr-2"
@@ -125,10 +127,12 @@ export default function AccountPage() {
 
           {/* Info Text */}
           <p className="text-center text-xs text-muted-foreground/60 mt-6 leading-relaxed max-w-md">
-            Jūsų profilio nustatymai ir konsultacijų istorija saugoma saugiai.
+            Jūsų profilio nustatymai saugomi saugiai.
           </p>
         </div>
       </main>
+
+      <Footer />
     </div>
   );
 }

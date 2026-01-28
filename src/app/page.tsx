@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
 import { useAuth } from '@/contexts/AuthContext';
 import { saveUserProfile, getUserProfile } from '@/lib/firebase/firestore';
 
@@ -288,11 +289,11 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-background texture-paper">
+    <div className="min-h-screen bg-background texture-paper flex flex-col">
       <Header showAuth />
 
       {/* Main */}
-      <main className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+      <main className="flex-1 max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 w-full">
         {/* Hero - only on step 1 */}
         {step === 1 && (
           <div className="text-center mb-6 animate-fade-up">
@@ -571,6 +572,8 @@ export default function Home() {
           Informacinio pobūdžio konsultacijos. Sudėtingais atvejais kreipkitės į teisininką.
         </p>
       </main>
+
+      <Footer />
     </div>
   );
 }
