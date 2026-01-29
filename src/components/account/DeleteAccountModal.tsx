@@ -55,7 +55,6 @@ export function DeleteAccountModal({ isOpen, onClose, onDeleted }: DeleteAccount
 
       // 2. Clear local storage
       localStorage.removeItem('legalai-context');
-      localStorage.removeItem('legalai-terms-accepted');
 
       // 3. Re-authenticate and delete Firebase Auth account
       try {
