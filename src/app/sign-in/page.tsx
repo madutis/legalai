@@ -25,7 +25,7 @@ export default function SignInPage() {
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [processingCallback, setProcessingCallback] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(true); // Pre-checked like Ryanair
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Check for magic link callback on mount
   useEffect(() => {
@@ -99,10 +99,7 @@ export default function SignInPage() {
   }, [user, authLoading, router]);
 
   const handleGoogleSignIn = async () => {
-    if (!termsAccepted) {
-      setError('Turite sutikti su paslaugų teikimo sąlygomis ir privatumo politika.');
-      return;
-    }
+    setTermsAccepted(true); // Auto-accept on click
     setError(null);
     setLoadingGoogle(true);
     try {
@@ -120,11 +117,7 @@ export default function SignInPage() {
     e.preventDefault();
     if (!email.trim()) return;
 
-    if (!termsAccepted) {
-      setError('Turite sutikti su paslaugų teikimo sąlygomis ir privatumo politika.');
-      return;
-    }
-
+    setTermsAccepted(true); // Auto-accept on click
     setError(null);
     setLoadingMagicLink(true);
     try {
