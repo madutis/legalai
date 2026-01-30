@@ -31,6 +31,9 @@ export interface UserDocument {
   trialStartedAt?: Date;
   stripeCustomerId?: string;
   subscription?: UserSubscription;
+
+  // Save preference
+  saveByDefault?: boolean;  // undefined treated as true
 }
 
 export type AccessStatus = 'allowed' | 'trial_expired' | 'subscription_expired' | 'pre_trial';
@@ -160,4 +163,25 @@ export function getAccessStatus(user: UserDocument | null): AccessStatus {
   }
 
   return 'trial_expired';
+}
+
+/**
+ * Get user's save-by-default preference.
+ * Defaults to true per CONTEXT.md
+ */
+export async function getSaveByDefault(uid: string): Promise<boolean> {
+  const db = getFirebaseFirestore();
+  const userRef = doc(db, 'users', uid);
+  const snapshot = await getDoc(userRef);
+  // Default true per CONTEXT.md
+  return snapshot.exists() ? (snapshot.data().saveByDefault ?? true) : true;
+}
+
+/**
+ * Set user's save-by-default preference.
+ */
+export async function setSaveByDefault(uid: string, value: boolean): Promise<void> {
+  const db = getFirebaseFirestore();
+  const userRef = doc(db, 'users', uid);
+  await setDoc(userRef, { saveByDefault: value }, { merge: true });
 }

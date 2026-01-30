@@ -10,13 +10,15 @@ import { ConsultationProvider, useConsultation } from '@/contexts/ConsultationCo
 import { useConsultations } from '@/hooks/useConsultations';
 import { useSavePreference } from '@/hooks/useSavePreference';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { deleteConsultation } from '@/lib/firebase/consultations';
 
 function ChatLayoutInner({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user } = useAuth();
+  const { isSubscribed } = useSubscription();
   const { consultations, isLoading, refetch } = useConsultations();
-  const { saveByDefault } = useSavePreference();
+  const { saveByDefault, setSaveByDefault } = useSavePreference();
   const {
     consultationId,
     consultation,
@@ -109,6 +111,14 @@ function ChatLayoutInner({ children }: { children: React.ReactNode }) {
     setSavePreference('dont_save');
   }, [setSavePreference]);
 
+  // Handle save-by-default toggle
+  const handleToggleSaveByDefault = useCallback(
+    (value: boolean) => {
+      setSaveByDefault(value);
+    },
+    [setSaveByDefault]
+  );
+
   // Save prompt handlers
   const handleSavePromptSave = useCallback(async () => {
     setSavePreference('save');
@@ -167,8 +177,10 @@ function ChatLayoutInner({ children }: { children: React.ReactNode }) {
         onDeleteConsultation={handleDeleteClick}
         onNewConsultation={handleNewConsultation}
         onDontSaveCurrentChat={handleDontSaveCurrentChat}
+        onToggleSaveByDefault={handleToggleSaveByDefault}
         isLoading={isLoading}
         saveByDefault={saveByDefault}
+        isSubscribed={isSubscribed}
         hasActiveChat={!!consultation && consultation.messages.length > 0}
         currentChatSavePreference={consultation?.savePreference}
       />

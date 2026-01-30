@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, EyeOff } from 'lucide-react';
+import { Plus, EyeOff, Save } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -15,6 +15,7 @@ import {
   SidebarRail,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { ConsultationList } from './ConsultationList';
 import type { ConsultationMeta } from '@/types';
 
@@ -25,8 +26,10 @@ interface ChatSidebarProps {
   onDeleteConsultation?: (id: string, title: string) => void;
   onNewConsultation?: () => void;
   onDontSaveCurrentChat?: () => void;
+  onToggleSaveByDefault?: (value: boolean) => void;
   isLoading?: boolean;
   saveByDefault?: boolean;
+  isSubscribed?: boolean;
   hasActiveChat?: boolean;
   currentChatSavePreference?: 'save' | 'dont_save' | 'pending';
 }
@@ -38,8 +41,10 @@ export function ChatSidebar({
   onDeleteConsultation,
   onNewConsultation,
   onDontSaveCurrentChat,
+  onToggleSaveByDefault,
   isLoading = false,
   saveByDefault = true,
+  isSubscribed = false,
   hasActiveChat = false,
   currentChatSavePreference,
 }: ChatSidebarProps) {
@@ -104,7 +109,24 @@ export function ChatSidebar({
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
-        {/* Footer intentionally left minimal - settings moved elsewhere */}
+        <div className="px-3 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Save className="w-4 h-4" />
+              <span>Saugoti</span>
+            </div>
+            <Switch
+              checked={saveByDefault}
+              onCheckedChange={onToggleSaveByDefault}
+              disabled={!isSubscribed}
+            />
+          </div>
+          {!isSubscribed && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Tik prenumeratoriams
+            </p>
+          )}
+        </div>
       </SidebarFooter>
 
       <SidebarRail />
