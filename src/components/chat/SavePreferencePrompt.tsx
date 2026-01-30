@@ -44,10 +44,10 @@ export function SavePreferencePrompt({ isOpen, onClose }: SavePreferencePromptPr
         {/* Content */}
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Konsultaciju issaugojimas
+            Konsultacijų išsaugojimas
           </h2>
           <p className="text-muted-foreground mb-6">
-            Ar norite, kad jusu konsultacijos butu saugomos automatiskai?
+            Ar norite, kad jūsų konsultacijos būtų saugomos automatiškai?
             Galite pakeisti bet kada nustatymuose.
           </p>
 

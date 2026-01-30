@@ -47,10 +47,10 @@ export function SavePrompt({ isOpen, onSave, onDontSave, onCancel }: SavePromptP
         {/* Content */}
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Issaugoti konsultacija?
+            Išsaugoti konsultaciją?
           </h2>
           <p className="text-muted-foreground mb-6">
-            Ar norite issaugoti sia konsultacija?
+            Ar norite išsaugoti šią konsultaciją?
           </p>
 
           <div className="space-y-3">
@@ -58,21 +58,21 @@ export function SavePrompt({ isOpen, onSave, onDontSave, onCancel }: SavePromptP
               onClick={onSave}
               className="w-full"
             >
-              Issaugoti
+              Išsaugoti
             </Button>
             <Button
               onClick={onDontSave}
               variant="destructive"
               className="w-full"
             >
-              Neissaugoti
+              Neišsaugoti
             </Button>
             <Button
               onClick={onCancel}
               variant="ghost"
               className="w-full"
             >
-              Atsaukti
+              Atšaukti
             </Button>
           </div>
         </div>

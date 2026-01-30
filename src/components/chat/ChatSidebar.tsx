@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, EyeOff, Save } from 'lucide-react';
+import { Plus, EyeOff, Save, PanelLeft } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -48,6 +49,9 @@ export function ChatSidebar({
   hasActiveChat = false,
   currentChatSavePreference,
 }: ChatSidebarProps) {
+  const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === 'collapsed';
+
   const handleSelectConsultation = (id: string) => {
     onSelectConsultation?.(id);
   };
@@ -77,8 +81,8 @@ export function ChatSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {/* Per-chat don't save button */}
-        {showDontSaveButton && (
+        {/* Per-chat don't save button - hidden when collapsed */}
+        {showDontSaveButton && !isCollapsed && (
           <div className="px-2 pt-2">
             <Button
               variant="ghost"
@@ -87,9 +91,23 @@ export function ChatSidebar({
               onClick={onDontSaveCurrentChat}
             >
               <EyeOff className="h-3.5 w-3.5 mr-2" />
-              <span>Nesaugoti sios</span>
+              <span>Nesaugoti šios</span>
             </Button>
           </div>
+        )}
+
+        {/* Expand button when collapsed */}
+        {isCollapsed && (
+          <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={toggleSidebar}
+                tooltip="Išskleisti"
+              >
+                <PanelLeft />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         )}
       </SidebarHeader>
 
@@ -109,8 +127,8 @@ export function ChatSidebar({
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
-        <div className="px-3 py-2">
-          <div className="flex items-center justify-between">
+        <div className="px-3 py-2 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center justify-between group-data-[collapsible=icon]:hidden">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Save className="w-4 h-4" />
               <span>Saugoti</span>
@@ -121,10 +139,14 @@ export function ChatSidebar({
               disabled={!isSubscribed}
             />
           </div>
-          {!isSubscribed && (
+          {!isSubscribed && !isCollapsed && (
             <p className="text-xs text-muted-foreground mt-1">
               Tik prenumeratoriams
             </p>
+          )}
+          {/* Icon-only view when collapsed */}
+          {isCollapsed && (
+            <Save className="w-4 h-4 text-muted-foreground" />
           )}
         </div>
       </SidebarFooter>

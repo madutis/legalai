@@ -9,12 +9,12 @@ import type { ConsultationMeta } from '@/types';
 
 // Topic labels in Lithuanian
 const TOPIC_LABELS: Record<string, string> = {
-  hiring: 'Idarbinimas',
+  hiring: 'Įdarbinimas',
   termination: 'Atleidimas',
   leave: 'Atostogos',
   wages: 'Atlyginimas',
-  disciplinary: 'Drausmine',
-  material: 'Materialine',
+  disciplinary: 'Drausminė',
+  material: 'Materialinė',
   contracts: 'Sutartys',
   safety: 'Sauga',
   other: 'Kita',
@@ -39,10 +39,10 @@ function formatRelativeDate(date: Date): string {
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
   if (diffMins < 1) return 'Dabar';
-  if (diffMins < 60) return `Pries ${diffMins} min.`;
-  if (diffHours < 24) return `Pries ${diffHours} val.`;
+  if (diffMins < 60) return `Prieš ${diffMins} min.`;
+  if (diffHours < 24) return `Prieš ${diffHours} val.`;
   if (diffDays === 1) return 'Vakar';
-  if (diffDays < 7) return `Pries ${diffDays} d.`;
+  if (diffDays < 7) return `Prieš ${diffDays} d.`;
   return date.toLocaleDateString('lt-LT', { month: 'short', day: 'numeric' });
 }
 
@@ -71,15 +71,15 @@ export function ConsultationList({
   // Empty state
   if (!consultations || consultations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+      <div className="flex flex-col items-center justify-center py-8 px-4 text-center group-data-[collapsible=icon]:hidden">
         <div className="w-12 h-12 rounded-xl bg-muted flex items-center justify-center mb-3">
           <MessageSquare className="w-6 h-6 text-muted-foreground" />
         </div>
         <p className="text-sm text-muted-foreground">
-          Nera issaugotu konsultaciju
+          Nėra išsaugotų konsultacijų
         </p>
         <p className="text-xs text-muted-foreground/70 mt-1">
-          Pradekite nauja konsultacija
+          Pradėkite naują konsultaciją
         </p>
       </div>
     );

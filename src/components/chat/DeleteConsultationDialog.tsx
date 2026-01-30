@@ -51,10 +51,10 @@ export function DeleteConsultationDialog({
         {/* Content */}
         <div className="text-center">
           <h2 className="text-xl font-semibold text-foreground mb-2">
-            Istrinti konsultacija?
+            Ištrinti konsultaciją?
           </h2>
           <p className="text-muted-foreground mb-6">
-            Ar tikrai norite istrinti &ldquo;{consultationTitle}&rdquo;? Sio veiksmo negalima atsaukti.
+            Ar tikrai norite ištrinti „{consultationTitle}"? Šio veiksmo negalima atšaukti.
           </p>
 
           <div className="space-y-3">
@@ -63,14 +63,14 @@ export function DeleteConsultationDialog({
               variant="destructive"
               className="w-full"
             >
-              Istrinti
+              Ištrinti
             </Button>
             <Button
               onClick={onCancel}
               variant="ghost"
               className="w-full"
             >
-              Atsaukti
+              Atšaukti
             </Button>
           </div>
         </div>

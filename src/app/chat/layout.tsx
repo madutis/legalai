@@ -168,8 +168,11 @@ function ChatLayoutInner({ children }: { children: React.ReactNode }) {
     setPendingLoadId(null);
   }, []);
 
+  // Sidebar closed by default for trial users, open for paid subscribers
+  const defaultOpen = isSubscribed;
+
   return (
-    <SidebarProvider defaultOpen={true}>
+    <SidebarProvider defaultOpen={defaultOpen}>
       <ChatSidebar
         consultations={consultations}
         selectedConsultationId={consultationId}
