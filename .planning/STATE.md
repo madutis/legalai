@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-20)
 ## Current Position
 
 Phase: 8 of 8 (Consultation Saving)
-Plan: 1 of 5 in current phase
+Plan: 4 of 5 in current phase
 Status: In progress
-Last activity: 2026-01-30 — Completed 08-01-PLAN.md
+Last activity: 2026-01-30 — Completed 08-04-PLAN.md
 
-Progress: █████████░ 86%
+Progress: █████████░ 96%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 19
-- Average duration: 10 min
-- Total execution time: 200 min
+- Total plans completed: 23
+- Average duration: 9 min
+- Total execution time: 213 min
 
 **By Phase:**
 
@@ -36,10 +36,10 @@ Progress: █████████░ 86%
 | 5 | 1 | 8 min | 8 min |
 | 5.4 | 1 | 2 min | 2 min |
 | 6 | 4 | 15 min | 4 min |
-| 8 | 1 | 10 min | 10 min |
+| 8 | 4 | 23 min | 6 min |
 
 **Recent Trend:**
-- Last 5 plans: 06-03 (2m), 06-04 (4m), 06-05 (4m), 08-01 (10m)
+- Last 5 plans: 06-05 (4m), 08-01 (10m), 08-02 (5m), 08-03 (5m), 08-04 (3m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -88,6 +88,9 @@ Recent decisions affecting current work:
 | 08-01 | Messages as array in document | Suitable for <1K messages per consultation, more efficient than subcollection |
 | 08-01 | Metadata-only list query | getUserConsultations returns only id, title, updatedAt, topic to minimize reads |
 | 08-01 | Local state + separate sync | Context manages local state, Firestore persistence via debounce in Plan 03 |
+| 08-04 | Gemini 2.0 Flash for title | Fast and cost-effective for simple title generation |
+| 08-04 | Ref-based title deduplication | Prevent duplicate LLM calls for same consultation |
+| 08-04 | Memoize initialMessages by ID | Prevent infinite re-renders when consultation object changes |
 
 ### Pending Todos
 
@@ -104,5 +107,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-30
-Stopped at: Completed 08-01-PLAN.md
+Stopped at: Completed 08-04-PLAN.md
 Resume file: None
