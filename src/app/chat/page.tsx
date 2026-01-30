@@ -8,6 +8,7 @@ import { Header } from '@/components/layout/Header';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useConsultation } from '@/contexts/ConsultationContext';
 import { getUserProfile, saveUserProfile, setSaveByDefault } from '@/lib/firebase/firestore';
 import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
 import { SavePreferencePrompt } from '@/components/chat/SavePreferencePrompt';
@@ -105,8 +106,12 @@ function ChatPageContent() {
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
   const { status: subscriptionStatus, userDoc } = useSubscription();
-  const [context, setContext] = useState<UserContext | null>(null);
+  const { consultation } = useConsultation();
+  const [profileContext, setProfileContext] = useState<UserContext | null>(null);
   const [contextLoading, setContextLoading] = useState(true);
+
+  // Use consultation context if loaded, otherwise use profile context
+  const context = consultation?.context || profileContext;
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false);
   const [showSavePreferencePrompt, setShowSavePreferencePrompt] = useState(false);
@@ -134,7 +139,7 @@ function ChatPageContent() {
             companySize: firestoreProfile.companySize,
             topic: firestoreProfile.topic,
           };
-          setContext(contextData);
+          setProfileContext(contextData);
           localStorage.setItem('legalai-context', JSON.stringify(contextData));
           setContextLoading(false);
           return;
@@ -145,7 +150,7 @@ function ChatPageContent() {
         if (saved) {
           try {
             const localContext = JSON.parse(saved);
-            setContext(localContext);
+            setProfileContext(localContext);
 
             // Migrate localStorage to Firestore
             await saveUserProfile(user!.uid, localContext);
@@ -165,7 +170,7 @@ function ChatPageContent() {
         const saved = localStorage.getItem('legalai-context');
         if (saved) {
           try {
-            setContext(JSON.parse(saved));
+            setProfileContext(JSON.parse(saved));
             setContextLoading(false);
             return;
           } catch {
@@ -223,7 +228,8 @@ function ChatPageContent() {
   }, [subscriptionStatus]);
 
   // Show loading while checking auth or context
-  if (authLoading || contextLoading || !context) {
+  // If consultation is loaded, use its context immediately (skip profile loading)
+  if (authLoading || (contextLoading && !consultation?.context) || !context) {
     return (
       <div className="h-full flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
