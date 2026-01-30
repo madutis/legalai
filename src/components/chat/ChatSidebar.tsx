@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, EyeOff, Save } from 'lucide-react';
+import { Plus, Save, PanelLeft } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +15,6 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { ConsultationList } from './ConsultationList';
 import type { ConsultationMeta } from '@/types';
@@ -26,13 +25,10 @@ interface ChatSidebarProps {
   onSelectConsultation?: (id: string) => void;
   onDeleteConsultation?: (id: string, title: string) => void;
   onNewConsultation?: () => void;
-  onDontSaveCurrentChat?: () => void;
   onToggleSaveByDefault?: (value: boolean) => void;
   isLoading?: boolean;
   saveByDefault?: boolean;
   isSubscribed?: boolean;
-  hasActiveChat?: boolean;
-  currentChatSavePreference?: 'save' | 'dont_save' | 'pending';
 }
 
 export function ChatSidebar({
@@ -41,13 +37,10 @@ export function ChatSidebar({
   onSelectConsultation,
   onDeleteConsultation,
   onNewConsultation,
-  onDontSaveCurrentChat,
   onToggleSaveByDefault,
   isLoading = false,
   saveByDefault = true,
   isSubscribed = false,
-  hasActiveChat = false,
-  currentChatSavePreference,
 }: ChatSidebarProps) {
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === 'collapsed';
@@ -55,15 +48,6 @@ export function ChatSidebar({
   const handleSelectConsultation = (id: string) => {
     onSelectConsultation?.(id);
   };
-
-  // Show "don't save" button when:
-  // - saveByDefault is ON
-  // - there's an active chat
-  // - current chat is not already marked as dont_save
-  const showDontSaveButton =
-    saveByDefault &&
-    hasActiveChat &&
-    currentChatSavePreference !== 'dont_save';
 
   return (
     <Sidebar collapsible="icon" side="left">
@@ -81,25 +65,37 @@ export function ChatSidebar({
           </SidebarMenuItem>
         </SidebarMenu>
 
-        {/* Per-chat don't save button - hidden when collapsed */}
-        {showDontSaveButton && !isCollapsed && (
-          <div className="px-2 pt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start text-muted-foreground hover:text-foreground text-xs"
-              onClick={onDontSaveCurrentChat}
-            >
-              <EyeOff className="h-3.5 w-3.5 mr-2" />
-              <span>Nesaugoti šios</span>
-            </Button>
-          </div>
+        {/* Desktop toggle when collapsed - below New consultation */}
+        {isCollapsed && (
+          <SidebarMenu className="hidden md:block">
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                onClick={toggleSidebar}
+                tooltip="Išplėsti"
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <PanelLeft />
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          </SidebarMenu>
         )}
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Istorija</SidebarGroupLabel>
+          <div className="flex items-center justify-between pr-2">
+            <SidebarGroupLabel>Istorija</SidebarGroupLabel>
+            {/* Desktop toggle when expanded - right of Istorija */}
+            {!isCollapsed && (
+              <button
+                onClick={toggleSidebar}
+                className="hidden md:flex h-6 w-6 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent transition-colors"
+                title="Sutraukti"
+              >
+                <PanelLeft className="h-4 w-4" />
+              </button>
+            )}
+          </div>
           <SidebarGroupContent>
             <ConsultationList
               consultations={consultations}

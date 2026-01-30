@@ -57,12 +57,14 @@ function ChatLayoutInner({ children }: { children: React.ReactNode }) {
   // Handle select consultation from list
   const handleSelectConsultation = useCallback(
     async (id: string) => {
+      // Skip if already viewing this consultation
+      if (id === consultationId) return;
+
       // If current chat has pending save preference, show prompt
       if (
         consultation &&
         consultation.savePreference === 'pending' &&
-        consultation.messages.length > 0 &&
-        id !== consultationId
+        consultation.messages.length > 0
       ) {
         setPendingAction('load');
         setPendingLoadId(id);
@@ -105,11 +107,6 @@ function ChatLayoutInner({ children }: { children: React.ReactNode }) {
       setConsultationToDelete(null);
     }
   }, [consultationToDelete, user, refetch, consultationId, clearConsultation]);
-
-  // Handle "don't save" current chat
-  const handleDontSaveCurrentChat = useCallback(() => {
-    setSavePreference('dont_save');
-  }, [setSavePreference]);
 
   // Handle save-by-default toggle
   const handleToggleSaveByDefault = useCallback(
@@ -179,13 +176,10 @@ function ChatLayoutInner({ children }: { children: React.ReactNode }) {
         onSelectConsultation={handleSelectConsultation}
         onDeleteConsultation={handleDeleteClick}
         onNewConsultation={handleNewConsultation}
-        onDontSaveCurrentChat={handleDontSaveCurrentChat}
         onToggleSaveByDefault={handleToggleSaveByDefault}
         isLoading={isLoading}
         saveByDefault={saveByDefault}
         isSubscribed={isSubscribed}
-        hasActiveChat={!!consultation && consultation.messages.length > 0}
-        currentChatSavePreference={consultation?.savePreference}
       />
       <SidebarInset>{children}</SidebarInset>
 

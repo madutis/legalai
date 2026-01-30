@@ -66,7 +66,8 @@ function messagesToFirestore(messages: ConsultationMessage[]): Record<string, un
     id: msg.id,
     role: msg.role,
     content: msg.content,
-    sources: msg.sources,
+    // Firestore doesn't accept undefined - omit if no sources
+    ...(msg.sources && msg.sources.length > 0 ? { sources: msg.sources } : {}),
     timestamp: dateToTimestamp(msg.timestamp),
   }));
 }

@@ -10,7 +10,7 @@ import { PRICING, TRIAL_DURATION_DAYS } from '@/lib/constants';
 
 export function SubscriptionStatus() {
   const { user } = useAuth();
-  const { status, userDoc, trialDaysLeft, isSubscribed } = useSubscription();
+  const { status, userDoc, trialDaysLeft, isSubscribed, isDeletedAccount } = useSubscription();
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -65,6 +65,28 @@ export function SubscriptionStatus() {
             <div className="h-4 bg-muted rounded w-32" />
             <div className="h-4 bg-muted rounded w-48" />
             <div className="h-10 bg-muted rounded w-full mt-4" />
+          </div>
+        </div>
+      );
+    }
+
+    // Deleted account re-registered - no trial, must subscribe
+    if (isDeletedAccount && !isSubscribed) {
+      return (
+        <div className="w-full max-w-md bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-border bg-muted/30">
+            <h2 className="font-medium text-foreground">Prenumerata reikalinga</h2>
+          </div>
+          <div className="px-5 py-4 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              Prenumeruokite, kad galėtumėte naudotis konsultacijomis.
+            </p>
+            <Button
+              onClick={() => setShowModal(true)}
+              size="lg" className="w-full"
+            >
+              Prenumeruoti
+            </Button>
           </div>
         </div>
       );

@@ -103,6 +103,7 @@ export async function POST(request: NextRequest) {
           break;
         }
 
+        case 'customer.subscription.created':
         case 'customer.subscription.updated': {
           const subscription = event.data.object as Stripe.Subscription;
           await handleSubscriptionUpdated(subscription);

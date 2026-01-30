@@ -4,7 +4,9 @@ import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useChat, type ChatSource } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
 import { useConsultation } from '@/contexts/ConsultationContext';
+import { useSavePreference } from '@/hooks/useSavePreference';
 import { Button } from '@/components/ui/button';
+import { EyeOff } from 'lucide-react';
 import { RulingModal } from './RulingModal';
 import { ArticleModal } from './ArticleModal';
 import { AssistantMessage } from './AssistantMessage';
@@ -24,7 +26,8 @@ interface ChatInterfaceProps {
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
   const { user } = useAuth();
-  const { consultation, consultationId, updateMessages } = useConsultation();
+  const { consultation, consultationId, updateMessages, startNewConsultation, setSavePreference } = useConsultation();
+  const { saveByDefault } = useSavePreference();
   const [input, setInput] = useState('');
   const [selectedRulingDocId, setSelectedRulingDocId] = useState<string | null>(null);
   const [selectedArticleNumber, setSelectedArticleNumber] = useState<number | null>(null);
@@ -34,13 +37,15 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   const isReturningUser = !!user;
 
   // Convert loaded consultation messages to ChatMessage format
-  // Memoize to prevent infinite re-renders when consultation changes
+  // Only recalculate when loading a DIFFERENT consultation (by ID)
+  // Using consultationId as dep, but reading consultation.messages for data
   const initialMessages = useMemo(() => {
     if (consultation?.messages && consultation.messages.length > 0) {
       return toChatMessages(consultation.messages);
     }
     return undefined;
-  }, [consultationId]); // Only recalculate when consultation ID changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [consultationId]);
 
   // Callback to sync messages with ConsultationContext
   const handleMessagesChange = useCallback((msgs: Parameters<typeof updateMessages>[0]) => {
@@ -68,6 +73,7 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     context: { topic, userRole, companySize },
     userId: user?.uid,
     initialMessages,
+    consultationId,
     onMessagesChange: handleMessagesChange,
   });
 
@@ -101,14 +107,32 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     }
   }, [messages]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Ref to prevent double consultation creation
+  const creatingConsultationRef = useRef(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (input.trim() && !isLoading) {
-      sendMessage(input);
-      setInput('');
-      isNearBottomRef.current = true;
-      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
+    if (!input.trim() || isLoading) return;
+
+    const messageToSend = input;
+    setInput('');
+    isNearBottomRef.current = true;
+
+    // Create consultation if this is the first message and we don't have one yet
+    if (!consultationId && !creatingConsultationRef.current && topic && userRole && companySize) {
+      creatingConsultationRef.current = true;
+      try {
+        const savePreference = saveByDefault ? 'save' : 'pending';
+        await startNewConsultation({ userRole, companySize, topic }, savePreference);
+      } catch (err) {
+        console.error('Failed to create consultation:', err);
+      } finally {
+        creatingConsultationRef.current = false;
+      }
     }
+
+    sendMessage(messageToSend);
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }), 50);
   };
 
   return (
@@ -217,6 +241,19 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
               Bandyti dar kartą
             </Button>
           )}
+        </div>
+      )}
+
+      {/* Don't save this chat button - shows when saveByDefault is on and chat is active */}
+      {saveByDefault && consultation && messages.length > 0 && consultation.savePreference !== 'dont_save' && (
+        <div className="flex justify-center pb-2">
+          <button
+            onClick={() => setSavePreference('dont_save')}
+            className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-md hover:bg-muted"
+          >
+            <EyeOff className="h-3 w-3" />
+            <span>Nesaugoti šios konsultacijos</span>
+          </button>
         </div>
       )}
 

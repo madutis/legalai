@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import { collection, query, where, orderBy, limit as firestoreLimit, onSnapshot, Timestamp } from 'firebase/firestore';
+import { getFirebaseFirestore } from '@/lib/firebase/config';
 import { useAuth } from '@/contexts/AuthContext';
-import { getUserConsultations } from '@/lib/firebase/consultations';
 import type { ConsultationMeta } from '@/types';
 
 interface UseConsultationsReturn {
@@ -12,8 +13,13 @@ interface UseConsultationsReturn {
   refetch: () => void;
 }
 
+function timestampToDate(ts: Timestamp | undefined): Date {
+  return ts?.toDate() ?? new Date();
+}
+
 /**
  * Hook for fetching the user's saved consultations for sidebar list.
+ * Uses real-time listener for instant updates when consultations are saved.
  * Returns metadata only (id, title, updatedAt, topic) to minimize reads.
  */
 export function useConsultations(): UseConsultationsReturn {
@@ -21,11 +27,9 @@ export function useConsultations(): UseConsultationsReturn {
   const [consultations, setConsultations] = useState<ConsultationMeta[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
 
-  const refetch = useCallback(() => {
-    setRefreshKey((prev) => prev + 1);
-  }, []);
+  // refetch is now a no-op since we use real-time listener
+  const refetch = useCallback(() => {}, []);
 
   useEffect(() => {
     if (!user) {
@@ -34,35 +38,45 @@ export function useConsultations(): UseConsultationsReturn {
       return;
     }
 
-    let cancelled = false;
+    setIsLoading(true);
+    setError(null);
 
-    async function fetchConsultations() {
-      setIsLoading(true);
-      setError(null);
+    const db = getFirebaseFirestore();
+    const consultationsRef = collection(db, 'users', user.uid, 'consultations');
 
-      try {
-        const data = await getUserConsultations(user!.uid);
-        if (!cancelled) {
-          setConsultations(data);
-        }
-      } catch (err) {
-        console.error('Failed to fetch consultations:', err);
-        if (!cancelled) {
-          setError('Nepavyko gauti konsultaciju saraso');
-        }
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
+    const q = query(
+      consultationsRef,
+      where('savePreference', '==', 'save'),
+      orderBy('updatedAt', 'desc'),
+      firestoreLimit(50)
+    );
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const data = snapshot.docs.map((docSnapshot) => {
+          const docData = docSnapshot.data();
+          return {
+            id: docSnapshot.id,
+            title: (docData.title as string) ?? '',
+            updatedAt: timestampToDate(docData.updatedAt as Timestamp | undefined),
+            topic: (docData.context as Record<string, unknown>)?.topic as string ?? '',
+          };
+        });
+        setConsultations(data);
+        setIsLoading(false);
+      },
+      (err) => {
+        console.error('Failed to listen to consultations:', err);
+        setError('Nepavyko gauti konsultacijų sąrašo');
+        setIsLoading(false);
       }
-    }
-
-    fetchConsultations();
+    );
 
     return () => {
-      cancelled = true;
+      unsubscribe();
     };
-  }, [user, refreshKey]);
+  }, [user]);
 
   return {
     consultations,

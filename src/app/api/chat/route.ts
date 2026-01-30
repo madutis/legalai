@@ -3,7 +3,7 @@ import { generateEmbedding, streamRAGResponse, ChatMessage, ChatContext, extract
 import { searchHybrid, fetchArticles, SearchResult } from '@/lib/pinecone';
 import { getCaseById, getPdfById } from '@/lib/db';
 import { checkRateLimit } from '@/lib/rate-limit';
-import { verifyIdToken, checkUsageLimitAdmin, incrementUsageAdmin } from '@/lib/firebase/admin';
+import { verifyIdToken, checkUsageLimitAdmin, incrementUsageAdmin, startTrialAdmin } from '@/lib/firebase/admin';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
@@ -76,6 +76,11 @@ export async function POST(request: NextRequest) {
       );
     }
     usageInfo = { remaining: usageCheck.remaining, showWarning: usageCheck.showWarning };
+
+    // Start trial on first message (idempotent - only sets if not already set)
+    startTrialAdmin(user.uid, user.email).catch((err) => {
+      console.error('Failed to start trial:', err);
+    });
   }
 
   try {
@@ -134,11 +139,11 @@ export async function POST(request: NextRequest) {
           // Step 2: Hybrid search + direct article fetch
           sendStatus('Ieškau aktualių šaltinių...');
           const [hybridResults, directArticles] = await Promise.all([
-            searchHybrid(queryEmbedding, 12, 6, 4),
+            searchHybrid(queryEmbedding, 12, 8, 4, 6, 6), // legislation, LAT rulings, nutarimai, VDI FAQ, VDI docs
             fetchArticles(relevantArticleNumbers),
           ]);
 
-          // Merge and deduplicate results
+          // Merge and deduplicate results (no artificial cap - let quality filters work)
           const seenIds = new Set<string>();
           const searchResults: SearchResult[] = [];
 
@@ -149,13 +154,32 @@ export async function POST(request: NextRequest) {
             }
           }
           for (const result of hybridResults) {
-            if (!seenIds.has(result.id) && searchResults.length < 14) {
+            if (!seenIds.has(result.id)) {
               seenIds.add(result.id);
               searchResults.push(result);
             }
           }
 
-          sendStatus(`Rasta ${searchResults.length} dokumentų. Ruošiu atsakymą...`);
+          // Build informative status with document type breakdown
+          const typeCounts = searchResults.reduce((acc, r) => {
+            const type = r.metadata.docType;
+            acc[type] = (acc[type] || 0) + 1;
+            return acc;
+          }, {} as Record<string, number>);
+
+          const typeLabels: Record<string, string> = {
+            legislation: 'straipsn.',
+            lat_ruling: 'LAT nutart.',
+            nutarimas: 'nutarim.',
+            vdi_faq: 'VDI DUK',
+            vdi_doc: 'VDI dok.',
+          };
+
+          const breakdown = Object.entries(typeCounts)
+            .map(([type, count]) => `${count} ${typeLabels[type] || type}`)
+            .join(', ');
+
+          sendStatus(`Rasta: ${breakdown}. Ruošiu atsakymą...`);
 
           // Pre-fetch all LAT cases to avoid N+1 queries
           const latRulingIds = searchResults

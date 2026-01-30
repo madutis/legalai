@@ -290,49 +290,49 @@ export default function TermsPage() {
 
           {/* Section 7 - Consultation saving */}
           <section id="konsultaciju-issaugojimas" className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">7. Konsultaciju issaugojimas</h2>
+            <h2 className="font-serif text-xl font-semibold mb-4">7. Konsultacijų išsaugojimas</h2>
 
             <TldrBox>
-              Jusu konsultacijos saugomos tik jei pasirenkate. Galite bet kada istrinti.
+              Jūsų konsultacijos saugomos tik jei pasirenkate. Galite bet kada ištrinti.
             </TldrBox>
 
             <div className="space-y-3 text-foreground/80 text-sm ml-4">
               <p>
-                Prenumeratoriai gali pasirinkti saugoti konsultaciju istorija. Issaugotos konsultacijos prieinamos tik jums ir gali buti istrintos bet kada.
+                Prenumeratoriai gali pasirinkti saugoti konsultacijų istoriją. Išsaugotos konsultacijos prieinamos tik jums ir gali būti ištrintos bet kada.
               </p>
               <p>
-                Jei nepasirenkate saugoti, konsultacijos duomenys nera issaugomi po sesijos pabaigos.
+                Jei nepasirenkate saugoti, konsultacijos duomenys nėra išsaugomi po sesijos pabaigos.
               </p>
             </div>
           </section>
 
           {/* Section 8 */}
           <section className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">8. Intelektine nuosavybe</h2>
+            <h2 className="font-serif text-xl font-semibold mb-4">8. Intelektinė nuosavybė</h2>
 
-            <h3 className="font-medium text-base mb-2 mt-4">8.1. Musu teises</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">8.1. Mūsų teisės</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              LegalAI programine iranga, dizainas, prekiu zenklai ir kitas turinys priklauso Imum, UAB arba jos licenciju davejams.
+              LegalAI programinė įranga, dizainas, prekių ženklai ir kitas turinys priklauso Imum, UAB arba jos licencijų davėjams.
             </p>
 
-            <h3 className="font-medium text-base mb-2 mt-4">8.2. Jusu turinys</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">8.2. Jūsų turinys</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Jus islaikote teises i informacija, kuria pateikiate naudodamiesi paslauga.
+              Jūs išlaikote teises į informaciją, kurią pateikiate naudodamiesi paslauga.
             </p>
           </section>
 
           {/* Section 9 */}
           <section className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">9. Paskyros uzdarymas</h2>
+            <h2 className="font-serif text-xl font-semibold mb-4">9. Paskyros uždarymas</h2>
 
-            <h3 className="font-medium text-base mb-2 mt-4">9.1. Jusu iniciatyva</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">9.1. Jūsų iniciatyva</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Galite bet kuriuo metu istrinti paskyra paskyros nustatymuose.
+              Galite bet kuriuo metu ištrinti paskyrą paskyros nustatymuose.
             </p>
 
-            <h3 className="font-medium text-base mb-2 mt-4">9.2. Musu iniciatyva</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">9.2. Mūsų iniciatyva</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Galime sustabdyti ar panaikinti jusu paskyra, jei pazeidziate sias salygas.
+              Galime sustabdyti ar panaikinti jūsų paskyrą, jei pažeidžiate šias sąlygas.
             </p>
           </section>
 
@@ -340,24 +340,24 @@ export default function TermsPage() {
           <section className="mb-10">
             <h2 className="font-serif text-xl font-semibold mb-4">10. Baigiamosios nuostatos</h2>
 
-            <h3 className="font-medium text-base mb-2 mt-4">10.1. Taikoma teise</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">10.1. Taikoma teisė</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Sioms salygoms taikoma Lietuvos Respublikos teise.
+              Šioms sąlygoms taikoma Lietuvos Respublikos teisė.
             </p>
 
-            <h3 className="font-medium text-base mb-2 mt-4">10.2. Gincu sprendimas</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">10.2. Ginčų sprendimas</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Gincai sprendziami derybu budu. Nepavykus susitarti, gincai sprendziami Lietuvos Respublikos teismuose.
+              Ginčai sprendžiami derybų būdu. Nepavykus susitarti, ginčai sprendžiami Lietuvos Respublikos teismuose.
             </p>
 
-            <h3 className="font-medium text-base mb-2 mt-4">10.3. Salygu pakeitimai</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">10.3. Sąlygų pakeitimai</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Galime keisti sias salygas. Apie esminius pakeitimus informuosime el. pastu. Tolimesnis naudojimasis paslauga po pakeitimu reiskia sutikima.
+              Galime keisti šias sąlygas. Apie esminius pakeitimus informuosime el. paštu. Tolesnis naudojimasis paslauga po pakeitimų reiškia sutikimą.
             </p>
 
             <h3 className="font-medium text-base mb-2 mt-4">10.4. Atskyrimas</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Jei kuri nors salyga pripazistama negaliojancia, likusios salygos lieka galioti.
+              Jei kuri nors sąlyga pripažįstama negaliojančia, likusios sąlygos lieka galioti.
             </p>
           </section>
 

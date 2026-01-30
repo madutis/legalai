@@ -26,6 +26,8 @@ interface UseChatOptions {
   onMessagesChange?: (messages: ConsultationMessage[]) => void;
   /** Initial messages to load (from loaded consultation) */
   initialMessages?: ChatMessage[];
+  /** Current consultation ID - used to detect when switching consultations */
+  consultationId?: string | null;
 }
 
 // Convert ChatMessage to ConsultationMessage
@@ -34,7 +36,8 @@ function toConsultationMessage(m: ChatMessage): ConsultationMessage {
     id: m.id,
     role: m.role,
     content: m.content,
-    sources: m.sources,
+    // Firestore doesn't accept undefined, use empty array or omit
+    ...(m.sources && m.sources.length > 0 ? { sources: m.sources } : {}),
     timestamp: new Date(),
   };
 }
@@ -45,7 +48,7 @@ function isFinalAnswer(content: string): boolean {
 }
 
 export function useChat(options?: UseChatOptions) {
-  const { context, userId, onMessagesChange, initialMessages } = options || {};
+  const { context, userId, onMessagesChange, initialMessages, consultationId } = options || {};
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>(initialMessages || []);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,20 +64,30 @@ export function useChat(options?: UseChatOptions) {
   const lastMessageRef = useRef<string | null>(null);
   const triedFallbackRef = useRef(false);
   const onMessagesChangeRef = useRef(onMessagesChange);
+  const prevConsultationIdRef = useRef<string | null | undefined>(consultationId);
 
   // Keep ref in sync
   useEffect(() => {
     onMessagesChangeRef.current = onMessagesChange;
   }, [onMessagesChange]);
 
-  // Update messages when initialMessages change (loading a different consultation)
+  // Update messages when consultation changes (by ID)
   useEffect(() => {
-    if (initialMessages) {
-      setMessages(initialMessages);
-      setConsultationFinishedAt(null);
-      setFollowUpCount(0);
+    // Skip if consultation ID hasn't changed
+    if (prevConsultationIdRef.current === consultationId) {
+      return;
     }
-  }, [initialMessages]);
+    prevConsultationIdRef.current = consultationId;
+
+    // Load messages for new consultation or clear for new/empty
+    if (initialMessages && initialMessages.length > 0) {
+      setMessages(initialMessages);
+    } else {
+      setMessages([]);
+    }
+    setConsultationFinishedAt(null);
+    setFollowUpCount(0);
+  }, [consultationId, initialMessages]);
 
   const MAX_FOLLOW_UPS = 5;
   const isConsultationComplete = consultationFinishedAt !== null && followUpCount >= MAX_FOLLOW_UPS;
@@ -109,16 +122,15 @@ export function useChat(options?: UseChatOptions) {
         role: 'user',
         content,
       };
+      setMessages((prev) => [...prev, userMessage]);
       setMessages((prev) => {
-        const newMessages = [...prev, userMessage];
-        // Sync user message immediately
-        syncMessagesToContext(newMessages);
-        return newMessages;
+        // Defer sync to avoid setState during render
+        queueMicrotask(() => syncMessagesToContext(prev));
+        return [
+          ...prev,
+          { id: assistantId, role: 'assistant', content: '', sources: [] },
+        ];
       });
-      setMessages((prev) => [
-        ...prev,
-        { id: assistantId, role: 'assistant', content: '', sources: [] },
-      ]);
     } else {
       // Reset the assistant message content for retry
       setMessages((prev) =>
@@ -258,8 +270,8 @@ export function useChat(options?: UseChatOptions) {
         if (lastAssistant && isFinalAnswer(lastAssistant.content) && consultationFinishedAt === null) {
           setConsultationFinishedAt(Date.now());
         }
-        // Sync complete messages to context for persistence
-        syncMessagesToContext(prev);
+        // Defer sync to avoid setState during render
+        queueMicrotask(() => syncMessagesToContext(prev));
         return prev;
       });
 

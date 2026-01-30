@@ -141,3 +141,34 @@ export async function incrementUsageAdmin(uid: string): Promise<void> {
     lastQuestionAt: FieldValue.serverTimestamp(),
   }, { merge: true });
 }
+
+/**
+ * Start trial for user (server-side)
+ * Only sets trialStartedAt if not already set and user is not in deletedAccounts
+ */
+export async function startTrialAdmin(uid: string, email?: string): Promise<boolean> {
+  const db = getAdminFirestore();
+  const userRef = db.collection('users').doc(uid);
+
+  const userSnap = await userRef.get();
+
+  // Only set trialStartedAt if not already set
+  if (userSnap.exists && userSnap.data()?.trialStartedAt) {
+    return true; // Already started
+  }
+
+  // Check if user previously deleted account (no free trial)
+  if (email) {
+    const deletedRef = db.collection('deletedAccounts').doc(email);
+    const deletedSnap = await deletedRef.get();
+    if (deletedSnap.exists) {
+      return false; // No trial for deleted accounts
+    }
+  }
+
+  await userRef.set({
+    trialStartedAt: FieldValue.serverTimestamp(),
+  }, { merge: true });
+
+  return true;
+}

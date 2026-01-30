@@ -88,50 +88,56 @@ export function ConsultationList({
   // List of consultations
   return (
     <SidebarMenu>
-      {consultations.map((consultation) => (
-        <SidebarMenuItem
-          key={consultation.id}
-          onMouseEnter={() => setHoveredId(consultation.id)}
-          onMouseLeave={() => setHoveredId(null)}
-        >
-          <div className="relative flex items-center w-full">
-            <SidebarMenuButton
-              isActive={consultation.id === selectedId}
-              onClick={() => onSelect(consultation.id)}
-              tooltip={consultation.title || 'Nauja konsultacija'}
-              className="h-auto py-2 flex-1"
-            >
-              <MessageSquare className="shrink-0" />
-              <div className="flex flex-col items-start gap-0.5 overflow-hidden">
-                <span className="truncate w-full text-left">
-                  {consultation.title || 'Nauja konsultacija'}
-                </span>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4">
-                    {TOPIC_LABELS[consultation.topic] || consultation.topic}
-                  </Badge>
-                  <span>{formatRelativeDate(consultation.updatedAt)}</span>
-                </div>
-              </div>
-            </SidebarMenuButton>
+      {consultations.map((consultation) => {
+        const isHovered = hoveredId === consultation.id;
+        const isSelected = consultation.id === selectedId;
+        const showDelete = onDelete && (isHovered || isSelected);
 
-            {/* Delete button - show on hover */}
-            {onDelete && (hoveredId === consultation.id || consultation.id === selectedId) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="absolute right-1 h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete(consultation.id, consultation.title || 'Nauja konsultacija');
-                }}
+        return (
+          <SidebarMenuItem
+            key={consultation.id}
+            onMouseEnter={() => setHoveredId(consultation.id)}
+            onMouseLeave={() => setHoveredId(null)}
+          >
+            <div className="flex items-center w-full gap-1">
+              <SidebarMenuButton
+                isActive={isSelected}
+                onClick={() => onSelect(consultation.id)}
+                tooltip={consultation.title || 'Nauja konsultacija'}
+                className="h-auto py-2 flex-1 min-w-0"
               >
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            )}
-          </div>
-        </SidebarMenuItem>
-      ))}
+                <MessageSquare className="shrink-0" />
+                <div className="flex flex-col items-start gap-0.5 overflow-hidden min-w-0">
+                  <span className="truncate w-full text-left">
+                    {consultation.title || 'Nauja konsultacija'}
+                  </span>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 shrink-0">
+                      {TOPIC_LABELS[consultation.topic] || consultation.topic}
+                    </Badge>
+                    <span className="shrink-0" suppressHydrationWarning>{formatRelativeDate(consultation.updatedAt)}</span>
+                  </div>
+                </div>
+              </SidebarMenuButton>
+
+              {/* Delete button - show on hover, hide when collapsed */}
+              {showDelete && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 h-7 w-7 p-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 group-data-[collapsible=icon]:hidden"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(consultation.id, consultation.title || 'Nauja konsultacija');
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
+          </SidebarMenuItem>
+        );
+      })}
     </SidebarMenu>
   );
 }

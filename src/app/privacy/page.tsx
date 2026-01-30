@@ -99,7 +99,7 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-xl font-semibold mb-4">2. Kokius duomenis renkame</h2>
 
             <TldrBox>
-              Renkame tik būtinus duomenis: jūsų vardą ir el. paštą iš Google, bei įmonės profilį. Pokalbių su AI nesaugome.
+              Renkame tik būtinus duomenis: jūsų vardą ir el. paštą iš Google, bei įmonės profilį. Pokalbių istorija saugoma tik jei patys pasirenkate.
             </TldrBox>
 
             <h3 className="font-medium text-base mb-2 mt-4">2.1. Paskyros duomenys</h3>
@@ -132,10 +132,19 @@ export default function PrivacyPage() {
               <li>Peržiūrėti puslapiai</li>
             </ul>
 
-            <h3 className="font-medium text-base mb-2 mt-4">2.4. Ko nerenkame</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">2.4. Konsultacijų istorija</h3>
             <GoodNewsBox>
-              <strong>Pokalbių istorijos nesaugome.</strong> Jūsų konsultacijos su AI asistentu nėra išsaugomos mūsų serveriuose. Kiekvienas pokalbis pradedamas iš naujo.
+              <strong>Jūs kontroliuojate savo pokalbių istoriją.</strong> Pagal nutylėjimą konsultacijos nėra saugomos. Prenumeratoriai gali pasirinkti išsaugoti konsultacijas – jos saugomos tik jūsų paskyroje ir gali būti ištrintos bet kuriuo metu.
             </GoodNewsBox>
+            <p className="text-sm text-foreground/80 ml-4 mt-2">
+              Jei pasirenkate saugoti konsultacijas:
+            </p>
+            <ul className="text-sm text-foreground/80 ml-8 list-disc space-y-1 mt-1">
+              <li>Išsaugomas pokalbio tekstas (jūsų klausimai ir AI atsakymai)</li>
+              <li>Duomenys prieinami tik jums</li>
+              <li>Galite ištrinti bet kurią konsultaciją bet kuriuo metu</li>
+              <li>Ištrynus paskyrą, visos konsultacijos ištrinamos</li>
+            </ul>
           </section>
 
           {/* Section 3 */}
@@ -162,6 +171,10 @@ export default function PrivacyPage() {
                   <tr>
                     <td className="px-4 py-2 border-b border-border">Paslaugos personalizavimas</td>
                     <td className="px-4 py-2 border-b border-border">Sutarties vykdymas</td>
+                  </tr>
+                  <tr>
+                    <td className="px-4 py-2 border-b border-border">Konsultacijų istorijos saugojimas</td>
+                    <td className="px-4 py-2 border-b border-border">Sutikimas (BDAR 6 str. 1 d. a p.)</td>
                   </tr>
                   <tr>
                     <td className="px-4 py-2 border-b border-border">Mokėjimų apdorojimas</td>
@@ -237,12 +250,13 @@ export default function PrivacyPage() {
             <h2 className="font-serif text-xl font-semibold mb-4">5. Duomenų saugojimo terminai</h2>
 
             <TldrBox>
-              Ištrynus paskyrą, jūsų duomenys bus ištrinti per 30 dienų. Mokėjimų įrašus privalome saugoti 10 metų.
+              Konsultacijas galite ištrinti bet kada. Ištrynus paskyrą, visi duomenys ištrinami iš karto. Mokėjimų įrašus privalome saugoti 10 metų.
             </TldrBox>
 
             <ul className="text-sm text-foreground/80 ml-8 list-disc space-y-2 mt-4">
               <li><strong>Aktyvios paskyros duomenys:</strong> saugomi, kol naudojatės paslauga</li>
-              <li><strong>Po paskyros ištrynimo:</strong> duomenys ištrinami per 30 dienų</li>
+              <li><strong>Išsaugotos konsultacijos:</strong> saugomos, kol patys jas ištrinate arba ištrinate paskyrą</li>
+              <li><strong>Po paskyros ištrynimo:</strong> visi duomenys (įskaitant konsultacijas) ištrinami iš karto</li>
               <li><strong>Mokėjimų įrašai:</strong> saugomi 10 metų pagal buhalterinės apskaitos reikalavimus</li>
             </ul>
           </section>
