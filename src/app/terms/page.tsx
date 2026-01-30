@@ -288,64 +288,82 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* Section 7 */}
-          <section className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">7. Intelektinė nuosavybė</h2>
+          {/* Section 7 - Consultation saving */}
+          <section id="konsultaciju-issaugojimas" className="mb-10">
+            <h2 className="font-serif text-xl font-semibold mb-4">7. Konsultaciju issaugojimas</h2>
 
-            <h3 className="font-medium text-base mb-2 mt-4">7.1. Mūsų teisės</h3>
-            <p className="text-sm text-foreground/80 ml-4">
-              LegalAI programinė įranga, dizainas, prekių ženklai ir kitas turinys priklauso Imum, UAB arba jos licencijų davėjams.
-            </p>
+            <TldrBox>
+              Jusu konsultacijos saugomos tik jei pasirenkate. Galite bet kada istrinti.
+            </TldrBox>
 
-            <h3 className="font-medium text-base mb-2 mt-4">7.2. Jūsų turinys</h3>
-            <p className="text-sm text-foreground/80 ml-4">
-              Jūs išlaikote teises į informaciją, kurią pateikiate naudodamiesi paslauga.
-            </p>
+            <div className="space-y-3 text-foreground/80 text-sm ml-4">
+              <p>
+                Prenumeratoriai gali pasirinkti saugoti konsultaciju istorija. Issaugotos konsultacijos prieinamos tik jums ir gali buti istrintos bet kada.
+              </p>
+              <p>
+                Jei nepasirenkate saugoti, konsultacijos duomenys nera issaugomi po sesijos pabaigos.
+              </p>
+            </div>
           </section>
 
           {/* Section 8 */}
           <section className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">8. Paskyros uždarymas</h2>
+            <h2 className="font-serif text-xl font-semibold mb-4">8. Intelektine nuosavybe</h2>
 
-            <h3 className="font-medium text-base mb-2 mt-4">8.1. Jūsų iniciatyva</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">8.1. Musu teises</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Galite bet kuriuo metu ištrinti paskyrą paskyros nustatymuose.
+              LegalAI programine iranga, dizainas, prekiu zenklai ir kitas turinys priklauso Imum, UAB arba jos licenciju davejams.
             </p>
 
-            <h3 className="font-medium text-base mb-2 mt-4">8.2. Mūsų iniciatyva</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">8.2. Jusu turinys</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Galime sustabdyti ar panaikinti jūsų paskyrą, jei pažeidžiate šias sąlygas.
+              Jus islaikote teises i informacija, kuria pateikiate naudodamiesi paslauga.
             </p>
           </section>
 
           {/* Section 9 */}
           <section className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">9. Baigiamosios nuostatos</h2>
+            <h2 className="font-serif text-xl font-semibold mb-4">9. Paskyros uzdarymas</h2>
 
-            <h3 className="font-medium text-base mb-2 mt-4">9.1. Taikoma teisė</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">9.1. Jusu iniciatyva</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Šioms sąlygoms taikoma Lietuvos Respublikos teisė.
+              Galite bet kuriuo metu istrinti paskyra paskyros nustatymuose.
             </p>
 
-            <h3 className="font-medium text-base mb-2 mt-4">9.2. Ginčų sprendimas</h3>
+            <h3 className="font-medium text-base mb-2 mt-4">9.2. Musu iniciatyva</h3>
             <p className="text-sm text-foreground/80 ml-4">
-              Ginčai sprendžiami derybų būdu. Nepavykus susitarti, ginčai sprendžiami Lietuvos Respublikos teismuose.
-            </p>
-
-            <h3 className="font-medium text-base mb-2 mt-4">9.3. Sąlygų pakeitimai</h3>
-            <p className="text-sm text-foreground/80 ml-4">
-              Galime keisti šias sąlygas. Apie esminius pakeitimus informuosime el. paštu. Tolimesnis naudojimasis paslauga po pakeitimų reiškia sutikimą.
-            </p>
-
-            <h3 className="font-medium text-base mb-2 mt-4">9.4. Atskyrimas</h3>
-            <p className="text-sm text-foreground/80 ml-4">
-              Jei kuri nors sąlyga pripažįstama negaliojančia, likusios sąlygos lieka galioti.
+              Galime sustabdyti ar panaikinti jusu paskyra, jei pazeidziate sias salygas.
             </p>
           </section>
 
           {/* Section 10 */}
           <section className="mb-10">
-            <h2 className="font-serif text-xl font-semibold mb-4">10. Kontaktai</h2>
+            <h2 className="font-serif text-xl font-semibold mb-4">10. Baigiamosios nuostatos</h2>
+
+            <h3 className="font-medium text-base mb-2 mt-4">10.1. Taikoma teise</h3>
+            <p className="text-sm text-foreground/80 ml-4">
+              Sioms salygoms taikoma Lietuvos Respublikos teise.
+            </p>
+
+            <h3 className="font-medium text-base mb-2 mt-4">10.2. Gincu sprendimas</h3>
+            <p className="text-sm text-foreground/80 ml-4">
+              Gincai sprendziami derybu budu. Nepavykus susitarti, gincai sprendziami Lietuvos Respublikos teismuose.
+            </p>
+
+            <h3 className="font-medium text-base mb-2 mt-4">10.3. Salygu pakeitimai</h3>
+            <p className="text-sm text-foreground/80 ml-4">
+              Galime keisti sias salygas. Apie esminius pakeitimus informuosime el. pastu. Tolimesnis naudojimasis paslauga po pakeitimu reiskia sutikima.
+            </p>
+
+            <h3 className="font-medium text-base mb-2 mt-4">10.4. Atskyrimas</h3>
+            <p className="text-sm text-foreground/80 ml-4">
+              Jei kuri nors salyga pripazistama negaliojancia, likusios salygos lieka galioti.
+            </p>
+          </section>
+
+          {/* Section 11 */}
+          <section className="mb-10">
+            <h2 className="font-serif text-xl font-semibold mb-4">11. Kontaktai</h2>
             <div className="text-sm text-foreground/80 ml-4 space-y-1">
               <p><strong>Imum, UAB</strong></p>
               <p>El. paštas: <a href="mailto:labas@legalai.lt" className="text-primary hover:underline">labas@legalai.lt</a></p>

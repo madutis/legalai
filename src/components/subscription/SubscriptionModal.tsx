@@ -114,8 +114,26 @@ export function SubscriptionModal({
           </p>
         </div>
 
+        {/* Benefits */}
+        <div className="px-6 pt-4 pb-2">
+          <ul className="grid grid-cols-2 gap-x-2 gap-y-1.5 text-sm text-muted-foreground">
+            <li className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-gold flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Neribotos konsultacijos</span>
+            </li>
+            <li className="flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5 text-gold flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+              <span>Konsultaciju issaugojimas</span>
+            </li>
+          </ul>
+        </div>
+
         {/* Plan selection */}
-        <div className="p-6 space-y-3">
+        <div className="p-6 pt-3 space-y-3">
           {/* Monthly option */}
           <button
             type="button"
