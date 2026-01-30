@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
-import type { ChatMessage, ChatSource } from '@/types';
-import { startTrial } from '@/lib/firebase/firestore';
+import { useState, useCallback, useRef, useEffect } from 'react';
+import type { ChatMessage, ChatSource, ConsultationMessage } from '@/types';
 import { useAuth } from '@/contexts/AuthContext';
 
 // Re-export for backwards compatibility
@@ -23,6 +22,21 @@ interface UsageInfo {
 interface UseChatOptions {
   context?: ChatContext;
   userId?: string;
+  /** Callback to sync messages with ConsultationContext */
+  onMessagesChange?: (messages: ConsultationMessage[]) => void;
+  /** Initial messages to load (from loaded consultation) */
+  initialMessages?: ChatMessage[];
+}
+
+// Convert ChatMessage to ConsultationMessage
+function toConsultationMessage(m: ChatMessage): ConsultationMessage {
+  return {
+    id: m.id,
+    role: m.role,
+    content: m.content,
+    sources: m.sources,
+    timestamp: new Date(),
+  };
 }
 
 // Check if a message is a final answer (no questions)
@@ -31,9 +45,9 @@ function isFinalAnswer(content: string): boolean {
 }
 
 export function useChat(options?: UseChatOptions) {
-  const { context, userId } = options || {};
+  const { context, userId, onMessagesChange, initialMessages } = options || {};
   const { user } = useAuth();
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages || []);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,9 +60,32 @@ export function useChat(options?: UseChatOptions) {
   const abortControllerRef = useRef<AbortController | null>(null);
   const lastMessageRef = useRef<string | null>(null);
   const triedFallbackRef = useRef(false);
+  const onMessagesChangeRef = useRef(onMessagesChange);
+
+  // Keep ref in sync
+  useEffect(() => {
+    onMessagesChangeRef.current = onMessagesChange;
+  }, [onMessagesChange]);
+
+  // Update messages when initialMessages change (loading a different consultation)
+  useEffect(() => {
+    if (initialMessages) {
+      setMessages(initialMessages);
+      setConsultationFinishedAt(null);
+      setFollowUpCount(0);
+    }
+  }, [initialMessages]);
 
   const MAX_FOLLOW_UPS = 5;
   const isConsultationComplete = consultationFinishedAt !== null && followUpCount >= MAX_FOLLOW_UPS;
+
+  // Sync messages to consultation context when they change
+  const syncMessagesToContext = useCallback((msgs: Message[]) => {
+    if (onMessagesChangeRef.current) {
+      const consultationMessages = msgs.map(toConsultationMessage);
+      onMessagesChangeRef.current(consultationMessages);
+    }
+  }, []);
 
   const sendMessageInternal = useCallback(async (
     content: string,
@@ -72,7 +109,12 @@ export function useChat(options?: UseChatOptions) {
         role: 'user',
         content,
       };
-      setMessages((prev) => [...prev, userMessage]);
+      setMessages((prev) => {
+        const newMessages = [...prev, userMessage];
+        // Sync user message immediately
+        syncMessagesToContext(newMessages);
+        return newMessages;
+      });
       setMessages((prev) => [
         ...prev,
         { id: assistantId, role: 'assistant', content: '', sources: [] },
@@ -92,15 +134,8 @@ export function useChat(options?: UseChatOptions) {
     setCanRetry(false);
     lastMessageRef.current = content;
 
-    // Start trial on first message (idempotent - only sets if not already set)
-    // Also triggers welcome email
-    // Note: startTrial checks deletedAccounts - users who deleted their account don't get trial
+    // Send welcome email on first message (API handles deduplication)
     if (userId && user?.email) {
-      startTrial(userId, user.email).catch((err) => {
-        console.error('Failed to start trial:', err);
-      });
-
-      // Send welcome email (API handles deduplication)
       fetch('/api/email/welcome', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -167,7 +202,6 @@ export function useChat(options?: UseChatOptions) {
 
       const decoder = new TextDecoder();
       let buffer = '';
-      let receivedContent = false;
 
       while (true) {
         const { done, value } = await reader.read();
@@ -200,7 +234,6 @@ export function useChat(options?: UseChatOptions) {
                 )
               );
             } else if (parsed.type === 'text') {
-              receivedContent = true;
               setStatus(null); // Clear status when text starts
               setMessages((prev) =>
                 prev.map((m) =>
@@ -219,12 +252,14 @@ export function useChat(options?: UseChatOptions) {
         }
       }
 
-      // Check if this is a final answer (consultation finished)
+      // Streaming complete - sync final messages to context
       setMessages((prev) => {
         const lastAssistant = prev.find((m) => m.id === assistantId);
         if (lastAssistant && isFinalAnswer(lastAssistant.content) && consultationFinishedAt === null) {
           setConsultationFinishedAt(Date.now());
         }
+        // Sync complete messages to context for persistence
+        syncMessagesToContext(prev);
         return prev;
       });
 
@@ -253,7 +288,7 @@ export function useChat(options?: UseChatOptions) {
       setIsLoading(false);
       abortControllerRef.current = null;
     }
-  }, [messages, context, consultationFinishedAt, userId]);
+  }, [messages, context, consultationFinishedAt, userId, user, syncMessagesToContext]);
 
   const sendMessage = useCallback(async (content: string) => {
     if (!content.trim() || isLoading || isConsultationComplete) return;
@@ -276,6 +311,8 @@ export function useChat(options?: UseChatOptions) {
     setMessages([]);
     setError(null);
     setCanRetry(false);
+    setConsultationFinishedAt(null);
+    setFollowUpCount(0);
   }, []);
 
   const remainingFollowUps = Math.max(0, MAX_FOLLOW_UPS - followUpCount);
