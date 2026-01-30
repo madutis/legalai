@@ -275,7 +275,7 @@ function ChatPageContent() {
 
               <Button
                 onClick={() => setShowCheckoutSuccess(false)}
-                size="xl"
+                size="lg"
                 className="w-full font-medium shadow-md hover:shadow-lg transition-shadow"
               >
                 Pradėti konsultaciją

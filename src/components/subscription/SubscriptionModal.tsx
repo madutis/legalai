@@ -208,7 +208,7 @@ export function SubscriptionModal({
           <Button
             onClick={handleSubscribe}
             disabled={isLoading}
-            size="xl"
+            size="lg"
             className="w-full mt-2 font-medium shadow-md hover:shadow-lg transition-shadow"
           >
             {isLoading ? (

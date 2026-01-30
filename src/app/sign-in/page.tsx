@@ -215,7 +215,7 @@ export default function SignInPage() {
                 disabled={loadingGoogle}
                 className="w-full gap-2"
                 variant="default"
-                size="xl"
+                size="lg"
               >
                 {loadingGoogle ? (
                   <Spinner size="sm" />
@@ -302,7 +302,7 @@ export default function SignInPage() {
                     type="submit"
                     disabled={loadingMagicLink || !email.trim()}
                     variant="outline"
-                    size="xl"
+                    size="lg"
                     className="w-full"
                   >
                     {loadingMagicLink ? (

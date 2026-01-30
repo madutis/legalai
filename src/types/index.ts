@@ -119,3 +119,34 @@ export interface SearchResult {
   metadata: ChunkMetadata;
   score: number;
 }
+
+// Consultation persistence types
+export interface ConsultationMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: ChatSource[];
+  timestamp: Date;
+}
+
+export interface ConsultationDocument {
+  id: string;
+  title: string;  // LLM-generated, max 60 chars
+  createdAt: Date;
+  updatedAt: Date;
+  status: 'active' | 'completed';
+  savePreference: 'save' | 'dont_save' | 'pending';
+  context: {
+    userRole: string;
+    companySize: string;
+    topic: string;
+  };
+  messages: ConsultationMessage[];
+}
+
+export interface ConsultationMeta {
+  id: string;
+  title: string;
+  updatedAt: Date;
+  topic: string;
+}
