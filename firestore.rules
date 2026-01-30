@@ -24,6 +24,11 @@ service cloud.firestore {
       match /usage/{date} {
         allow read: if request.auth != null && request.auth.uid == uid;
       }
+
+      // Consultations subcollection - user can only access their own
+      match /consultations/{consultationId} {
+        allow read, write: if request.auth != null && request.auth.uid == uid;
+      }
     }
 
     // Deleted accounts - read own email to check trial eligibility
