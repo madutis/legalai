@@ -31,6 +31,7 @@ None
 - [ ] **Phase 5.5: Contact & Support** - Contact details and support channel (INSERTED)
 - [x] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
 - [ ] **Phase 7: Usage Controls** - Limits, restrictions, metering
+- [ ] **Phase 8: Consultation Saving** - Allow paid users to save and view chat history
 
 ## Phase Details
 
@@ -253,10 +254,42 @@ None
 **Plans**: 0 (covered by 06-05)
 **Status**: Complete — 50/day limit with warning at 45 and block at 50 implemented in Phase 6
 
+### Phase 8: Consultation Saving
+**Goal**: Allow paid users to save and view chat history with configurable defaults
+**Depends on**: Phase 6 (subscription required)
+**Research**: Unlikely (Firestore patterns)
+**Plans**: 5 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — Data layer: types, Firestore CRUD, security rules, context
+- [ ] 08-02-PLAN.md — Sidebar UI: shadcn sidebar, consultation list, chat layout
+- [ ] 08-03-PLAN.md — Save logic: debounced auto-save, save prompt, wire sidebar
+- [ ] 08-04-PLAN.md — Title generation + history loading: Gemini titles, load/continue
+- [ ] 08-05-PLAN.md — Settings & copy: preference toggle, post-sub prompt, T&Cs
+
+**Scope:**
+- Only available for paid subscribers
+- Update copy across pages: "we don't save chats unless you ask us to"
+- Update T&Cs with chat saving policy
+- Update upgrade modals: mention chat saving as subscription benefit
+- Post-subscription prompt: ask if user wants to save chats by default
+- Account settings: toggle for "save chats by default"
+- In-chat control: per-chat save/don't save option
+- Chat history section:
+  - View saved consultations list
+  - View individual chat with messages
+  - Highlight main consultation section
+  - Delete individual chats
+
+**Data model:**
+- `users/{uid}/consultations/{consultationId}` subcollection
+- Each chat: messages array, createdAt, topic, title (LLM-generated)
+- User preference: `saveByDefault` boolean in user doc
+
 ## Progress
 
 **Execution Order:**
-1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 5.1 → 5.2 → 5.3 → 5.4 → 5.5 → 6 → 7** → 2 → 2.1 → 3
+1 → 1.1 → 1.2 → 1.3 → 1.4 → **4 → 5 → 5.1 → 5.2 → 5.3 → 5.4 → 5.5 → 6 → 7 → 8** → 2 → 2.1 → 3
 
 Auth/billing prioritized over templates/landing page.
 
@@ -276,6 +309,7 @@ Auth/billing prioritized over templates/landing page.
 | 5.5. Contact & Support | 0/1 | Not started | - |
 | 6. Subscription & Billing | 5/5 | ✓ Complete | 2026-01-27 |
 | 7. Usage Controls | 0/0 | ✓ Complete (via 06-05) | 2026-01-27 |
+| 8. Consultation Saving | 0/5 | Not started | - |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
