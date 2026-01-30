@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ChatInterface } from '@/components/chat/ChatInterface';
 import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/Header';
+import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getUserProfile, saveUserProfile } from '@/lib/firebase/firestore';
@@ -200,7 +201,7 @@ function ChatPageContent() {
   // Show loading while checking auth or context
   if (authLoading || contextLoading || !context) {
     return (
-      <div className="h-[100svh] flex items-center justify-center bg-background">
+      <div className="h-full flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
             <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -220,7 +221,7 @@ function ChatPageContent() {
   }
 
   return (
-    <div className="h-[100svh] flex flex-col bg-background">
+    <div className="h-full flex flex-col bg-background">
       {/* Subscription Modal */}
       <SubscriptionModal
         isOpen={showSubscriptionModal}
@@ -294,18 +295,7 @@ function ChatPageContent() {
       )}
 
       <Header showAuth>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleNewConsultation}
-          className="flex-shrink-0 text-xs sm:text-sm rounded-lg border-border hover:bg-muted transition-colors"
-        >
-          <svg className="w-4 h-4 mr-1.5 hidden sm:block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          <span className="hidden sm:inline">Nauja konsultacija</span>
-          <span className="sm:hidden">Nauja</span>
-        </Button>
+        <SidebarTrigger className="md:hidden" />
       </Header>
 
       {/* Context Summary */}
@@ -360,7 +350,7 @@ function ChatPageContent() {
 export default function ChatPage() {
   return (
     <Suspense fallback={
-      <div className="h-[100svh] flex items-center justify-center bg-background">
+      <div className="h-full flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center animate-pulse">
             <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
