@@ -96,19 +96,17 @@ export function ChatSidebar({
           </div>
         )}
 
-        {/* Expand button when collapsed */}
-        {isCollapsed && (
-          <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                onClick={toggleSidebar}
-                tooltip="Išskleisti"
-              >
-                <PanelLeft />
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          </SidebarMenu>
-        )}
+        {/* Toggle button - expand when collapsed, collapse when expanded */}
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              onClick={toggleSidebar}
+              tooltip={isCollapsed ? 'Išskleisti' : 'Suskleisti'}
+            >
+              <PanelLeft />
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>
