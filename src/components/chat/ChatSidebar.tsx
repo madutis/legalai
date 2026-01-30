@@ -1,7 +1,6 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { Plus, Settings } from 'lucide-react';
+import { Plus, EyeOff } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -15,32 +14,47 @@ import {
   SidebarMenuButton,
   SidebarRail,
 } from '@/components/ui/sidebar';
-import { ConsultationList, type Consultation } from './ConsultationList';
+import { Button } from '@/components/ui/button';
+import { ConsultationList } from './ConsultationList';
+import type { ConsultationMeta } from '@/types';
 
 interface ChatSidebarProps {
-  consultations?: Consultation[];
+  consultations?: ConsultationMeta[];
   selectedConsultationId?: string | null;
   onSelectConsultation?: (id: string) => void;
+  onDeleteConsultation?: (id: string, title: string) => void;
+  onNewConsultation?: () => void;
+  onDontSaveCurrentChat?: () => void;
   isLoading?: boolean;
+  saveByDefault?: boolean;
+  hasActiveChat?: boolean;
+  currentChatSavePreference?: 'save' | 'dont_save' | 'pending';
 }
 
 export function ChatSidebar({
   consultations,
   selectedConsultationId,
   onSelectConsultation,
+  onDeleteConsultation,
+  onNewConsultation,
+  onDontSaveCurrentChat,
   isLoading = false,
+  saveByDefault = true,
+  hasActiveChat = false,
+  currentChatSavePreference,
 }: ChatSidebarProps) {
-  const router = useRouter();
-
-  const handleNewConsultation = () => {
-    // Clear context and go to onboarding
-    localStorage.removeItem('legalai-context');
-    router.push('/');
-  };
-
   const handleSelectConsultation = (id: string) => {
     onSelectConsultation?.(id);
   };
+
+  // Show "don't save" button when:
+  // - saveByDefault is ON
+  // - there's an active chat
+  // - current chat is not already marked as dont_save
+  const showDontSaveButton =
+    saveByDefault &&
+    hasActiveChat &&
+    currentChatSavePreference !== 'dont_save';
 
   return (
     <Sidebar collapsible="icon" side="left">
@@ -48,7 +62,7 @@ export function ChatSidebar({
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={handleNewConsultation}
+              onClick={onNewConsultation}
               tooltip="Nauja konsultacija"
               className="bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
             >
@@ -57,6 +71,21 @@ export function ChatSidebar({
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+
+        {/* Per-chat don't save button */}
+        {showDontSaveButton && (
+          <div className="px-2 pt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start text-muted-foreground hover:text-foreground text-xs"
+              onClick={onDontSaveCurrentChat}
+            >
+              <EyeOff className="h-3.5 w-3.5 mr-2" />
+              <span>Nesaugoti sios</span>
+            </Button>
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
@@ -67,6 +96,7 @@ export function ChatSidebar({
               consultations={consultations}
               selectedId={selectedConsultationId}
               onSelect={handleSelectConsultation}
+              onDelete={onDeleteConsultation}
               isLoading={isLoading}
             />
           </SidebarGroupContent>
@@ -74,14 +104,7 @@ export function ChatSidebar({
       </SidebarContent>
 
       <SidebarFooter className="border-t border-sidebar-border">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton tooltip="Nustatymai" disabled>
-              <Settings />
-              <span>Saugoti pagal numatyma</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        {/* Footer intentionally left minimal - settings moved elsewhere */}
       </SidebarFooter>
 
       <SidebarRail />
