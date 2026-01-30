@@ -1,6 +1,6 @@
 'use client';
 
-import { Plus, EyeOff, Save, PanelLeft } from 'lucide-react';
+import { Plus, EyeOff, Save } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -95,18 +95,6 @@ export function ChatSidebar({
             </Button>
           </div>
         )}
-
-        {/* Toggle button - expand when collapsed, collapse when expanded */}
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              onClick={toggleSidebar}
-              tooltip={isCollapsed ? 'Išskleisti' : 'Suskleisti'}
-            >
-              <PanelLeft />
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
       </SidebarHeader>
 
       <SidebarContent>
