@@ -8,8 +8,9 @@ import { Header } from '@/components/layout/Header';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { getUserProfile, saveUserProfile } from '@/lib/firebase/firestore';
+import { getUserProfile, saveUserProfile, setSaveByDefault } from '@/lib/firebase/firestore';
 import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
+import { SavePreferencePrompt } from '@/components/chat/SavePreferencePrompt';
 
 interface UserContext {
   userRole: string;
@@ -103,11 +104,12 @@ function ChatPageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, loading: authLoading } = useAuth();
-  const { status: subscriptionStatus } = useSubscription();
+  const { status: subscriptionStatus, userDoc } = useSubscription();
   const [context, setContext] = useState<UserContext | null>(null);
   const [contextLoading, setContextLoading] = useState(true);
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
   const [showCheckoutSuccess, setShowCheckoutSuccess] = useState(false);
+  const [showSavePreferencePrompt, setShowSavePreferencePrompt] = useState(false);
 
   // Auth check - redirect to sign-in if not authenticated
   useEffect(() => {
@@ -182,6 +184,28 @@ function ChatPageContent() {
     router.push('/');
   };
 
+  // Handle checkout success modal close
+  const handleCheckoutSuccessClose = () => {
+    setShowCheckoutSuccess(false);
+    // Check if this is first subscription (saveByDefault not explicitly set)
+    // userDoc.saveByDefault will be undefined if never set
+    if (userDoc && userDoc.saveByDefault === undefined) {
+      setShowSavePreferencePrompt(true);
+    }
+  };
+
+  // Handle save preference prompt close
+  const handleSavePreferenceClose = async (saveByDefault: boolean) => {
+    setShowSavePreferencePrompt(false);
+    if (user) {
+      try {
+        await setSaveByDefault(user.uid, saveByDefault);
+      } catch (err) {
+        console.error('Failed to save preference:', err);
+      }
+    }
+  };
+
   // Handle checkout success query param
   useEffect(() => {
     if (searchParams.get('checkout') === 'success') {
@@ -232,7 +256,7 @@ function ChatPageContent() {
       {showCheckoutSuccess && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-300"
-          onClick={() => setShowCheckoutSuccess(false)}
+          onClick={handleCheckoutSuccessClose}
         >
           <div
             className="relative bg-card border border-border rounded-xl shadow-2xl max-w-sm w-full mx-4 overflow-hidden animate-in zoom-in-95 fade-in slide-in-from-bottom-4 duration-300"
@@ -275,7 +299,7 @@ function ChatPageContent() {
               </p>
 
               <Button
-                onClick={() => setShowCheckoutSuccess(false)}
+                onClick={handleCheckoutSuccessClose}
                 size="lg"
                 className="w-full font-medium shadow-md hover:shadow-lg transition-shadow"
               >
@@ -293,6 +317,12 @@ function ChatPageContent() {
           </div>
         </div>
       )}
+
+      {/* Save Preference Prompt - shown after first checkout success */}
+      <SavePreferencePrompt
+        isOpen={showSavePreferencePrompt}
+        onClose={handleSavePreferenceClose}
+      />
 
       <Header showAuth>
         <SidebarTrigger className="md:hidden" />

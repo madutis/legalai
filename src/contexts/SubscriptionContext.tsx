@@ -14,6 +14,7 @@ import {
   type UserDocument,
   type AccessStatus,
   getAccessStatus,
+  checkDeletedAccount,
 } from '@/lib/firebase/firestore';
 import { TRIAL_DURATION_DAYS } from '@/lib/constants';
 
@@ -22,6 +23,7 @@ interface SubscriptionContextValue {
   userDoc: UserDocument | null;
   trialDaysLeft: number | null;
   isSubscribed: boolean;
+  isDeletedAccount: boolean;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextValue | null>(null);
@@ -43,6 +45,7 @@ function parseUserDocument(data: Record<string, unknown>): UserDocument {
     createdAt: (data.createdAt as { toDate: () => Date } | undefined)?.toDate(),
     trialStartedAt: (data.trialStartedAt as { toDate: () => Date } | undefined)?.toDate(),
     stripeCustomerId: data.stripeCustomerId as string | undefined,
+    saveByDefault: data.saveByDefault as boolean | undefined,
     subscription: data.subscription ? {
       status: (data.subscription as Record<string, unknown>).status as 'active' | 'canceled' | 'past_due' | 'expired',
       stripeSubscriptionId: (data.subscription as Record<string, unknown>).stripeSubscriptionId as string,
@@ -59,6 +62,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const [userDoc, setUserDoc] = useState<UserDocument | null>(null);
   const [status, setStatus] = useState<'loading' | AccessStatus>('loading');
+  const [isDeletedAccount, setIsDeletedAccount] = useState(false);
 
   // Set up real-time Firestore listener
   useEffect(() => {
@@ -69,7 +73,13 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     if (!user) {
       setUserDoc(null);
       setStatus('pre_trial');
+      setIsDeletedAccount(false);
       return;
+    }
+
+    // Check if user previously deleted account (no trial eligibility)
+    if (user.email) {
+      checkDeletedAccount(user.email).then(setIsDeletedAccount);
     }
 
     const db = getFirebaseFirestore();
@@ -123,6 +133,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         userDoc,
         trialDaysLeft,
         isSubscribed,
+        isDeletedAccount,
       }}
     >
       {children}
