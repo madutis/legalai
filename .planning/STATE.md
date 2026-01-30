@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-20)
 
 **Core value:** Instant, accurate answers to Lithuanian labor law questions — so accountants can confidently handle employment matters for their clients without specialist legal knowledge.
-**Current focus:** Phase 6 — Subscription & Billing
+**Current focus:** Phase 8 — Consultation Saving
 
 ## Current Position
 
-Phase: 6 of 8 (Subscription & Billing)
-Plan: 5 of 5 in current phase
-Status: Phase complete
-Last activity: 2026-01-27 — Completed 06-05-PLAN.md
+Phase: 8 of 8 (Consultation Saving)
+Plan: 2 of 5 in current phase
+Status: In progress
+Last activity: 2026-01-30 — Completed 08-02-PLAN.md
 
-Progress: █████████░ 85%
+Progress: █████████░ 88%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
+- Total plans completed: 19
 - Average duration: 10 min
-- Total execution time: 190 min
+- Total execution time: 198 min
 
 **By Phase:**
 
@@ -36,9 +36,10 @@ Progress: █████████░ 85%
 | 5 | 1 | 8 min | 8 min |
 | 5.4 | 1 | 2 min | 2 min |
 | 6 | 4 | 15 min | 4 min |
+| 8 | 1 | 8 min | 8 min |
 
 **Recent Trend:**
-- Last 5 plans: 05.4-01 (2m), 06-01 (4m), 06-02 (5m), 06-03 (2m), 06-04 (4m)
+- Last 5 plans: 06-02 (5m), 06-03 (2m), 06-04 (4m), 06-05 (4m), 08-02 (8m)
 - Trend: Progressing
 
 ## Accumulated Context
@@ -84,6 +85,8 @@ Recent decisions affecting current work:
 | 06-04 | Suspense wrapper for chat page | Next.js 16 requires useSearchParams in Suspense boundary |
 | 06-05 | UTC date key for usage tracking | Consistent across timezones, aligns with midnight UTC reset |
 | 06-05 | Fire-and-forget usage increment | Non-blocking UX - usage tracking shouldn't delay response |
+| 08-02 | Use shadcn sidebar primitives | Consistent UI with built-in mobile/keyboard features |
+| 08-02 | Cookie-based sidebar state | Persists sidebar open/collapsed across sessions |
 
 ### Pending Todos
 
@@ -93,8 +96,12 @@ None yet.
 
 None yet.
 
+### Roadmap Evolution
+
+- Phase 8 added: Consultation Saving - Allow paid users to save and view chat history
+
 ## Session Continuity
 
-Last session: 2026-01-27
-Stopped at: Completed 06-05-PLAN.md (Phase 6 complete)
+Last session: 2026-01-30
+Stopped at: Completed 08-02-PLAN.md
 Resume file: None
