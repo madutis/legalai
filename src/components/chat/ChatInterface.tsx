@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useChat, type ChatSource } from '@/hooks/useChat';
 import { useAuth } from '@/contexts/AuthContext';
+import { useConsultation } from '@/contexts/ConsultationContext';
 import { Button } from '@/components/ui/button';
 import { RulingModal } from './RulingModal';
 import { ArticleModal } from './ArticleModal';
@@ -13,6 +14,7 @@ import { exportToPDF } from '@/lib/pdf-export';
 import { UsageWarning } from '@/components/subscription/UsageWarning';
 import { UsageLimitModal } from '@/components/subscription/UsageLimitModal';
 import { SubscriptionModal } from '@/components/subscription/SubscriptionModal';
+import { toChatMessages } from '@/lib/utils/messageConverter';
 
 interface ChatInterfaceProps {
   topic?: string;
@@ -22,6 +24,7 @@ interface ChatInterfaceProps {
 
 export function ChatInterface({ topic, userRole, companySize }: ChatInterfaceProps) {
   const { user } = useAuth();
+  const { consultation, consultationId, updateMessages } = useConsultation();
   const [input, setInput] = useState('');
   const [selectedRulingDocId, setSelectedRulingDocId] = useState<string | null>(null);
   const [selectedArticleNumber, setSelectedArticleNumber] = useState<number | null>(null);
@@ -29,6 +32,20 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isNearBottomRef = useRef(true);
   const isReturningUser = !!user;
+
+  // Convert loaded consultation messages to ChatMessage format
+  // Memoize to prevent infinite re-renders when consultation changes
+  const initialMessages = useMemo(() => {
+    if (consultation?.messages && consultation.messages.length > 0) {
+      return toChatMessages(consultation.messages);
+    }
+    return undefined;
+  }, [consultationId]); // Only recalculate when consultation ID changes
+
+  // Callback to sync messages with ConsultationContext
+  const handleMessagesChange = useCallback((msgs: Parameters<typeof updateMessages>[0]) => {
+    updateMessages(msgs);
+  }, [updateMessages]);
 
   const {
     messages,
@@ -47,7 +64,12 @@ export function ChatInterface({ topic, userRole, companySize }: ChatInterfacePro
     subscriptionRequired,
     dismissLimitReached,
     dismissUsageWarning,
-  } = useChat({ context: { topic, userRole, companySize }, userId: user?.uid });
+  } = useChat({
+    context: { topic, userRole, companySize },
+    userId: user?.uid,
+    initialMessages,
+    onMessagesChange: handleMessagesChange,
+  });
 
   const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
