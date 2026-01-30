@@ -31,7 +31,7 @@ None
 - [ ] **Phase 5.5: Contact & Support** - Contact details and support channel (INSERTED)
 - [x] **Phase 6: Subscription & Billing** - Pricing, trials, payment integration
 - [ ] **Phase 7: Usage Controls** - Limits, restrictions, metering
-- [ ] **Phase 8: Consultation Saving** - Allow paid users to save and view chat history
+- [x] **Phase 8: Consultation Saving** - Allow paid users to save and view chat history
 
 ## Phase Details
 
@@ -261,11 +261,11 @@ None
 **Plans**: 5 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — Data layer: types, Firestore CRUD, security rules, context
-- [ ] 08-02-PLAN.md — Sidebar UI: shadcn sidebar, consultation list, chat layout
-- [ ] 08-03-PLAN.md — Save logic: debounced auto-save, save prompt, wire sidebar
-- [ ] 08-04-PLAN.md — Title generation + history loading: Gemini titles, load/continue
-- [ ] 08-05-PLAN.md — Settings & copy: preference toggle, post-sub prompt, T&Cs
+- [x] 08-01-PLAN.md — Data layer: types, Firestore CRUD, security rules, context
+- [x] 08-02-PLAN.md — Sidebar UI: shadcn sidebar, consultation list, chat layout
+- [x] 08-03-PLAN.md — Save logic: debounced auto-save, save prompt, wire sidebar
+- [x] 08-04-PLAN.md — Title generation + history loading: Gemini titles, load/continue
+- [x] 08-05-PLAN.md — Settings & copy: preference toggle, post-sub prompt, T&Cs
 
 **Scope:**
 - Only available for paid subscribers
@@ -309,7 +309,7 @@ Auth/billing prioritized over templates/landing page.
 | 5.5. Contact & Support | 0/1 | Not started | - |
 | 6. Subscription & Billing | 5/5 | ✓ Complete | 2026-01-27 |
 | 7. Usage Controls | 0/0 | ✓ Complete (via 06-05) | 2026-01-27 |
-| 8. Consultation Saving | 0/5 | Not started | - |
+| 8. Consultation Saving | 5/5 | ✓ Complete | 2026-01-30 |
 | 2. Contract Templates | 0/TBD | Not started | - |
 | 2.1. Safety Rules Generator | 0/3-4 | Not started | - |
 | 3. Landing Page | 0/TBD | Not started | - |
