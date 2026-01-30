@@ -88,6 +88,9 @@ Recent decisions affecting current work:
 | 08-01 | Messages as array in document | Suitable for <1K messages per consultation, more efficient than subcollection |
 | 08-01 | Metadata-only list query | getUserConsultations returns only id, title, updatedAt, topic to minimize reads |
 | 08-01 | Local state + separate sync | Context manages local state, Firestore persistence via debounce in Plan 03 |
+| 08-03 | 2s debounce for auto-save | Balance between responsiveness and Firestore write costs |
+| 08-03 | Message sync via callback | Keeps useChat loosely coupled, can work without context |
+| 08-03 | Client-side layout for hooks | Sidebar state needs client-side management with hooks |
 | 08-04 | Gemini 2.0 Flash for title | Fast and cost-effective for simple title generation |
 | 08-04 | Ref-based title deduplication | Prevent duplicate LLM calls for same consultation |
 | 08-04 | Memoize initialMessages by ID | Prevent infinite re-renders when consultation object changes |
